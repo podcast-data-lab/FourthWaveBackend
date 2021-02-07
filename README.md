@@ -22,13 +22,18 @@ Podcast:
 
 ```json
 {
-    "title":"Ted Radio Hour",
-    "publisher":"NPR",
-    "rssFeed":"https://feeds.npr.org/510298/podcast.xml",
-    "link":"https://www.npr.org/programs/ted-radio-hour/",
-    "image":"https://media.npr.org/assets/img/2020/03/09/trh_podcast-tile_sq-c05fb259465d433a5cf8a21248b8fa209a6b7690.png?s=1400",
-    "categories":{"Technology","Science","Social Sciences","Society & Culture"},
-    "episodes":{}
+  "title": "Ted Radio Hour",
+  "publisher": "NPR",
+  "rssFeed": "https://feeds.npr.org/510298/podcast.xml",
+  "link": "https://www.npr.org/programs/ted-radio-hour/",
+  "image": "https://media.npr.org/assets/img/2020/03/09/trh_podcast-tile_sq-c05fb259465d433a5cf8a21248b8fa209a6b7690.png?s=1400",
+  "categories": [
+    "Technology",
+    "Science",
+    "Social Sciences",
+    "Society & Culture"
+  ],
+  "episodes": {}
 }
 ```
 
