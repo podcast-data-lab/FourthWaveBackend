@@ -41,7 +41,7 @@ app.use(auth.setUser);
 
 app.use((req, res, next) => {
   const allowedOrigins = [
-    "http://onthistopic.tamaduni.org",
+    "https://onthistopic.tamaduni.org",
     "http://localhost:3000",
   ];
   const origin = req.headers.origin;
