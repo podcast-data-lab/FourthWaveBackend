@@ -1,8 +1,7 @@
-import express from "express";
-import { ApolloServer } from "apollo-server-express";
-import { createServer } from "http";
-
+import fastify from "fastify";
+import { ApolloServer } from "apollo-server-fastify";
 const mongoose = require("mongoose");
+const PORT = +process.env.PORT || 6500;
 
 mongoose.connect(process.env.MONGO_DB, {
   useNewUrlParser: true,
@@ -21,7 +20,7 @@ import {
   UserResolver,
 } from "./graphql/resolvers";
 
-const runServer = async () => {
+(async () => {
   const schema = await buildSchema({
     resolvers: [
       CommentResolver,
@@ -35,22 +34,35 @@ const runServer = async () => {
     emitSchemaFile: true,
   });
 
-  const app = express();
+  const app = fastify();
 
-  const apolloServer = new ApolloServer({
+  const server = new ApolloServer({
     schema,
   });
 
-  apolloServer.applyMiddleware({ app });
-  const httpServer = createServer(app);
+  await server.start();
+  app.register(server.createHandler());
 
-  apolloServer.installSubscriptionHandlers(httpServer);
-
-  const PORT = process.env.PORT || 6509;
-
-  httpServer.listen(PORT, () => {
-    console.log(`server listening on port ${PORT}`);
+  app.register(require("fastify-cors"), {
+    origin: (origin, cb) => {
+      if (/localhost/.test(origin) || !origin) {
+        //  Request from localhost will pass
+        cb(null, true);
+        return;
+      }
+      if (checkAllowedOrigins(origin)) {
+        cb(null, true);
+        return;
+      }
+      // Generate an error on other origins, disabling access
+      cb(new Error("Not allowed"));
+    },
   });
-};
 
-runServer();
+  await app.listen(PORT);
+})();
+
+function checkAllowedOrigins(origin: string): boolean {
+  console.log(origin);
+  return false;
+}

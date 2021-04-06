@@ -38,7 +38,7 @@ podData.map((pod) => {
       title: thisEp.title,
       datePublished: thisEp.datePublished,
       description: thisEp.description,
-      duration: thisEp.duration,
+      duration: thisEp.duration || 0,
       sourceUrl: thisEp.sourceUrl,
       slug: thisEp.slug,
       image: thisEp.image,
@@ -55,7 +55,7 @@ podData.map((pod) => {
           { title: pod.title },
           {
             $push: {
-              episodes: newEp._id,
+              episodes: newEp,
             },
           }
         ).then(console.log("ep saved"));

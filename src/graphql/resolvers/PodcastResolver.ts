@@ -1,6 +1,6 @@
 import { Query, Resolver } from "type-graphql";
 
-import { Podcast } from "../../models/Podcast";
+import { Podcast, PodcastModel } from "../../models/Podcast";
 
 @Resolver((of) => Podcast)
 export default class PodcastResolver {
@@ -8,5 +8,12 @@ export default class PodcastResolver {
   print(): String {
     console.log("here");
     return "Hello";
+  }
+
+  @Query((returns) => [Podcast])
+  async getPodcasts(): Promise<Podcast[]> {
+    const podcasts: Podcast[] = await PodcastModel.find();
+
+    return podcasts;
   }
 }

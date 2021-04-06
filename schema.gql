@@ -25,7 +25,6 @@ type Episode {
   likes: [User!]!
   locations: [Locale!]!
   people: [Person!]!
-  podcast: String!
   slug: String!
   sourceUrl: String!
   themes: [Theme!]!
@@ -60,7 +59,8 @@ type Podcast {
 }
 
 type Query {
-  getComment: Comment!
+  getComment: Comment
+  getPodcasts: [Podcast!]!
   print: String!
 }
 

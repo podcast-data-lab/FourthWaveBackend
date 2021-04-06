@@ -4,7 +4,7 @@ import { PodcastModel } from "../../models/Podcast";
 
 @Resolver((of) => Comment)
 export default class CommentResolver {
-  @Query((returns) => Comment)
+  @Query((returns) => Comment, { nullable: true })
   async getComment(): Promise<Comment> {
     console.log("here");
     const comment = await CommentModel.findOne();

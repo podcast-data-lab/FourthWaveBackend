@@ -53,10 +53,6 @@ export class Episode {
   public locations: Ref<Locale>[];
 
   @Field()
-  @prop()
-  public podcast: string;
-
-  @Field()
   @prop({
     type: String,
     required: true,

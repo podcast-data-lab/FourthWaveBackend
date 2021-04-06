@@ -75,7 +75,7 @@ const Podcast = new Schema(
     link: String,
     image: String,
     description: String,
-    lastRssBuildDate: Date,
+    lastRssBuildDate: { type: Date, default: Date.now() },
     slug: {
       type: String,
       required: true,
@@ -91,7 +91,7 @@ const Podcast = new Schema(
 const Episode = new Schema(
   {
     title: String,
-    datePublished: String,
+    datePublished: { type: Date, default: Date.now() },
     description: String,
     duration: String,
     sourceUrl: String,
@@ -208,4 +208,5 @@ let dbconf = conf.dbconf;
 mongoose.connect(process.env.MONGO_DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useCreateIndex: true,
 });
