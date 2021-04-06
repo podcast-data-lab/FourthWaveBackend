@@ -1,3 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(dbconf, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});

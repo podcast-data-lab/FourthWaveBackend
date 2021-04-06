@@ -2,6 +2,13 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { createServer } from "http";
 
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGO_DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import {
@@ -39,7 +46,7 @@ const runServer = async () => {
 
   apolloServer.installSubscriptionHandlers(httpServer);
 
-  const PORT = process.env.PORT || 6500;
+  const PORT = process.env.PORT || 6509;
 
   httpServer.listen(PORT, () => {
     console.log(`server listening on port ${PORT}`);
