@@ -3,6 +3,9 @@ import { ApolloServer } from "apollo-server-fastify";
 const mongoose = require("mongoose");
 const PORT = +process.env.PORT || 6500;
 
+// Require the environment variables
+require("dotenv").config("../");
+
 mongoose.connect(process.env.MONGO_DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true,

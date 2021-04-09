@@ -52,7 +52,7 @@ type Podcast {
   image: String!
   lastRssBuildDate: DateTime!
   link: String!
-  publisher: String!
+  publisher: String
   rssFeed: String!
   slug: String!
   title: String!

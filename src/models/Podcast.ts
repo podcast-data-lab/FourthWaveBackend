@@ -8,7 +8,7 @@ export class Podcast {
   @prop()
   public title: string;
 
-  @Field()
+  @Field({ nullable: true })
   @prop()
   publisher: string;
 
