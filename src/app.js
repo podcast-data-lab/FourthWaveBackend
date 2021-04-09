@@ -856,8 +856,8 @@ app.get("/likes", function (req, res) {});
  */
 app.post("/like", function (req, res) {});
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname + "/build/index.html"));
-// });
-
-app.listen(5000);
+app.get("*", (req, res) => {
+  res.json({ message: "Welcome to On this topic api" });
+});
+const port = process.env.PORT || 5000;
+app.listen(port);

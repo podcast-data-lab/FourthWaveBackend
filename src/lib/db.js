@@ -195,14 +195,6 @@ mongoose.model("Theme", Theme);
 mongoose.model("Location", Location);
 mongoose.model("Person", Person);
 
-// import the configuratio file for the mongodb database
-const fs = require("fs");
-const fn = "src/config.json";
-const data = fs.readFileSync(fn);
+const dbUrl = process.env.MONGO_DB;
 
-// our configuration file will be in json, so parse it and set the
-// conenction string appropriately!
-const conf = JSON.parse(data);
-let dbconf = conf.dbconf;
-
-mongoose.connect(dbconf, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
