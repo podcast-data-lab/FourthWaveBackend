@@ -10,12 +10,18 @@ passport.use(
     try {
       const user = await User.findOne({ username: username }).exec();
       if (!user) {
+        console.log("problem with username");
+        console.log(username);
         return done(null, false, { message: "Invalid Username or Password" });
       }
       const passwordOK = await user.comparePassword(password);
       if (!passwordOK) {
+        console.log(password);
+        console.log("problem with pass");
+
         return done(null, false, { message: "Invalid Username or Password" });
       }
+      console.log(user);
       return done(null, user);
     } catch (err) {
       return done(err);

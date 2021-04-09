@@ -41,12 +41,13 @@ app.use(auth.setUser);
 
 app.use((req, res, next) => {
   const allowedOrigins = [
-    "https://onthistopic.tamaduni.org",
+    "https://onthistopic.web.app",
     "http://localhost:3000",
+    "https://onthistopic.web.app/",
   ];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
-    console.log(origin);
+    console.log(`allowing requests from ${origin}`);
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
   res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -85,7 +86,9 @@ app.get("/loginstatus", (req, res) => {
   }
 });
 
-app.post("/signup", async (req, res, next) => {
+app.post("/signup", async (req, res) => {
+  const errors = [];
+
   try {
     const user = new User({
       firstname: req.body.firstname,
@@ -95,19 +98,17 @@ app.post("/signup", async (req, res, next) => {
       password: req.body.password,
     });
     const savedUser = await user.save();
-    if (savedUser) return res.redirect("/");
-    return next(new Error("Failed to save User for unknown reasons"));
+    if (savedUser) {
+      passport.authenticate(req.body.username, req.body.password);
+
+      return res.json({ status: true, errors: errors });
+    }
+    // return next(new Error("Failed to save User for unknown reasons"));
   } catch (error) {
-    return next(error);
+    return res.json({ status: false, errors: [error.message] });
   }
 });
 
-app.get("/signin", (req, res) => {
-  res.json({ ready: true });
-});
-app.get("/signup", (req, res) => {
-  res.json({ ready: true });
-});
 // app.get("/oaccount", (req, res, next) => {
 //   if (req.user) {
 //     console.log(req.user);
@@ -116,13 +117,17 @@ app.get("/signup", (req, res) => {
 //   return res.redirect("/signin");
 // });
 
-app.post(
-  "/signin",
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/signin?error=true",
-  })
-);
+app.post("/signin", (req, res) => {
+  console.log("here");
+
+  passport.authenticate("local", (result) => {
+    if (!!result) {
+      res.json({ status: true });
+    } else {
+      res.json({ status: false });
+    }
+  });
+});
 
 app.post("/signout", (req, res) => {
   req.logOut();
@@ -145,128 +150,7 @@ app.get("/podcast/:slug/", async function (req, res) {
     const slug = req.params.slug;
     const pod = await Podcast.findOne({ slug: encodeURIComponent(slug) });
 
-    /**
-     * If the podcast exits
-     * TODO: Otherwise, if it does not, return podcasts with similar slugs
-     */
-    if (pod !== null) {
-      /**
-       * The parser checks the rss feed of the podcast,
-       * gets back the last build date and compares it with the current build date
-       * in the database
-       */
-      console.log(pod);
-
-      let Parser = require("rss-parser");
-      let parser = new Parser();
-      let updatedPod = await parser.parseURL(pod.rssFeed);
-
-      // The last build date of the podcast
-      let rssBuildDate = new Date(updatedPod["lastBuildDate"]);
-      // If the rssFeed does not contain a build date, check the latest episode
-      if (isNaN(rssBuildDate)) {
-        rssBuildDate = new Date(updatedPod.items[0].isoDate);
-      }
-
-      /**
-       * If the rssBuild date is more recent than the date the podcast was updated
-       * Update with the most recent episodes
-       */
-      if (rssBuildDate > pod.lastRssBuildDate) {
-        console.log("need updating");
-        /**
-         * Filter only the episodes that are more recent than when the podcast was updated
-         */
-        const newEps = updatedPod.items.filter(
-          (epi) => new Date(epi.isoDate) > pod.lastRssBuildDate
-        );
-        // const newEps = updatedPod.items;
-
-        /**
-         * Loop through all the "new" episodes and create new podcasts
-         */
-        const addEpisodes = Promise.all(
-          newEps.map(async (ep) => {
-            let newEp = new Episode({
-              title: ep["title"],
-              datePublished: ep["pubDate"],
-              description: ep["content"],
-              duration: ep["itunes"]["duration"],
-              sourceUrl: ep["enclosure"]["url"],
-              slug: `${pod.slug}?episode=${new Date(ep["pubDate"])
-                .toISOString()
-                .substring(0, 10)}-${makeSlug(ep["title"])}`,
-              image: pod.image,
-              podcast: pod._id,
-              likes: [],
-              comments: [],
-              people: [],
-              locations: [],
-            });
-            /**
-             * For each episode, save it to the database
-             */
-            newEp.save((err) => {
-              if (err) console.log("error saving new ep");
-            });
-            return newEp;
-          })
-        );
-        /**
-         * After saving, the episodes,
-         * save the episode Id to the array of podcast ids of the podcat
-         */
-        addEpisodes.then(async (resultz) => {
-          const filling = Promise.all(
-            resultz.map(async (i) => {
-              pod.episodes.push(mongoose.Types.ObjectId(i._id));
-            })
-          );
-          filling
-            .then(() => {
-              /**
-               * Update when the podcast was updated with the most recent build date of the rss feed
-               */
-              pod.lastRssBuildDate = rssBuildDate;
-            })
-            .then(pod.save())
-            .then(async () => {
-              /**
-               * Get the podcast episodes and return to user
-               */
-              let episodes = await Episode.find({
-                _id: {
-                  $in: pod.episodes,
-                },
-              });
-              // Sort by date
-              episodes = episodes.sort(function (a, b) {
-                return new Date(b.datePublished) > new Date(a.datePublished)
-                  ? 1
-                  : -1;
-              });
-              res.json({ podcast: pod, episodes: episodes });
-            });
-        });
-      } else {
-        /**
-         * // TODO: If the podcast doesn't exist, return a similar
-         *
-         * Since the else statement is only activated when the podcast actually doesn't exits,
-         * or the slug is wrong
-         */
-        let episodes = await Episode.find({
-          _id: {
-            $in: pod.episodes,
-          },
-        });
-        // Sort by date
-        episodes = episodes.sort(function (a, b) {
-          return new Date(b.datePublished) > new Date(a.datePublished) ? 1 : -1;
-        });
-        res.json({ podcast: pod, episodes: episodes });
-      }
-    }
+    res.json({ podcast: pod, episodes: pod.episodes });
   } catch (error) {
     console.log(error);
     res.send("error");
@@ -861,3 +745,4 @@ app.get("*", (req, res) => {
 });
 const port = process.env.PORT || 5000;
 app.listen(port);
+console.log(`api listening on port ${port}`);
