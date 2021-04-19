@@ -14,6 +14,7 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "@typegoose/typegoose": "^7.6.0",
+    "altair-fastify-plugin": "^4.0.0",
     "apollo-server-express": "^2.22.2",
     "apollo-server-fastify": "^2.22.2",
     "bcrypt": "^5.0.0",

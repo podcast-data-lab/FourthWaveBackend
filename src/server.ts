@@ -13,6 +13,8 @@ mongoose.connect(process.env.MONGO_DB, {
 
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
+const AltairFastify = require("altair-fastify-plugin");
+
 import {
   EpisodeResolver,
   CommentResolver,
@@ -60,6 +62,12 @@ import {
       // Generate an error on other origins, disabling access
       cb(new Error("Not allowed"));
     },
+  });
+
+  app.register(AltairFastify, {
+    path: "/altair",
+    baseURL: "/altair/",
+    endpointURL: "/graphql",
   });
 
   await app.listen(PORT);
