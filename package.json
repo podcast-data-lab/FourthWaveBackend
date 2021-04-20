@@ -2,7 +2,7 @@
   "name": "onthistopic-backend",
   "version": "2.0.0",
   "description": "Backend for Eycho Podcast App.",
-  "main": "dist/server.js",
+  "main": "dist/server/server.js",
   "scripts": {
     "start": "node dist/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",

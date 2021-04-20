@@ -8,58 +8,67 @@ const Episode = mongoose.model("Episode");
 
 let podData = require("./podcasts.json");
 
+
 podData.map((pod) => {
   /**
    * Check when the podcast rss feed was last updated
    * If the field is not provided, use the latest episode
    */
-  let lastRssbuild;
-  if (!pod.lastUpdate) {
-    lastRssbuild = new Date(pod.episodes[0]["datePublished"]);
-  } else {
-    lastRssbuild = new Date(pod.lastUpdate);
+  try {
+    let lastRssbuild;
+    if (!pod.lastUpdate) {
+      lastRssbuild = new Date(pod.episodes[0]["datePublished"]);
+    } else {
+      lastRssbuild = new Date(pod.lastUpdate);
+    }
+    Podcast.insertMany(
+      new Podcast({
+        title: pod.title,
+        publisher: pod.publisher,
+        rssFeed: pod.rssFeed,
+        link: pod.link,
+        image: pod.image,
+        description: pod.description,
+        categories: pod.categories,
+        lastRssBuildDate: lastRssbuild,
+        slug: pod.slug,
+      })
+    ).then(console.log("saved podcast")).catch((error)=>console.log(error.message))
+    pod["episodes"].map((ep) => {
+      const thisEp = ep;
+      let newEp = new Episode({
+        title: thisEp.title,
+        datePublished: thisEp.datePublished,
+        description: thisEp.description,
+        duration: thisEp.duration || 0,
+        sourceUrl: thisEp.sourceUrl,
+        slug: thisEp.slug,
+        image: thisEp.image,
+        podcast: this.podcast,
+        likes: [],
+        comments: [],
+        people: [],
+        locations: [],
+      });
+      newEp.save((err) => {
+        if (err) console.log(err);
+        else {
+          Podcast.updateOne(
+            { title: pod.title },
+            {
+              $push: {
+                episodes: newEp._id,
+              },
+            }
+          ).then(console.log(`episode ${newEp.title} saved.`)).catch((error)=>console.log(error.message))
+        }
+      });
+    });
+  } catch (error) {(pod) => {
+    console.log(pod);
+    console.log("pod updated");
+  };
+    console.log(error.message);;
   }
-  Podcast.insertMany(
-    new Podcast({
-      title: pod.title,
-      publisher: pod.publisher,
-      rssFeed: pod.rssFeed,
-      link: pod.link,
-      image: pod.image,
-      description: pod.description,
-      categories: pod.categories,
-      lastRssBuildDate: lastRssbuild,
-      slug: pod.slug,
-    })
-  ).then(console.log("saved podcast"));
-  pod["episodes"].map((ep) => {
-    const thisEp = ep;
-    let newEp = new Episode({
-      title: thisEp.title,
-      datePublished: thisEp.datePublished,
-      description: thisEp.description,
-      duration: thisEp.duration || 0,
-      sourceUrl: thisEp.sourceUrl,
-      slug: thisEp.slug,
-      image: thisEp.image,
-      podcast: this.podcast,
-      likes: [],
-      comments: [],
-      people: [],
-      locations: [],
-    });
-    newEp.save((err) => {
-      if (err) console.log(err);
-      else {
-        Podcast.updateOne(
-          { title: pod.title },
-          {
-            $push: {
-              episodes: newEp,
-            },
-          }
-        ).then(console.log("ep saved"));
-      }
-    });
-  });
+  
 });

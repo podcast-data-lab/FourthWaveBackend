@@ -1,4 +1,4 @@
-import { prop, getModelForClass } from "@typegoose/typegoose";
+import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
 import { Field, ObjectType } from "type-graphql";
 import { Episode } from "./Episode";
 
@@ -45,8 +45,8 @@ export class Podcast {
   categories: string[];
 
   @Field((type) => [Episode])
-  @prop({ type: () => Episode })
-  episodes: Episode[];
+  @prop({ ref: () => "Episode" })
+  episodes: Ref<Episode[]>;
 }
 
 export const PodcastModel = getModelForClass(Podcast);

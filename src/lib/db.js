@@ -82,7 +82,7 @@ const Podcast = new Schema(
       index: { unique: true },
     },
     categories: [],
-    episodes: [],
+    episodes: [{ type: Schema.Types.ObjectId, ref: "Episode" }],
   },
   {
     timestamps: true,
