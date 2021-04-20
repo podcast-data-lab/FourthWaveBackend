@@ -75,6 +75,7 @@ const Podcast = new Schema(
     link: String,
     image: String,
     description: String,
+    palettes: [String],
     lastRssBuildDate: { type: Date, default: Date.now() },
     slug: {
       type: String,
@@ -196,14 +197,14 @@ mongoose.model("Location", Location);
 mongoose.model("Person", Person);
 
 // import the configuratio file for the mongodb database
-const fs = require("fs");
-const fn = "src/config.json";
-const data = fs.readFileSync(fn);
+// const fs = require("fs");
+// const fn = "src/config.json";
+// const data = fs.readFileSync(fn);
 
 // our configuration file will be in json, so parse it and set the
 // conenction string appropriately!
-const conf = JSON.parse(data);
-let dbconf = conf.dbconf;
+// const conf = JSON.parse(data);
+// let dbconf = conf.dbconf;
 
 mongoose.connect(process.env.MONGO_DB, {
   useNewUrlParser: true,
