@@ -75,7 +75,7 @@ const Podcast = new Schema(
     link: String,
     image: String,
     description: String,
-    palettes: [String],
+    palette: [String],
     lastRssBuildDate: { type: Date, default: Date.now() },
     slug: {
       type: String,
