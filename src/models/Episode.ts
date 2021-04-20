@@ -8,51 +8,51 @@ import { User } from "./User";
 
 @ObjectType()
 export class Episode {
-  @Field()
+  @Field({nullable:true})
   @prop()
   public title: string;
 
-  @Field((type) => Date)
+  @Field((type) => Date, {nullable:true})
   @prop({ type: () => Date })
   public datePublished: Date;
 
-  @Field()
+  @Field({nullable:true})
   @prop()
   public description: string;
 
-  @Field()
+  @Field({nullable:true})
   @prop()
   public duration: string;
 
-  @Field()
+  @Field({nullable:true})
   @prop()
   public sourceUrl: string;
 
-  @Field()
+  @Field({nullable:true})
   @prop()
   public image: string;
 
-  @Field((type) => [User])
+  @Field((type) => [User], {nullable:true})
   @prop({ ref: () => User })
   public likes: Ref<User>[];
 
-  @Field((type) => [Theme])
+  @Field((type) => [Theme], {nullable:true})
   @prop({ ref: () => Theme })
   public themes: Ref<Theme>[];
 
-  @Field((type) => [Comment])
+  @Field((type) => [Comment], {nullable:true})
   @prop({ ref: "Comment" })
   public comments: Comment[];
 
-  @Field((type) => [Person])
+  @Field((type) => [Person], {nullable:true})
   @prop({ ref: "Person" })
   public people: Ref<Person>[];
 
-  @Field((type) => [Locale])
+  @Field((type) => [Locale], {nullable:true})
   @prop({ ref: "Locale" })
   public locations: Ref<Locale>[];
 
-  @Field()
+  @Field({nullable:true})
   @prop({
     type: String,
     required: true,

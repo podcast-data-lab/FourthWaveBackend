@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const PORT = +process.env.PORT || 6500;
 
 // Require the environment variables
-require("dotenv").config("../");
+require("dotenv").config("../../");
 
 mongoose.connect(process.env.MONGO_DB, {
   useNewUrlParser: true,
@@ -23,7 +23,7 @@ import {
   PodcastResolver,
   ThemeResolver,
   UserResolver,
-} from "./graphql/resolvers";
+} from "../graphql/resolvers";
 
 (async () => {
   const schema = await buildSchema({

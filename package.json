@@ -4,9 +4,9 @@
   "description": "Backend for Eycho Podcast App.",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "run:dev": "concurrently \"tsc -w\" \" nodemon dist/server.js\"",
+    "run:dev": "concurrently \"tsc -w\" \" nodemon dist/server/server.js\"",
     "build": "tsc"
   },
   "author": "",
@@ -27,7 +27,7 @@
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "fastify": "2.13.1",
+    "fastify": "^3.14.2",
     "fastify-cors": "^5.2.0",
     "fastify-gql": "^5.8.2",
     "fastify-swagger": "^4.5.0",

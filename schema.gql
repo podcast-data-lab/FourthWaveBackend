@@ -17,18 +17,18 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Episode {
-  comments: [Comment!]!
-  datePublished: DateTime!
-  description: String!
-  duration: String!
-  image: String!
-  likes: [User!]!
-  locations: [Locale!]!
-  people: [Person!]!
-  slug: String!
-  sourceUrl: String!
-  themes: [Theme!]!
-  title: String!
+  comments: [Comment!]
+  datePublished: DateTime
+  description: String
+  duration: String
+  image: String
+  likes: [User!]
+  locations: [Locale!]
+  people: [Person!]
+  slug: String
+  sourceUrl: String
+  themes: [Theme!]
+  title: String
 }
 
 type Locale {
@@ -59,7 +59,17 @@ type Podcast {
 }
 
 type Query {
+  """Find episodes based on a search string"""
+  findEpisodes(searchString: String!): [Episode!]!
+
+  """Searches for a podcast based on a search string"""
+  findPodcasts(searchString: String!): [Podcast!]!
   getComment: Comment
+
+  """Find a podcast based on it's slug"""
+  getPodcast(slug: String!): [Podcast!]!
+
+  """Get all podcasts"""
   getPodcasts: [Podcast!]!
   print: String!
 }
