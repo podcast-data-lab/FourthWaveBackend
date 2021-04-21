@@ -28,13 +28,15 @@ podData.map((pod) => {
         rssFeed: pod.rssFeed,
         link: pod.link,
         image: pod.image,
-        palettes: [],
+        palette: pod.palette || [],
         description: pod.description,
         categories: pod.categories,
         lastRssBuildDate: lastRssbuild,
         slug: pod.slug,
       })
-    ).then(console.log("saved podcast")).catch((error)=>console.log(error.message))
+    )
+      .then(console.log("saved podcast"))
+      .catch((error) => console.log(error.message));
     pod["episodes"].map((ep) => {
       const thisEp = ep;
       let newEp = new Episode({

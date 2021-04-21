@@ -16,7 +16,7 @@ export class Podcast {
   @prop()
   rssFeed: string;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   @prop()
   link: string;
 
@@ -28,9 +28,9 @@ export class Podcast {
   @prop()
   description: string;
 
-  @Field((type)=>[String])
-  @prop({type: ()=>[String]})
-  colors: [string];
+  @Field((type) => [String])
+  @prop({ type: () => [String] })
+  palette: [string];
 
   @Field((type) => Date)
   @prop({ type: () => Date })
