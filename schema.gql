@@ -51,7 +51,7 @@ type Podcast {
   episodes: [Episode!]!
   image: String!
   lastRssBuildDate: DateTime!
-  link: String!
+  link: String
   publisher: String
   rssFeed: String!
   slug: String!
@@ -65,9 +65,13 @@ type Query {
   """Searches for a podcast based on a search string"""
   findPodcasts(searchString: String!): [Podcast!]!
   getComment: Comment
+  getDominantColor(image: String!): String!
 
   """Find a podcast based on it's slug"""
-  getPodcast(slug: String!): [Podcast!]!
+  getPodcast(slug: String!): Podcast!
+
+  """Returns a podcasts'episode"""
+  getPodcastEpisodes(slug: String!): [Episode!]!
 
   """Get all podcasts"""
   getPodcasts: [Podcast!]!
