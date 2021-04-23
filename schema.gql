@@ -74,7 +74,7 @@ type Query {
   getPodcastEpisodes(slug: String!): [Episode!]!
 
   """Get all podcasts"""
-  getPodcasts: [Podcast!]!
+  getPodcasts(page: Float!): [Podcast!]!
   print: String!
 }
 
