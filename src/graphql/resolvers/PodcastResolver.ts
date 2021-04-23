@@ -8,20 +8,19 @@ import { Podcast, PodcastModel } from "../../models/Podcast";
 export default class PodcastResolver {
 
   @Query((returns) => [Podcast], {description: "Get all podcasts"})
-  async getPodcasts(): Promise<Podcast[]> {
-    const podcasts: Podcast[] = await PodcastModel.find();
-
+  async getPodcasts(@Arg('page')page: number): Promise<Podcast[]> {
+    const podcasts: Podcast[] = await PodcastModel.find().skip(50*page).limit(50);
     return podcasts;
   }
 
   @Query((returs)=>[Episode], {description: "Returns a podcasts'episode"})
-  async getPodcastEpisodes(@Arg('slug') slug: String): Promise<Episode[]>{
+  async getPodcastEpisodes(@Arg('slug') slug: string): Promise<Episode[]>{
     const episodes: Episode[] = await EpisodeModel.find({podcast: slug})
     return episodes
   }
 
   @Query((returns) => Podcast, {description: "Find a podcast based on it's slug"})
-  async getPodcast(@Arg('slug') slug: String): Promise<Podcast> {
+  async getPodcast(@Arg('slug') slug: string): Promise<Podcast> {
     const podcast: Podcast = await PodcastModel.findOne({slug: `${slug}`});
 
     return podcast;
