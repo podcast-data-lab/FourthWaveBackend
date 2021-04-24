@@ -71,8 +71,10 @@ import {
   const PORT = process.env.PORT || 8080;
 
 
-  await app.listen(PORT, () => {});
-  console.log(`api running on port ${PORT}`);
+  app.listen(PORT, () => {
+    console.log(`api running on port ${PORT}`);
+  });
+  
 })();
 
 function checkAllowedOrigins(origin: string): boolean {
