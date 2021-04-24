@@ -1,7 +1,6 @@
 import fastify from "fastify";
 import { ApolloServer } from "apollo-server-fastify";
 const mongoose = require("mongoose");
-const PORT = +process.env.PORT || 6500;
 
 // Require the environment variables
 require("dotenv").config("../../");
@@ -69,8 +68,11 @@ import {
     baseURL: "/altair/",
     endpointURL: "/graphql",
   });
+  const PORT = process.env.PORT || 8080;
 
-  await app.listen(PORT);
+
+  await app.listen(PORT, () => {});
+  console.log(`api running on port ${PORT}`);
 })();
 
 function checkAllowedOrigins(origin: string): boolean {
