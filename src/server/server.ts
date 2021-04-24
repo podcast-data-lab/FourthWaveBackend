@@ -74,7 +74,9 @@ import {
   app.listen(PORT, () => {
     console.log(`api running on port ${PORT}`);
   });
-  
+  app.get("**", (req, res) => {
+    res.send({ message: "perhaps you were looking for the frontend" });
+  });
 })();
 
 function checkAllowedOrigins(origin: string): boolean {
