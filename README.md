@@ -1,4 +1,4 @@
-![CI](https://github.com/github/docs/actions/workflows/CI.yml/badge.svg)
+![https://github.com/lbugasu/onthistopic-backend/actions/workflows/CI.yml/badge.svg](https://github.com/lbugasu/onthistopic-backend/actions/workflows/CI.yml/badge.svg)
 
 ## Object Schemas
 
