@@ -49,8 +49,7 @@
     "rss-parser": "^3.9.0",
     "slug": "^4.0.2",
     "type-graphql": "^1.1.1",
-    "typescript": "^4.2.3",
-    "use-color-thief": "^1.2.0"
+    "typescript": "^4.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
