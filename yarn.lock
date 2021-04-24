@@ -1211,6 +1211,11 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
+"@types/validator@^13.1.3":
+  version "13.1.3"
+  resolved "https://registry.yarnpkg.com/@types/validator/-/validator-13.1.3.tgz#366b394aa3fbeed2392bf0a20ded606fa4a3d35e"
+  integrity sha512-DaOWN1zf7j+8nHhqXhIgNmS+ltAC53NXqGxYuBhWqWgqolRhddKzfZU814lkHQSTG0IUfQxU7Cg0gb8fFWo2mA==
+
 "@types/ws@^7.0.0":
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.1.tgz#49eacb15a0534663d53a36fbf5b4d98f5ae9a73a"
@@ -1990,6 +1995,15 @@ ci-info@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ci-info/-/ci-info-2.0.0.tgz#67a9e964be31a51e15e5010d58e6f12834002f46"
   integrity sha512-5tK7EtrZ0N+OLFMthtqOj4fI2Jeb88C4CAZPu25LDVUgXJ0A3Js4PMGqrn0JU1W0Mh1/Z8wZzYPxqUrXeBboCQ==
+
+class-validator@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/class-validator/-/class-validator-0.13.1.tgz#381b2001ee6b9e05afd133671fbdf760da7dec67"
+  integrity sha512-zWIeYFhUitvAHBwNhDdCRK09hWx+P0HUwFE8US8/CxFpMVzkUK8RJl7yOIE+BVu2lxyPNgeOaFv78tLE47jBIg==
+  dependencies:
+    "@types/validator" "^13.1.3"
+    libphonenumber-js "^1.9.7"
+    validator "^13.5.2"
 
 clean-stack@^2.0.0:
   version "2.2.0"
@@ -2862,6 +2876,11 @@ fastify-cors@^5.2.0:
     fastify-plugin "^3.0.0"
     vary "^1.1.2"
 
+fastify-error@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/fastify-error/-/fastify-error-0.2.0.tgz#9a1c28d4f42b6259e7a549671c8e5e2d85660634"
+  integrity sha512-zabxsBatj59ROG0fhP36zNdc5Q1/eYeH9oSF9uvfrurZf8/JKfrJbMcIGrLpLWcf89rS6L91RHWm20A/X85hcA==
+
 fastify-error@^0.3.0:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/fastify-error/-/fastify-error-0.3.1.tgz#8eb993e15e3cf57f0357fc452af9290f1c1278d2"
@@ -2907,7 +2926,7 @@ fastify-plugin@^3.0.0:
   resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-3.0.0.tgz#cf1b8c8098e3b5a7c8c30e6aeb06903370c054ca"
   integrity sha512-ZdCvKEEd92DNLps5n0v231Bha8bkz1DjnPP/aEz37rz/q42Z5JVLmgnqR4DYuNn3NXAO3IDCPyRvgvxtJ4Ym4w==
 
-fastify-static@^3.0.0, fastify-static@^3.2.1:
+fastify-static@^3.0.0, fastify-static@^3.2.1, fastify-static@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/fastify-static/-/fastify-static-3.4.0.tgz#812f7af416ef2e998c7d6c19ae3dd7afc8d7ca58"
   integrity sha512-5y9xTNiPTj6/jDwzH6CqBIcI3/yZtocUiHoLud2NYPfHSOLlS6eW6DTheiU8b9WWlfmHfqOjwFFBdhiH1+nBhg==
@@ -2917,7 +2936,7 @@ fastify-static@^3.0.0, fastify-static@^3.2.1:
     readable-stream "^3.4.0"
     send "^0.17.1"
 
-fastify-static@^4.0.0, fastify-static@^4.0.1:
+fastify-static@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/fastify-static/-/fastify-static-4.0.1.tgz#28947728b2b4c9360eeea8a92ae7b36a0e38b273"
   integrity sha512-Mjt0My8Gf/nzJqIDai9rz3HsxH4RAJeMGMIPmf40lGMFKAv4SbRiKJ2cmteXoKHrFGPeGxwMq0gXfixwueV8wA==
@@ -2944,21 +2963,13 @@ fastify-warning@^0.2.0:
   resolved "https://registry.yarnpkg.com/fastify-warning/-/fastify-warning-0.2.0.tgz#e717776026a4493dc9a2befa44db6d17f618008f"
   integrity sha512-s1EQguBw/9qtc1p/WTY4eq9WMRIACkj+HTcOIK1in4MV5aFaQC9ZCIt0dJ7pr5bIf4lPpHvAtP2ywpTNgs7hqw==
 
-fastify-websocket@^2.0.5:
+fastify-websocket@^2.0.11, fastify-websocket@^2.0.5:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/fastify-websocket/-/fastify-websocket-2.1.0.tgz#3e0e83d09512e19d5084f0440d9767e289cf91c2"
   integrity sha512-u5zClCarOHctvzKq76Gc0rDwtWfU7pw+JGYETfSu77YzZ/uzXLDX4jB70vLliUc3nqK0zXFRDK2/KnEnfdF9Kw==
   dependencies:
     fastify-plugin "^3.0.0"
     find-my-way "^3.0.5"
-    ws "^7.4.2"
-
-fastify-websocket@^3.0.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/fastify-websocket/-/fastify-websocket-3.1.0.tgz#9f94ab24e5988f2f4c5a09ec3a0ae0ff829d703c"
-  integrity sha512-YXylshWmUvLN95bnlFQo3EX/tEKPfUiGS7H55RqVSpOwsHb1eiGk184zrdLBZIYOnDNq+08yyVkKMOISzral3w==
-  dependencies:
-    fastify-plugin "^3.0.0"
     ws "^7.4.2"
 
 fastify@^3.14.2:
@@ -4082,6 +4093,11 @@ latest-version@^5.0.0:
   dependencies:
     package-json "^6.3.0"
 
+libphonenumber-js@^1.9.7:
+  version "1.9.16"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.9.16.tgz#84fcadf834a1e4234dab3399b5798cf8ff809683"
+  integrity sha512-PaHT7nTtnejZ0HHekAaA0olv6BUTKZGtKM4SCQS0yE3XjFuVo/tjePMHUAr32FKwIZfyPky1ExMUuaiBAUmV6w==
+
 light-my-request@^4.2.0:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/light-my-request/-/light-my-request-4.4.1.tgz#bfa2220316eef4f6465bf2f0667780da6b7f6a71"
@@ -4293,18 +4309,18 @@ mercurius-apollo-registry@^1.0.0:
     node-fetch "^2.6.1"
     uuid "^8.3.2"
 
-mercurius@^7.3.3:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/mercurius/-/mercurius-7.4.0.tgz#2e1f5a2659dbfab4272f2ff50f7a424b7e4ae30a"
-  integrity sha512-HMUORoaK2XoaAVDg1EO0p2VxbRobO6BIXmdtoV1dlyicX2mfyv3TwbnfMX/DW3HYpgxQRC+mR47yv+joBUKyuA==
+mercurius@^6.11.0:
+  version "6.12.0"
+  resolved "https://registry.yarnpkg.com/mercurius/-/mercurius-6.12.0.tgz#cf8f063f6db63e460b611f9452003f637e7f34ba"
+  integrity sha512-Dn7UuaN0UGvRoHtm37UPDf5KHuYvgBnOxEbORAf5tDW+MTYIM9cImerXIcq16hFEh/YV6yJ6GCL3JgRdjfHimA==
   dependencies:
     "@types/isomorphic-form-data" "^2.0.0"
     end-of-stream "^1.4.4"
     events.on "^1.0.1"
-    fastify-error "^0.3.0"
-    fastify-plugin "^3.0.0"
-    fastify-static "^4.0.1"
-    fastify-websocket "^3.0.0"
+    fastify-error "^0.2.0"
+    fastify-plugin "^2.0.1"
+    fastify-static "^3.4.0"
+    fastify-websocket "^2.0.11"
     graphql "^15.4.0"
     graphql-jit "^0.5.0"
     mqemitter "^4.0.0"
@@ -4312,9 +4328,8 @@ mercurius@^7.3.3:
     promise.allsettled "^1.0.2"
     readable-stream "^3.5.0"
     secure-json-parse "^2.2.0"
-    single-user-cache "^0.4.0"
+    single-user-cache "^0.3.0"
     tiny-lru "^7.0.2"
-    undici "^3.0.0"
     ws "^7.4.2"
 
 merge-descriptors@1.0.1:
@@ -5617,13 +5632,6 @@ single-user-cache@^0.3.0:
   dependencies:
     safe-stable-stringify "^1.1.0"
 
-single-user-cache@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/single-user-cache/-/single-user-cache-0.4.0.tgz#9e44e1393b34b9c5728d24afac6d28c41f7751fe"
-  integrity sha512-aUJDbwD+ZEVqffkFCy71xgiLT0/KHE0Fmi3+lsVoWcURI/gmSU3nwc9b9Kq34ZXZR9MqFw2YdS3r1r6UjYMyTg==
-  dependencies:
-    safe-stable-stringify "^1.1.0"
-
 sliced@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/sliced/-/sliced-1.0.1.tgz#0b3a662b5d04c3177b1926bea82b03f837a2ef41"
@@ -6119,11 +6127,6 @@ undefsafe@^2.0.3:
   dependencies:
     debug "^2.2.0"
 
-undici@^3.0.0:
-  version "3.3.4"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-3.3.4.tgz#a52dab910cf4f46ce1a39377dd9049bb08656d2a"
-  integrity sha512-9BAepS9jBqD9lLKO2UJ8vPZlIHNmVibkMt23c+qBQhpXpG11F6SH12ttYeKGfEiFaHyZ1wZlOIHED7TTZOCTGQ==
-
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-1.0.4.tgz#2619800c4c825800efdd8343af7dd9933cbe2818"
@@ -6262,6 +6265,11 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+validator@^13.5.2:
+  version "13.6.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.6.0.tgz#1e71899c14cdc7b2068463cb24c1cc16f6ec7059"
+  integrity sha512-gVgKbdbHgtxpRyR8K0O6oFZPhhB5tT1jeEHZR0Znr9Svg03U0+r9DXWMrnRAB+HtCStDQKlaIZm42tVsVjqtjg==
 
 vary@^1, vary@^1.1.2, vary@~1.1.2:
   version "1.1.2"

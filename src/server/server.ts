@@ -68,12 +68,11 @@ import {
     baseURL: "/altair/",
     endpointURL: "/graphql",
   });
-  const PORT = process.env.PORT || 8080;
 
-
-  app.listen(PORT, () => {
-    console.log(`api running on port ${PORT}`);
+  app.listen(process.env.PORT || 8080, () => {
+    console.log(`api running`);
   });
+
   app.get("**", (req, res) => {
     res.send({ message: "perhaps you were looking for the frontend" });
   });
