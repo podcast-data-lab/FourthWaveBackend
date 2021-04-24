@@ -4,7 +4,7 @@ const rgbHex = require('rgb-hex');
 
 const mongoose = require("mongoose");
 
-require("./lib/db");
+require("./db");
 const Podcast = mongoose.model("Podcast");
 
 Podcast.find().then((podcasts)=>{

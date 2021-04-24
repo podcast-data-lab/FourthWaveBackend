@@ -8,11 +8,11 @@ const passport = require("passport");
 const publicPath = path.resolve(__dirname, "public");
 const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo")(session);
-const auth = require("./lib/auth");
+const auth = require("./auth");
 const makeSlug = require("slug");
 
 const { Db } = require("mongodb");
-const { default: addPod } = require("./addPodcast");
+const { default: addPod } = require("../addPodcast");
 const LocalStrategy = require("passport-local").Strategy;
 
 const app = express();
@@ -64,9 +64,9 @@ app.use(async (req, res, next) => {
   }
 });
 app.use(express.static(path.join(__dirname, "/build")));
-require("./lib/db");
+require("./db");
 
-const dbFuncs = require("./addPodcast");
+const dbFuncs = require("../addPodcast");
 const { throws } = require("assert");
 const { promises } = require("fs");
 const Podcast = mongoose.model("Podcast");

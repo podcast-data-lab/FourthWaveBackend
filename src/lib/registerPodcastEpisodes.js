@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-require("./lib/db");
+require("./db");
 const Podcast = mongoose.model("Podcast");
 const Episode = mongoose.model("Episode");
 
 // Loop through the podcast file and register the podcasts to the database
 
-let podData = require("./podcasts.json");
+let podData = require("../podcasts.json");
 
 
 podData.map((pod) => {
