@@ -38,6 +38,11 @@ type Locale {
   title: String!
 }
 
+type Mutation {
+  signin(password: String!, username: String!): String!
+  signup(email: String!, firstname: String!, lastname: String, password: String, username: String!): String!
+}
+
 type Person {
   comments: [Comment!]!
   contributor: User!
@@ -70,8 +75,8 @@ type Query {
   """Find a podcast based on it's slug"""
   getPodcast(slug: String!): Podcast!
 
-  """Returns a podcasts'episode"""
-  getPodcastEpisodes(slug: String!): [Episode!]!
+  """Returns a podcasts'episodes"""
+  getPodcastEpisodes(page: Float!, slug: String!): [Episode!]!
 
   """Get all podcasts"""
   getPodcasts(page: Float!): [Podcast!]!
@@ -86,6 +91,7 @@ type Theme {
 }
 
 type User {
+  active: Boolean!
   contributions: [String!]!
   email: String!
   firstname: String!

@@ -23,6 +23,7 @@ import {
   ThemeResolver,
   UserResolver,
 } from "../graphql/resolvers";
+import { AuthCheckerFn } from "../graphql/AuthChecker";
 
 (async () => {
   const schema = await buildSchema({
@@ -36,6 +37,7 @@ import {
       UserResolver,
     ],
     emitSchemaFile: true,
+    authChecker: AuthCheckerFn,
   });
 
   const app = fastify();
@@ -47,21 +49,21 @@ import {
   await server.start();
   app.register(server.createHandler());
 
-  app.register(require("fastify-cors"), {
-    origin: (origin, cb) => {
-      if (/localhost/.test(origin) || !origin) {
-        //  Request from localhost will pass
-        cb(null, true);
-        return;
-      }
-      if (checkAllowedOrigins(origin)) {
-        cb(null, true);
-        return;
-      }
-      // Generate an error on other origins, disabling access
-      cb(new Error("Not allowed"));
-    },
-  });
+  // app.register(require("fastify-cors"), {
+  //   origin: (origin, cb) => {
+  //     if (/localhost/.test(origin) || !origin) {
+  //       //  Request from localhost will pass
+  //       cb(null, true);
+  //       return;
+  //     }
+  //     if (checkAllowedOrigins(origin)) {
+  //       cb(null, true);
+  //       return;
+  //     }
+  //     // Generate an error on other origins, disabling access
+  //     cb(new Error("Not allowed"));
+  //   },
+  // });
 
   app.register(AltairFastify, {
     path: "/altair",
@@ -74,7 +76,7 @@ import {
   });
 
   app.get("**", (req, res) => {
-    res.send({ message: "perhaps you were looking for the frontend" });
+    res.send({ message: "hi there?" });
   });
 })();
 

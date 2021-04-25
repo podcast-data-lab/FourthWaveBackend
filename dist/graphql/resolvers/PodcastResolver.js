@@ -17,11 +17,18 @@ const Episode_1 = require("../../models/Episode");
 const Podcast_1 = require("../../models/Podcast");
 let PodcastResolver = class PodcastResolver {
     async getPodcasts(page) {
-        const podcasts = await Podcast_1.PodcastModel.find().skip(50 * page).limit(50);
+        const podcasts = await Podcast_1.PodcastModel.find()
+            .skip(50 * page)
+            .limit(50);
         return podcasts;
     }
-    async getPodcastEpisodes(slug) {
-        const episodes = await Episode_1.EpisodeModel.find({ podcast: slug });
+    async getPodcastEpisodes(slug, page) {
+        const episodes = await Episode_1.EpisodeModel.find({
+            podcast: slug,
+        })
+            .sort({ datePublished: -1 })
+            .skip(15 * page)
+            .limit(15);
         return episodes;
     }
     async getPodcast(slug) {
@@ -30,34 +37,40 @@ let PodcastResolver = class PodcastResolver {
     }
     async findPodcasts(searchString) {
         const regex = new RegExp(`^${searchString}`);
-        const podcasts = await Podcast_1.PodcastModel.find({ title: { $regex: regex, $options: 'ix' } });
+        const podcasts = await Podcast_1.PodcastModel.find({
+            title: { $regex: regex, $options: "ix" },
+        });
         return podcasts;
     }
 };
 __decorate([
     type_graphql_1.Query((returns) => [Podcast_1.Podcast], { description: "Get all podcasts" }),
-    __param(0, type_graphql_1.Arg('page')),
+    __param(0, type_graphql_1.Arg("page")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], PodcastResolver.prototype, "getPodcasts", null);
 __decorate([
-    type_graphql_1.Query((returs) => [Episode_1.Episode], { description: "Returns a podcasts'episode" }),
-    __param(0, type_graphql_1.Arg('slug')),
+    type_graphql_1.Query((returs) => [Episode_1.Episode], { description: "Returns a podcasts'episodes" }),
+    __param(0, type_graphql_1.Arg("slug")), __param(1, type_graphql_1.Arg('page')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], PodcastResolver.prototype, "getPodcastEpisodes", null);
 __decorate([
-    type_graphql_1.Query((returns) => Podcast_1.Podcast, { description: "Find a podcast based on it's slug" }),
-    __param(0, type_graphql_1.Arg('slug')),
+    type_graphql_1.Query((returns) => Podcast_1.Podcast, {
+        description: "Find a podcast based on it's slug",
+    }),
+    __param(0, type_graphql_1.Arg("slug")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PodcastResolver.prototype, "getPodcast", null);
 __decorate([
-    type_graphql_1.Query((returns) => [Podcast_1.Podcast], { description: "Searches for a podcast based on a search string" }),
-    __param(0, type_graphql_1.Arg('searchString')),
+    type_graphql_1.Query((returns) => [Podcast_1.Podcast], {
+        description: "Searches for a podcast based on a search string",
+    }),
+    __param(0, type_graphql_1.Arg("searchString")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

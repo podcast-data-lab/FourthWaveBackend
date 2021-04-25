@@ -16,6 +16,7 @@ require("reflect-metadata");
 const type_graphql_1 = require("type-graphql");
 const AltairFastify = require("altair-fastify-plugin");
 const resolvers_1 = require("../graphql/resolvers");
+const AuthChecker_1 = require("../graphql/AuthChecker");
 (async () => {
     const schema = await type_graphql_1.buildSchema({
         resolvers: [
@@ -28,6 +29,7 @@ const resolvers_1 = require("../graphql/resolvers");
             resolvers_1.UserResolver,
         ],
         emitSchemaFile: true,
+        authChecker: AuthChecker_1.AuthCheckerFn,
     });
     const app = fastify_1.default();
     const server = new apollo_server_fastify_1.ApolloServer({
@@ -35,21 +37,21 @@ const resolvers_1 = require("../graphql/resolvers");
     });
     await server.start();
     app.register(server.createHandler());
-    app.register(require("fastify-cors"), {
-        origin: (origin, cb) => {
-            if (/localhost/.test(origin) || !origin) {
-                //  Request from localhost will pass
-                cb(null, true);
-                return;
-            }
-            if (checkAllowedOrigins(origin)) {
-                cb(null, true);
-                return;
-            }
-            // Generate an error on other origins, disabling access
-            cb(new Error("Not allowed"));
-        },
-    });
+    // app.register(require("fastify-cors"), {
+    //   origin: (origin, cb) => {
+    //     if (/localhost/.test(origin) || !origin) {
+    //       //  Request from localhost will pass
+    //       cb(null, true);
+    //       return;
+    //     }
+    //     if (checkAllowedOrigins(origin)) {
+    //       cb(null, true);
+    //       return;
+    //     }
+    //     // Generate an error on other origins, disabling access
+    //     cb(new Error("Not allowed"));
+    //   },
+    // });
     app.register(AltairFastify, {
         path: "/altair",
         baseURL: "/altair/",
@@ -59,7 +61,7 @@ const resolvers_1 = require("../graphql/resolvers");
         console.log(`api running`);
     });
     app.get("**", (req, res) => {
-        res.send({ message: "perhaps you were looking for the frontend" });
+        res.send({ message: "hi there?" });
     });
 })();
 function checkAllowedOrigins(origin) {

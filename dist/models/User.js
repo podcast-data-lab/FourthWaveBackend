@@ -66,8 +66,13 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
+    type_graphql_1.Field((type) => Boolean),
+    typegoose_1.prop({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "active", void 0);
+__decorate([
     type_graphql_1.Field((type) => [String]),
-    typegoose_1.prop({ type: () => [String] }),
+    typegoose_1.prop({ type: () => [String], default: [] }),
     __metadata("design:type", Array)
 ], User.prototype, "contributions", void 0);
 __decorate([
