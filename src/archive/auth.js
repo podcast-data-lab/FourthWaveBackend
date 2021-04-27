@@ -2,7 +2,7 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 
 const localStrategy = require("passport-local").Strategy;
-require("./db");
+require("./db/db");
 const User = mongoose.model("User");
 
 passport.use(
