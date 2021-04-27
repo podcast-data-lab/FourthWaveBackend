@@ -45,7 +45,6 @@ export default class PodcastResolver {
   }
   @Mutation(returns => String)
   async rerunPods (): Promise<string> {
-    registerPodcasts()
     return 'working'
   }
 

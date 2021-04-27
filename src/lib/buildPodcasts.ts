@@ -8,7 +8,6 @@ import { parseAndSave } from './functions'
 const fs = require('fs')
 const ner = require('ner-promise')
 //@ts-ignore
-import * as masterlist from './assets/podcastsMaster.json'
 
 const nerParser = new ner({
   install_path: '../stanford-ner-2018-10-16'
@@ -55,10 +54,8 @@ const generatedPodcasts = (podcast_list: string[]) => {
 export function work () {
   generatedPodcasts(feeds)
 }
-export function registerPodcasts () {
-  const podcasts: any = masterlist
-
-  console.log(podcasts.length)
+export function registerPodcasts (podcasts) {
+  console.log(podcasts)
   podcasts.forEach(pod => {
     const podcast = new PodcastModel({
       title: pod.title,
