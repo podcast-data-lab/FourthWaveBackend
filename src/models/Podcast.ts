@@ -7,6 +7,7 @@ import {
 } from '@typegoose/typegoose'
 import { Field, ObjectType } from 'type-graphql'
 import { Episode } from './Episode'
+import { Topic } from './Topic'
 
 @ObjectType()
 export class Podcast {
@@ -22,7 +23,7 @@ export class Podcast {
   @prop()
   rssFeed: string
 
-  @Field()
+  @Field({ nullable: true })
   @prop()
   base64image: string
 
@@ -61,6 +62,10 @@ export class Podcast {
   @Field(type => [String])
   @prop({ type: () => [String] })
   categories: string[]
+
+  @Field(type => [Topic])
+  @prop({ type: () => [Topic] })
+  public topics?: Topic[]
 
   @Field(type => [String])
   @prop({ type: () => [mongoose.Types.ObjectId], default: [] })

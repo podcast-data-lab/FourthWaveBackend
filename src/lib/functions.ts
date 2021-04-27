@@ -86,6 +86,29 @@ export const parseAndSave = async (
   })
   podcast.episodes = episodeList
   console.log(`Processed ${podcast.title}`)
-  await podcast.save()
+  image2colors(
+    {
+      image: `data:image/jpg;base64, ${imageBase64}`,
+      colors: 5,
+      sample: 1024,
+      scaleSvg: false
+    },
+    async (err, colors) => {
+      if (err) {
+        console.log(err.message)
+      }
+      if (!!colors) {
+        const palettes = colors.map(color => {
+          return rgbHex(...color.color._rgb)
+        })
+        podcast.palette = palettes
+        podcast.setPalette(palettes)
+        await podcast.save()
+
+        console.log(`set palettes for ${podcast.title}`)
+      }
+    }
+  )
+
   return podcast
 }

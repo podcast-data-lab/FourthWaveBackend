@@ -33,6 +33,7 @@ type Episode {
   sourceUrl: String!
   themes: [Theme!]
   title: String!
+  topics: [Topic!]!
 }
 
 type Locale {
@@ -60,7 +61,7 @@ type Play {
 }
 
 type Podcast {
-  base64image: String!
+  base64image: String
   categories: [String!]!
   description: String!
   episodes: [String!]!
@@ -72,6 +73,7 @@ type Podcast {
   rssFeed: String!
   slug: String!
   title: String!
+  topics: [Topic!]!
 }
 
 type Query {
@@ -98,6 +100,11 @@ type Theme {
   contributor: User!
   podcastEpisodes: [Episode!]!
   title: String!
+}
+
+type Topic {
+  name: String!
+  type: String!
 }
 
 type User {

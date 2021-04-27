@@ -1,5 +1,5 @@
 import { Arg, Mutation, Query, Resolver } from 'type-graphql'
-import { work } from '../../lib/buildPodcasts'
+import { registerPodcasts, work } from '../../lib/buildPodcasts'
 import { getImagePalettes } from '../../lib/functions'
 import { Episode, EpisodeModel } from '../../models/Episode'
 
@@ -45,7 +45,7 @@ export default class PodcastResolver {
   }
   @Mutation(returns => String)
   async rerunPods (): Promise<string> {
-    work()
+    registerPodcasts()
     return 'working'
   }
 
