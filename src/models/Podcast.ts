@@ -1,56 +1,70 @@
-import { prop, getModelForClass, Ref } from "@typegoose/typegoose";
-import { Field, ObjectType } from "type-graphql";
-import { Episode } from "./Episode";
+import {
+  prop,
+  getModelForClass,
+  Ref,
+  DocumentType,
+  mongoose
+} from '@typegoose/typegoose'
+import { Field, ObjectType } from 'type-graphql'
+import { Episode } from './Episode'
 
 @ObjectType()
 export class Podcast {
   @Field()
   @prop()
-  public title: string;
+  public title: string
 
   @Field({ nullable: true })
   @prop()
-  publisher: string;
+  publisher: string
 
   @Field()
   @prop()
-  rssFeed: string;
+  rssFeed: string
+
+  @Field()
+  @prop()
+  base64image: string
 
   @Field({ nullable: true })
   @prop()
-  link: string;
+  link: string
 
   @Field()
   @prop()
-  image: string;
+  image: string
 
   @Field()
   @prop()
-  description: string;
+  description: string
 
-  @Field((type) => [String])
+  @Field(type => [String])
   @prop({ type: () => [String] })
-  palette: [string];
+  palette: [string]
 
-  @Field((type) => Date)
+  public async setPalette (this: DocumentType<Podcast>, palette: [string]) {
+    this.palette = palette
+    await this.save()
+  }
+  @Field(type => Date)
   @prop({ type: () => Date })
-  lastRssBuildDate: Date;
+  lastRssBuildDate: Date
 
   @Field()
   @prop({
     type: String,
     required: true,
-    unique: true,
+    unique: true
   })
-  slug: string;
+  slug: string
 
-  @Field((type) => [String])
+  @Field(type => [String])
   @prop({ type: () => [String] })
-  categories: string[];
+  categories: string[]
 
-  @Field((type) => [Episode])
-  @prop({ ref: () => "Episode" })
-  episodes: Ref<Episode[]>;
+  @Field(type => [String])
+  @prop({ type: () => [mongoose.Types.ObjectId], default: [] })
+  episodes: mongoose.Types.ObjectId[]
 }
 
-export const PodcastModel = getModelForClass(Podcast);
+export const PodcastModel = getModelForClass(Podcast)

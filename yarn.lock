@@ -4113,6 +4113,11 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+lodash.assign@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
+  integrity sha1-DZnzzNem0mHRm9rrkkUAXShYCOc=
+
 lodash.assignin@^4.0.9:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.assignin/-/lodash.assignin-4.2.0.tgz#ba8df5fb841eb0a3e8044232b0e263a8dc6a28a2"
@@ -4123,7 +4128,7 @@ lodash.bind@^4.1.4:
   resolved "https://registry.yarnpkg.com/lodash.bind/-/lodash.bind-4.2.1.tgz#7ae3017e939622ac31b7d7d7dcb1b34db1690d35"
   integrity sha1-euMBfpOWIqwxt9fX3LGzTbFpDTU=
 
-lodash.compact@^3.0.0:
+lodash.compact@^3.0.0, lodash.compact@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/lodash.compact/-/lodash.compact-3.0.1.tgz#540ce3837745975807471e16b4a2ba21e7256ca5"
   integrity sha1-VAzjg3dFl1gHRx4WtKK6IeclbKU=
@@ -4158,7 +4163,7 @@ lodash.get@^4.4.2:
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
 
-lodash.map@^4.4.0:
+lodash.map@^4.4.0, lodash.map@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.map/-/lodash.map-4.6.0.tgz#771ec7839e3473d9c4cde28b19394c3562f4f6d3"
   integrity sha1-dx7Hg540c9nEzeKLGTlMNWL09tM=
@@ -4544,6 +4549,15 @@ negotiator@0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
+
+ner-promise@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/ner-promise/-/ner-promise-1.0.1.tgz#8a7cb307135d23b28a84a2bc094b84c24ef79c52"
+  integrity sha512-DU02TpE6UlDdk+lHc4YIwb1YFusSnilB9pfZsUiAMywlbUgGn0aDdHzW2g1A1oFcxpyyKgn8WNmn1ODbuGm6dg==
+  dependencies:
+    lodash.assign "^4.2.0"
+    lodash.compact "^3.0.1"
+    lodash.map "^4.6.0"
 
 node-abi@^2.21.0:
   version "2.24.0"

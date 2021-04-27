@@ -18,17 +18,21 @@ scalar DateTime
 
 type Episode {
   comments: [Comment!]
-  datePublished: DateTime
+  datePublished: DateTime!
   description: String
   duration: String
+  epNo: Float!
   image: String
   likes: [User!]
   locations: [Locale!]
   people: [Person!]
+  plays: Float!
+  podcast: String
   slug: String
-  sourceUrl: String
+  snNo: Float!
+  sourceUrl: String!
   themes: [Theme!]
-  title: String
+  title: String!
 }
 
 type Locale {
@@ -38,6 +42,11 @@ type Locale {
   title: String!
 }
 
+type Mutation {
+  generatePalettes(slug: String!): String!
+  rerunPods: String!
+}
+
 type Person {
   comments: [Comment!]!
   contributor: User!
@@ -45,10 +54,16 @@ type Person {
   title: String!
 }
 
+type Play {
+  episode: String!
+  position: Float!
+}
+
 type Podcast {
+  base64image: String!
   categories: [String!]!
   description: String!
-  episodes: [Episode!]!
+  episodes: [String!]!
   image: String!
   lastRssBuildDate: DateTime!
   link: String
@@ -86,12 +101,16 @@ type Theme {
 }
 
 type User {
+  LikedPodcasts: [Podcast!]!
+  bookmarkedEpisodes: [Episode!]!
   contributions: [String!]!
   email: String!
   firstname: String!
   lastname: String!
   likedEpisodes: [Episode!]!
   password: String!
-  podcastLikes: [Podcast!]!
+  playingSpeed: Float!
+  plays: [Play!]!
+  subscribedPodcasts: [Podcast!]!
   username: String!
 }
