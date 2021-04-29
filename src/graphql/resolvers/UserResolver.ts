@@ -1,3 +1,5 @@
+
+@Resolver(of => User)
 import { UserModel } from './../../models/User';
 import { Arg, Args, ArgsType, Field, Mutation, Query, Resolver } from "type-graphql";
 import { User } from "../../models/User";

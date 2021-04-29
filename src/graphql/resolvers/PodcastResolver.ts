@@ -1,11 +1,13 @@
-import { Arg, Query, Resolver } from "type-graphql";
-import { Episode, EpisodeModel } from "../../models/Episode";
+import { Arg, Mutation, Query, Resolver } from 'type-graphql'
+import { registerPodcasts, work } from '../../lib/buildPodcasts'
+import { getImagePalettes } from '../../lib/functions'
+import { Episode, EpisodeModel } from '../../models/Episode'
 
-import { Podcast, PodcastModel } from "../../models/Podcast";
+import { Podcast, PodcastModel } from '../../models/Podcast'
 
-
-@Resolver((of) => Podcast)
+@Resolver(of => Podcast)
 export default class PodcastResolver {
+
   @Query((returns) => [Podcast], { description: "Get all podcasts" })
   async getPodcasts(@Arg("page") page: number): Promise<Podcast[]> {
     const podcasts: Podcast[] = await PodcastModel.find()
@@ -31,9 +33,19 @@ export default class PodcastResolver {
   async getPodcast(@Arg("slug") slug: string): Promise<Podcast> {
     const podcast: Podcast = await PodcastModel.findOne({ slug: `${slug}` });
 
-    return podcast;
+    return podcast
   }
 
+  @Query(returns => [Podcast], {
+    description: 'Searches for a podcast based on a search string'
+  })
+  async findPodcasts (
+    @Arg('searchString') searchString: String
+  ): Promise<Podcast[]> {
+    const regex = new RegExp(`^${searchString}`)
+    const podcasts: Podcast[] = await PodcastModel.find({
+      title: { $regex: regex, $options: 'ix' }
+    })
   @Query((returns) => [Podcast], {
     description: "Searches for a podcast based on a search string",
   })
@@ -45,6 +57,18 @@ export default class PodcastResolver {
       title: { $regex: regex, $options: "ix" },
     });
 
-    return podcasts;
+    return podcasts
   }
+  @Mutation(returns => String)
+  async rerunPods (): Promise<string> {
+    return 'working'
+  }
+
+  @Mutation(returns => String)
+  async generatePalettes (@Arg('slug') slug: string): Promise<string> {
+    const podcast = await PodcastModel.findOne({ slug: slug })
+    getImagePalettes(podcast)
+    return 'generating palettes'
+  }
+
 }
