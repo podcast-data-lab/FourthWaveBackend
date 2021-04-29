@@ -1,6 +1,7 @@
-import fastify from 'fastify'
-import { ApolloServer } from 'apollo-server-fastify'
-const mongoose = require('mongoose')
+
+import fastify from "fastify";
+import { ApolloServer } from "apollo-server-fastify";
+const mongoose = require("mongoose");
 
 // Require the environment variables
 require('dotenv').config('../../')
@@ -21,9 +22,11 @@ import {
   PersonResolver,
   PodcastResolver,
   ThemeResolver,
-  UserResolver
-} from '../graphql/resolvers'
-;(async () => {
+  UserResolver,
+} from "../graphql/resolvers";
+import { AuthCheckerFn } from "../graphql/AuthChecker";
+
+(async () => {
   const schema = await buildSchema({
     resolvers: [
       CommentResolver,
@@ -34,8 +37,10 @@ import {
       ThemeResolver,
       UserResolver
     ],
-    emitSchemaFile: true
-  })
+
+    emitSchemaFile: true,
+    authChecker: AuthCheckerFn,
+  });
 
   const app = fastify()
 
@@ -61,6 +66,21 @@ import {
       cb(new Error('Not allowed'))
     }
   })
+  // app.register(require("fastify-cors"), {
+  //   origin: (origin, cb) => {
+  //     if (/localhost/.test(origin) || !origin) {
+  //       //  Request from localhost will pass
+  //       cb(null, true);
+  //       return;
+  //     }
+  //     if (checkAllowedOrigins(origin)) {
+  //       cb(null, true);
+  //       return;
+  //     }
+  //     // Generate an error on other origins, disabling access
+  //     cb(new Error("Not allowed"));
+  //   },
+  // });
 
   app.register(AltairFastify, {
     path: '/altair',
@@ -74,6 +94,12 @@ import {
     console.log(`api listening on port ${PORT}`)
   })
 })()
+
+
+  app.get("**", (req, res) => {
+    res.send({ message: "hi there?" });
+  });
+})();
 
 function checkAllowedOrigins (origin: string): boolean {
   console.log(origin)

@@ -46,6 +46,8 @@ type Locale {
 type Mutation {
   generatePalettes(slug: String!): String!
   rerunPods: String!
+  signin(password: String!, username: String!): String!
+  signup(email: String!, firstname: String!, lastname: String, password: String, username: String!): String!
 }
 
 type Person {
@@ -87,8 +89,8 @@ type Query {
   """Find a podcast based on it's slug"""
   getPodcast(slug: String!): Podcast!
 
-  """Returns a podcasts'episode"""
-  getPodcastEpisodes(slug: String!): [Episode!]!
+  """Returns a podcasts'episodes"""
+  getPodcastEpisodes(page: Float!, slug: String!): [Episode!]!
 
   """Get all podcasts"""
   getPodcasts(page: Float!): [Podcast!]!
@@ -110,6 +112,7 @@ type Topic {
 type User {
   LikedPodcasts: [Podcast!]!
   bookmarkedEpisodes: [Episode!]!
+  active: Boolean!
   contributions: [String!]!
   email: String!
   firstname: String!

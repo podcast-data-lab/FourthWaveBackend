@@ -56,9 +56,13 @@ export class User {
   })
   public password: string
 
-  @Field(type => [String])
-  @prop({ type: () => [String] })
-  public contributions: string[]
+  @Field((type) => Boolean)
+  @prop({ default: false })
+  public active: boolean;
+
+  @Field((type) => [String])
+  @prop({ type: () => [String], default:  [] })
+  public contributions: string[];
 
   @Field(type => [Podcast])
   @prop({ ref: 'Podcast', default: [] })
