@@ -13,15 +13,14 @@ exports.UserModel = exports.User = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
 const Episode_1 = require("./Episode");
+const Play_1 = require("./Play");
 const Podcast_1 = require("./Podcast");
-const emailValidator = require("email-validator");
-const bcrypt = require("bcrypt");
+const emailValidator = require('email-validator');
+const bcrypt = require('bcrypt');
 const SALT_ROUNDS = 12;
 let User = class User {
-    constructor() {
-        this.comparePassword = async function comparePassword(candidate) {
-            return bcrypt.compare(candidate, this.password);
-        };
+    async comparePassword(candidate) {
+        return bcrypt.compare(candidate, this.password);
     }
 };
 __decorate([
@@ -49,8 +48,8 @@ __decorate([
         unique: true,
         validate: {
             validator: emailValidator.validate,
-            message: (props) => `${props.value} is not a valid email address`,
-        },
+            message: props => `${props.value} is not a valid email address`
+        }
     }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
@@ -61,34 +60,69 @@ __decorate([
         required: true,
         trim: true,
         unique: true,
-        minlength: 8,
+        minlength: 8
     }),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
-    type_graphql_1.Field((type) => Boolean),
+    type_graphql_1.Field(type => Boolean),
     typegoose_1.prop({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "active", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [String]),
+    type_graphql_1.Field(type => [String]),
     typegoose_1.prop({ type: () => [String], default: [] }),
     __metadata("design:type", Array)
 ], User.prototype, "contributions", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [Podcast_1.Podcast]),
-    typegoose_1.prop({ ref: "Podcast" }),
+    type_graphql_1.Field(type => [Podcast_1.Podcast]),
+    typegoose_1.prop({ ref: 'Podcast', default: [] }),
     __metadata("design:type", Array)
-], User.prototype, "podcastLikes", void 0);
+], User.prototype, "LikedPodcasts", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [Episode_1.Episode]),
-    typegoose_1.prop({ ref: "Episode" }),
+    type_graphql_1.Field(type => [Podcast_1.Podcast]),
+    typegoose_1.prop({ ref: 'Podcast', default: [] }),
+    __metadata("design:type", Array)
+], User.prototype, "subscribedPodcasts", void 0);
+__decorate([
+    type_graphql_1.Field(type => [Episode_1.Episode]),
+    typegoose_1.prop({ ref: 'Episode', default: [] }),
     __metadata("design:type", Array)
 ], User.prototype, "likedEpisodes", void 0);
+__decorate([
+    type_graphql_1.Field(type => [Episode_1.Episode]),
+    typegoose_1.prop({ ref: 'Episode', default: [] }),
+    __metadata("design:type", Array)
+], User.prototype, "bookmarkedEpisodes", void 0);
+__decorate([
+    type_graphql_1.Field(type => [Play_1.Play]),
+    typegoose_1.prop({ ref: 'Play', default: [] }),
+    __metadata("design:type", Array)
+], User.prototype, "plays", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typegoose_1.prop({ default: 1 }),
+    __metadata("design:type", Number)
+], User.prototype, "playingSpeed", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typegoose_1.prop({ default: 0.5 }),
+    __metadata("design:type", Number)
+], User.prototype, "volume", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typegoose_1.prop({ default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "admin", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typegoose_1.prop({ default: 'false' }),
+    __metadata("design:type", String)
+], User.prototype, "authtoken", void 0);
 User = __decorate([
-    typegoose_1.pre("save", async function preSave(next) {
+    typegoose_1.pre('save', async function preSave(next) {
         const user = this;
-        if (!user.isModified("password"))
+        if (!user.isModified('password'))
             return next();
         try {
             const hash = await bcrypt.hash(user.password, SALT_ROUNDS);

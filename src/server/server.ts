@@ -1,7 +1,6 @@
-
-import fastify from "fastify";
-import { ApolloServer } from "apollo-server-fastify";
-const mongoose = require("mongoose");
+import fastify from 'fastify'
+import { ApolloServer } from 'apollo-server-fastify'
+const mongoose = require('mongoose')
 
 // Require the environment variables
 require('dotenv').config('../../')
@@ -22,11 +21,11 @@ import {
   PersonResolver,
   PodcastResolver,
   ThemeResolver,
-  UserResolver,
-} from "../graphql/resolvers";
-import { AuthCheckerFn } from "../graphql/AuthChecker";
-
-(async () => {
+  UserResolver
+} from '../graphql/resolvers'
+import { AuthCheckerFn } from '../graphql/AuthChecker'
+import { verifyToken } from '../db/authentication'
+;(async () => {
   const schema = await buildSchema({
     resolvers: [
       CommentResolver,
@@ -39,13 +38,21 @@ import { AuthCheckerFn } from "../graphql/AuthChecker";
     ],
 
     emitSchemaFile: true,
-    authChecker: AuthCheckerFn,
-  });
+    authChecker: AuthCheckerFn
+  })
 
   const app = fastify()
 
   const server = new ApolloServer({
-    schema
+    schema,
+    context: ({ request, reply }) => {
+      console.log(request.headers.authorization)
+      //@ts-ignore
+      let token = request.headers.authorization || ''
+      const user = verifyToken(token)
+
+      return user
+    }
   })
 
   await server.start()
@@ -94,12 +101,6 @@ import { AuthCheckerFn } from "../graphql/AuthChecker";
     console.log(`api listening on port ${PORT}`)
   })
 })()
-
-
-  app.get("**", (req, res) => {
-    res.send({ message: "hi there?" });
-  });
-})();
 
 function checkAllowedOrigins (origin: string): boolean {
   console.log(origin)

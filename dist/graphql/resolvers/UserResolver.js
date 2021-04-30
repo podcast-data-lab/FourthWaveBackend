@@ -12,6 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const authentication_1 = require("./../../db/authentication");
 const User_1 = require("./../../models/User");
 const type_graphql_1 = require("type-graphql");
 const User_2 = require("../../models/User");
@@ -19,23 +20,23 @@ const graphql_1 = require("graphql");
 let UserSignUpArgs = class UserSignUpArgs {
 };
 __decorate([
-    type_graphql_1.Field((type) => String, { nullable: false }),
+    type_graphql_1.Field(type => String, { nullable: false }),
     __metadata("design:type", String)
 ], UserSignUpArgs.prototype, "username", void 0);
 __decorate([
-    type_graphql_1.Field((type) => String, { nullable: false }),
+    type_graphql_1.Field(type => String, { nullable: false }),
     __metadata("design:type", String)
 ], UserSignUpArgs.prototype, "email", void 0);
 __decorate([
-    type_graphql_1.Field((type) => String, { nullable: false }),
+    type_graphql_1.Field(type => String, { nullable: false }),
     __metadata("design:type", String)
 ], UserSignUpArgs.prototype, "firstname", void 0);
 __decorate([
-    type_graphql_1.Field((type) => String, { nullable: true }),
+    type_graphql_1.Field(type => String, { nullable: true }),
     __metadata("design:type", String)
 ], UserSignUpArgs.prototype, "lastname", void 0);
 __decorate([
-    type_graphql_1.Field((type) => String, { nullable: true }),
+    type_graphql_1.Field(type => String, { nullable: true }),
     __metadata("design:type", String)
 ], UserSignUpArgs.prototype, "password", void 0);
 UserSignUpArgs = __decorate([
@@ -48,7 +49,7 @@ let UserResolver = class UserResolver {
             email: email,
             firstname: firstname,
             lastname: lastname,
-            password: password,
+            password: password
         });
         try {
             await user.save();
@@ -60,24 +61,47 @@ let UserResolver = class UserResolver {
         return JSON.stringify(user);
     }
     async signin(username, password) {
-        return "signedin";
+        const user = await authentication_1.authenticateUser(username, password);
+        return user;
+    }
+    async signout() {
+        return true;
+    }
+    async signInWithToken(context) {
+        const userContext = context;
+        const user = await User_1.UserModel.findOne({ username: userContext.username });
+        return user;
     }
 };
 __decorate([
-    type_graphql_1.Mutation((returns) => String),
+    type_graphql_1.Mutation(returns => String),
     __param(0, type_graphql_1.Args()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [UserSignUpArgs]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "signup", null);
 __decorate([
-    type_graphql_1.Mutation((returns) => String),
-    __param(0, type_graphql_1.Arg('username')), __param(1, type_graphql_1.Arg("password")),
+    type_graphql_1.Mutation(returns => User_2.User),
+    __param(0, type_graphql_1.Arg('username')),
+    __param(1, type_graphql_1.Arg('password')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "signin", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Boolean),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "signout", null);
+__decorate([
+    type_graphql_1.Mutation(returns => User_2.User),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "signInWithToken", null);
 UserResolver = __decorate([
-    type_graphql_1.Resolver((of) => User_2.User)
+    type_graphql_1.Resolver(of => User_2.User)
 ], UserResolver);
 exports.default = UserResolver;

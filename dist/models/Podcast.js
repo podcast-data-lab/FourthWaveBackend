@@ -12,8 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PodcastModel = exports.Podcast = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
-const Episode_1 = require("./Episode");
+const Topic_1 = require("./Topic");
 let Podcast = class Podcast {
+    async setPalette(palette) {
+        this.palette = palette;
+        await this.save();
+    }
 };
 __decorate([
     type_graphql_1.Field(),
@@ -34,6 +38,11 @@ __decorate([
     type_graphql_1.Field({ nullable: true }),
     typegoose_1.prop(),
     __metadata("design:type", String)
+], Podcast.prototype, "base64image", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    typegoose_1.prop(),
+    __metadata("design:type", String)
 ], Podcast.prototype, "link", void 0);
 __decorate([
     type_graphql_1.Field(),
@@ -46,12 +55,12 @@ __decorate([
     __metadata("design:type", String)
 ], Podcast.prototype, "description", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [String]),
+    type_graphql_1.Field(type => [String]),
     typegoose_1.prop({ type: () => [String] }),
     __metadata("design:type", Array)
 ], Podcast.prototype, "palette", void 0);
 __decorate([
-    type_graphql_1.Field((type) => Date),
+    type_graphql_1.Field(type => Date),
     typegoose_1.prop({ type: () => Date }),
     __metadata("design:type", Date)
 ], Podcast.prototype, "lastRssBuildDate", void 0);
@@ -60,19 +69,24 @@ __decorate([
     typegoose_1.prop({
         type: String,
         required: true,
-        unique: true,
+        unique: true
     }),
     __metadata("design:type", String)
 ], Podcast.prototype, "slug", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [String]),
+    type_graphql_1.Field(type => [String]),
     typegoose_1.prop({ type: () => [String] }),
     __metadata("design:type", Array)
 ], Podcast.prototype, "categories", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [Episode_1.Episode]),
-    typegoose_1.prop({ ref: () => "Episode" }),
-    __metadata("design:type", Object)
+    type_graphql_1.Field(type => [Topic_1.Topic]),
+    typegoose_1.prop({ type: () => [Topic_1.Topic] }),
+    __metadata("design:type", Array)
+], Podcast.prototype, "topics", void 0);
+__decorate([
+    type_graphql_1.Field(type => [String]),
+    typegoose_1.prop({ type: () => [typegoose_1.mongoose.Types.ObjectId], default: [] }),
+    __metadata("design:type", Array)
 ], Podcast.prototype, "episodes", void 0);
 Podcast = __decorate([
     type_graphql_1.ObjectType()

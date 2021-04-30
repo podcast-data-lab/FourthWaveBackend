@@ -7,31 +7,33 @@ import { Podcast, PodcastModel } from '../../models/Podcast'
 
 @Resolver(of => Podcast)
 export default class PodcastResolver {
-
-  @Query((returns) => [Podcast], { description: "Get all podcasts" })
-  async getPodcasts(@Arg("page") page: number): Promise<Podcast[]> {
+  @Query(returns => [Podcast], { description: 'Get all podcasts' })
+  async getPodcasts (@Arg('page') page: number): Promise<Podcast[]> {
     const podcasts: Podcast[] = await PodcastModel.find()
       .skip(50 * page)
-      .limit(50);
-    return podcasts;
+      .limit(50)
+    return podcasts
   }
 
-  @Query((returs) => [Episode], { description: "Returns a podcasts'episodes" })
-  async getPodcastEpisodes(@Arg("slug") slug: string, @Arg('page') page: number): Promise<Episode[]> {
+  @Query(returs => [Episode], { description: "Returns a podcasts'episodes" })
+  async getPodcastEpisodes (
+    @Arg('slug') slug: string,
+    @Arg('page') page: number
+  ): Promise<Episode[]> {
     const episodes: Episode[] = await EpisodeModel.find({
-      podcast: slug,
+      podcast: slug
     })
       .sort({ datePublished: -1 })
-      .skip(15*page)
-      .limit(15);
-    return episodes;
+      .skip(15 * page)
+      .limit(15)
+    return episodes
   }
 
-  @Query((returns) => Podcast, {
-    description: "Find a podcast based on it's slug",
+  @Query(returns => Podcast, {
+    description: "Find a podcast based on it's slug"
   })
-  async getPodcast(@Arg("slug") slug: string): Promise<Podcast> {
-    const podcast: Podcast = await PodcastModel.findOne({ slug: `${slug}` });
+  async getPodcast (@Arg('slug') slug: string): Promise<Podcast> {
+    const podcast: Podcast = await PodcastModel.findOne({ slug: `${slug}` })
 
     return podcast
   }
@@ -46,16 +48,6 @@ export default class PodcastResolver {
     const podcasts: Podcast[] = await PodcastModel.find({
       title: { $regex: regex, $options: 'ix' }
     })
-  @Query((returns) => [Podcast], {
-    description: "Searches for a podcast based on a search string",
-  })
-  async findPodcasts(
-    @Arg("searchString") searchString: String
-  ): Promise<Podcast[]> {
-    const regex = new RegExp(`^${searchString}`);
-    const podcasts: Podcast[] = await PodcastModel.find({
-      title: { $regex: regex, $options: "ix" },
-    });
 
     return podcasts
   }
@@ -70,5 +62,4 @@ export default class PodcastResolver {
     getImagePalettes(podcast)
     return 'generating palettes'
   }
-
 }

@@ -17,15 +17,16 @@ const Comment_1 = require("./Comment");
 const Person_1 = require("./Person");
 const Theme_1 = require("./Theme");
 const User_1 = require("./User");
+const Topic_1 = require("./Topic");
 let Episode = class Episode {
 };
 __decorate([
-    type_graphql_1.Field({ nullable: true }),
+    type_graphql_1.Field(),
     typegoose_1.prop(),
     __metadata("design:type", String)
 ], Episode.prototype, "title", void 0);
 __decorate([
-    type_graphql_1.Field((type) => Date, { nullable: true }),
+    type_graphql_1.Field(type => Date),
     typegoose_1.prop({ type: () => Date }),
     __metadata("design:type", Date)
 ], Episode.prototype, "datePublished", void 0);
@@ -40,7 +41,7 @@ __decorate([
     __metadata("design:type", String)
 ], Episode.prototype, "duration", void 0);
 __decorate([
-    type_graphql_1.Field({ nullable: true }),
+    type_graphql_1.Field(),
     typegoose_1.prop(),
     __metadata("design:type", String)
 ], Episode.prototype, "sourceUrl", void 0);
@@ -50,35 +51,60 @@ __decorate([
     __metadata("design:type", String)
 ], Episode.prototype, "image", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [User_1.User], { nullable: true }),
+    type_graphql_1.Field({ nullable: true }),
+    typegoose_1.prop(),
+    __metadata("design:type", String)
+], Episode.prototype, "podcast", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typegoose_1.prop({ default: 0 }),
+    __metadata("design:type", Number)
+], Episode.prototype, "epNo", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typegoose_1.prop({ default: 0 }),
+    __metadata("design:type", Number)
+], Episode.prototype, "snNo", void 0);
+__decorate([
+    type_graphql_1.Field(type => [User_1.User], { nullable: true }),
     typegoose_1.prop({ ref: () => User_1.User }),
     __metadata("design:type", Array)
 ], Episode.prototype, "likes", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [Theme_1.Theme], { nullable: true }),
-    typegoose_1.prop({ ref: () => Theme_1.Theme }),
+    type_graphql_1.Field(type => [Topic_1.Topic]),
+    typegoose_1.prop({ type: () => [Topic_1.Topic] }),
+    __metadata("design:type", Array)
+], Episode.prototype, "topics", void 0);
+__decorate([
+    type_graphql_1.Field(type => [Theme_1.Theme], { nullable: true }),
+    typegoose_1.prop({ ref: () => 'Theme', default: [] }),
     __metadata("design:type", Array)
 ], Episode.prototype, "themes", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [Comment_1.Comment], { nullable: true }),
-    typegoose_1.prop({ ref: "Comment" }),
+    type_graphql_1.Field(type => [Comment_1.Comment], { nullable: true }),
+    typegoose_1.prop({ ref: 'Comment', default: [] }),
     __metadata("design:type", Array)
 ], Episode.prototype, "comments", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [Person_1.Person], { nullable: true }),
-    typegoose_1.prop({ ref: "Person" }),
+    type_graphql_1.Field(type => [Person_1.Person], { nullable: true }),
+    typegoose_1.prop({ ref: 'Person', default: [] }),
     __metadata("design:type", Array)
 ], Episode.prototype, "people", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [Locale_1.Locale], { nullable: true }),
-    typegoose_1.prop({ ref: "Locale" }),
+    type_graphql_1.Field(type => [Locale_1.Locale], { nullable: true }),
+    typegoose_1.prop({ ref: 'Locale', default: [] }),
     __metadata("design:type", Array)
 ], Episode.prototype, "locations", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    typegoose_1.prop({ default: 0 }),
+    __metadata("design:type", Number)
+], Episode.prototype, "plays", void 0);
 __decorate([
     type_graphql_1.Field({ nullable: true }),
     typegoose_1.prop({
         type: String,
-        required: true,
+        required: true
     }),
     __metadata("design:type", String)
 ], Episode.prototype, "slug", void 0);

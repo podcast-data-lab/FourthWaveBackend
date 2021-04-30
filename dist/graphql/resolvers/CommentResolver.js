@@ -14,7 +14,7 @@ const Comment_1 = require("../../models/Comment");
 const Podcast_1 = require("../../models/Podcast");
 let CommentResolver = class CommentResolver {
     async getComment() {
-        console.log("here");
+        console.log('here');
         const comment = await Comment_1.CommentModel.findOne();
         let pod = await Podcast_1.PodcastModel.find();
         console.log(pod[0].episodes[0]);
@@ -23,12 +23,12 @@ let CommentResolver = class CommentResolver {
     }
 };
 __decorate([
-    type_graphql_1.Query((returns) => Comment_1.Comment, { nullable: true }),
+    type_graphql_1.Query(returns => Comment_1.Comment, { nullable: true }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CommentResolver.prototype, "getComment", null);
 CommentResolver = __decorate([
-    type_graphql_1.Resolver((of) => Comment_1.Comment)
+    type_graphql_1.Resolver(of => Comment_1.Comment)
 ], CommentResolver);
 exports.default = CommentResolver;

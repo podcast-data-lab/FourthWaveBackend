@@ -46,7 +46,9 @@ type Locale {
 type Mutation {
   generatePalettes(slug: String!): String!
   rerunPods: String!
-  signin(password: String!, username: String!): String!
+  signInWithToken: User!
+  signin(password: String!, username: String!): User!
+  signout: Boolean!
   signup(email: String!, firstname: String!, lastname: String, password: String, username: String!): String!
 }
 
@@ -58,6 +60,7 @@ type Person {
 }
 
 type Play {
+  """The slug of the epiosde"""
   episode: String!
   position: Float!
 }
@@ -111,8 +114,10 @@ type Topic {
 
 type User {
   LikedPodcasts: [Podcast!]!
-  bookmarkedEpisodes: [Episode!]!
   active: Boolean!
+  admin: Boolean!
+  authtoken: String!
+  bookmarkedEpisodes: [Episode!]!
   contributions: [String!]!
   email: String!
   firstname: String!
@@ -123,4 +128,5 @@ type User {
   plays: [Play!]!
   subscribedPodcasts: [Podcast!]!
   username: String!
+  volume: Float!
 }

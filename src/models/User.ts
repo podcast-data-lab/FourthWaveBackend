@@ -1,4 +1,10 @@
-import { prop, getModelForClass, Ref, pre } from '@typegoose/typegoose'
+import {
+  prop,
+  getModelForClass,
+  Ref,
+  pre,
+  DocumentType
+} from '@typegoose/typegoose'
 import { Field, ObjectType } from 'type-graphql'
 import { Episode } from './Episode'
 import { Play } from './Play'
@@ -56,13 +62,13 @@ export class User {
   })
   public password: string
 
-  @Field((type) => Boolean)
+  @Field(type => Boolean)
   @prop({ default: false })
-  public active: boolean;
+  public active: boolean
 
-  @Field((type) => [String])
-  @prop({ type: () => [String], default:  [] })
-  public contributions: string[];
+  @Field(type => [String])
+  @prop({ type: () => [String], default: [] })
+  public contributions: string[]
 
   @Field(type => [Podcast])
   @prop({ ref: 'Podcast', default: [] })
@@ -88,7 +94,19 @@ export class User {
   @prop({ default: 1 })
   public playingSpeed: number
 
-  public comparePassword = async function comparePassword (candidate) {
+  @Field()
+  @prop({ default: 0.5 })
+  public volume: number
+
+  @Field()
+  @prop({ default: false })
+  public admin: boolean
+
+  @Field()
+  @prop({ default: 'false' })
+  public authtoken: string
+
+  public async comparePassword (this: DocumentType<User>, candidate: string) {
     return bcrypt.compare(candidate, this.password)
   }
 }
