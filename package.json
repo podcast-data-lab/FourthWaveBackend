@@ -40,6 +40,7 @@
     "http": "^0.0.1-security",
     "image-to-base64": "^2.2.0",
     "image2colors": "^2.0.7",
+    "jsonwebtoken": "^8.5.1",
     "mercurius": "^6.11.0",
     "mercurius-apollo-registry": "^1.0.0",
     "mongodb": "^3.6.3",
