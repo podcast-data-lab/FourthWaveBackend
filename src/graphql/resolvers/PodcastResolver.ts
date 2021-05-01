@@ -56,10 +56,56 @@ export default class PodcastResolver {
     return 'working'
   }
 
-  @Mutation(returns => String)
+  @Mutation(returns => String, {
+    description:
+      'Generates the palettes of a podcast based on the podcasts image'
+  })
   async generatePalettes (@Arg('slug') slug: string): Promise<string> {
     const podcast = await PodcastModel.findOne({ slug: slug })
     getImagePalettes(podcast)
     return 'generating palettes'
+  }
+
+  @Query(returns => [Podcast], { description: 'Returns the featured podcasts' })
+  async getFeatured (): Promise<Podcast[]> {
+    const pods = await PodcastModel.find({})
+      .limit(7)
+      .skip(110)
+    return pods
+  }
+
+  @Query(returns => [Podcast], { description: 'Returns the Trending Podcasts' })
+  async getTrending (): Promise<Podcast[]> {
+    const pods = await PodcastModel.find({})
+      .limit(5)
+      .skip(170)
+    return pods
+  }
+
+  @Query(returns => [Podcast], {
+    description: 'Returns the Most Played Podcasts'
+  })
+  async getTopPlayed (): Promise<Podcast[]> {
+    const pods = await PodcastModel.find({})
+      .limit(5)
+      .skip(170)
+    return pods
+  }
+
+  @Query(returns => [String], {
+    description: 'Returns a list of all the genres'
+  })
+  async getGenres (): Promise<string[]> {
+    return PodcastModel.find({}).then(podcasts => {
+      const categories = []
+
+      podcasts.forEach(pod => {
+        return pod.categories.forEach(category => {
+          const indx = categories.indexOf(category)
+          if (indx == -1) categories.push(category)
+        })
+      })
+      return categories
+    })
   }
 }

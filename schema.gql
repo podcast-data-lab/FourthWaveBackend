@@ -44,6 +44,7 @@ type Locale {
 }
 
 type Mutation {
+  """Generates the palettes of a podcast based on the podcasts image"""
   generatePalettes(slug: String!): String!
   rerunPods: String!
   signInWithToken: User!
@@ -89,6 +90,12 @@ type Query {
   findPodcasts(searchString: String!): [Podcast!]!
   getComment: Comment
 
+  """Returns the featured podcasts"""
+  getFeatured: [Podcast!]!
+
+  """Returns a list of all the genres"""
+  getGenres: [String!]!
+
   """Find a podcast based on it's slug"""
   getPodcast(slug: String!): Podcast!
 
@@ -97,7 +104,16 @@ type Query {
 
   """Get all podcasts"""
   getPodcasts(page: Float!): [Podcast!]!
+
+  """Returns the Most Played Podcasts"""
+  getTopPlayed: [Podcast!]!
+
+  """Returns the Trending Podcasts"""
+  getTrending: [Podcast!]!
   print: String!
+
+  """Returns the Most Popular Podcast Episodes"""
+  topEpisodes: [Episode!]!
 }
 
 type Theme {

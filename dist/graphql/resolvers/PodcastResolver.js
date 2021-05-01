@@ -51,6 +51,37 @@ let PodcastResolver = class PodcastResolver {
         functions_1.getImagePalettes(podcast);
         return 'generating palettes';
     }
+    async getFeatured() {
+        const pods = await Podcast_1.PodcastModel.find({})
+            .limit(7)
+            .skip(110);
+        return pods;
+    }
+    async getTrending() {
+        const pods = await Podcast_1.PodcastModel.find({})
+            .limit(5)
+            .skip(170);
+        return pods;
+    }
+    async getTopPlayed() {
+        const pods = await Podcast_1.PodcastModel.find({})
+            .limit(5)
+            .skip(170);
+        return pods;
+    }
+    async getGenres() {
+        return Podcast_1.PodcastModel.find({}).then(podcasts => {
+            const categories = [];
+            podcasts.forEach(pod => {
+                return pod.categories.forEach(category => {
+                    const indx = categories.indexOf(category);
+                    if (indx == -1)
+                        categories.push(category);
+                });
+            });
+            return categories;
+        });
+    }
 };
 __decorate([
     type_graphql_1.Query(returns => [Podcast_1.Podcast], { description: 'Get all podcasts' }),
@@ -92,12 +123,42 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PodcastResolver.prototype, "rerunPods", null);
 __decorate([
-    type_graphql_1.Mutation(returns => String),
+    type_graphql_1.Mutation(returns => String, {
+        description: 'Generates the palettes of a podcast based on the podcasts image'
+    }),
     __param(0, type_graphql_1.Arg('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PodcastResolver.prototype, "generatePalettes", null);
+__decorate([
+    type_graphql_1.Query(returns => [Podcast_1.Podcast], { description: 'Returns the featured podcasts' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PodcastResolver.prototype, "getFeatured", null);
+__decorate([
+    type_graphql_1.Query(returns => [Podcast_1.Podcast], { description: 'Returns the Trending Podcasts' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PodcastResolver.prototype, "getTrending", null);
+__decorate([
+    type_graphql_1.Query(returns => [Podcast_1.Podcast], {
+        description: 'Returns the Most Played Podcasts'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PodcastResolver.prototype, "getTopPlayed", null);
+__decorate([
+    type_graphql_1.Query(returns => [String], {
+        description: 'Returns a list of all the genres'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PodcastResolver.prototype, "getGenres", null);
 PodcastResolver = __decorate([
     type_graphql_1.Resolver(of => Podcast_1.Podcast)
 ], PodcastResolver);

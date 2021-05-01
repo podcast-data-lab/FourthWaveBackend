@@ -17,18 +17,36 @@ const Episode_1 = require("../../models/Episode");
 let EpisodeResolver = class EpisodeResolver {
     async findEpisodes(searchString) {
         const regex = new RegExp(`^${searchString}`);
-        const episodes = await Episode_1.EpisodeModel.find({ title: { $regex: regex, $options: 'ix' } });
+        const episodes = await Episode_1.EpisodeModel.find({
+            title: { $regex: regex, $options: 'ix' }
+        });
         return episodes;
+    }
+    async topEpisodes() {
+        const eps = await Episode_1.EpisodeModel.find({})
+            .limit(5)
+            .skip(120);
+        return eps;
     }
 };
 __decorate([
-    type_graphql_1.Query((returns) => [Episode_1.Episode], { description: "Find episodes based on a search string" }),
+    type_graphql_1.Query(returns => [Episode_1.Episode], {
+        description: 'Find episodes based on a search string'
+    }),
     __param(0, type_graphql_1.Arg('searchString')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], EpisodeResolver.prototype, "findEpisodes", null);
+__decorate([
+    type_graphql_1.Query(returns => [Episode_1.Episode], {
+        description: 'Returns the Most Popular Podcast Episodes'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], EpisodeResolver.prototype, "topEpisodes", null);
 EpisodeResolver = __decorate([
-    type_graphql_1.Resolver((of) => Episode_1.Episode)
+    type_graphql_1.Resolver(of => Episode_1.Episode)
 ], EpisodeResolver);
 exports.default = EpisodeResolver;
