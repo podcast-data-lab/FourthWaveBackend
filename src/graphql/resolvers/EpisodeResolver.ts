@@ -1,5 +1,6 @@
 import { Arg, Query, Resolver } from 'type-graphql'
-import { Episode, EpisodeModel } from '../../models/Episode'
+import { EpisodeModel } from '../../models'
+import { Episode } from '../../models/Episode'
 
 @Resolver(of => Episode)
 export default class EpisodeResolver {

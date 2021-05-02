@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EpisodeModel = exports.Episode = void 0;
+exports.Episode = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
 const Locale_1 = require("./Locale");
@@ -18,6 +18,7 @@ const Person_1 = require("./Person");
 const Theme_1 = require("./Theme");
 const User_1 = require("./User");
 const Topic_1 = require("./Topic");
+const Play_1 = require("./Play");
 let Episode = class Episode {
 };
 __decorate([
@@ -96,9 +97,9 @@ __decorate([
     __metadata("design:type", Array)
 ], Episode.prototype, "locations", void 0);
 __decorate([
-    type_graphql_1.Field({ nullable: true }),
-    typegoose_1.prop({ default: 0 }),
-    __metadata("design:type", Number)
+    type_graphql_1.Field(type => Play_1.Play, { nullable: true }),
+    typegoose_1.prop({ ref: () => 'Play', default: 0 }),
+    __metadata("design:type", Array)
 ], Episode.prototype, "plays", void 0);
 __decorate([
     type_graphql_1.Field({ nullable: true }),
@@ -112,4 +113,3 @@ Episode = __decorate([
     type_graphql_1.ObjectType()
 ], Episode);
 exports.Episode = Episode;
-exports.EpisodeModel = typegoose_1.getModelForClass(Episode);

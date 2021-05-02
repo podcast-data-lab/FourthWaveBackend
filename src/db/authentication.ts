@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql'
 import jwt from 'jsonwebtoken'
-import { User, UserModel } from '../models/User'
+import { UserModel } from '../models'
+import { User } from '../models/User'
 
 // let conf = require("dotenv").config("../../").parsed;
 

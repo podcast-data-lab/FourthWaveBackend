@@ -90,6 +90,10 @@ export class User {
   @prop({ ref: 'Play', default: [] })
   public plays: Ref<Play>[]
 
+  @Field(type => [Play])
+  @prop({ type: () => Play, default: [] })
+  public queue: Play[]
+
   @Field()
   @prop({ default: 1 })
   public playingSpeed: number
@@ -110,5 +114,3 @@ export class User {
     return bcrypt.compare(candidate, this.password)
   }
 }
-
-export const UserModel = getModelForClass(User)

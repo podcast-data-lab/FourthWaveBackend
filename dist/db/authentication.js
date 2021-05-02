@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.genPassword = exports.resetPassword = exports.getAuthenticatedUser = exports.verifyToken = exports.generateToken = exports.authenticateUser = void 0;
 const graphql_1 = require("graphql");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const User_1 = require("../models/User");
+const models_1 = require("../models");
 // let conf = require("dotenv").config("../../").parsed;
 /**
  * A function to authenticate a user
@@ -17,11 +17,11 @@ const User_1 = require("../models/User");
 const authenticateUser = async (username, password) => {
     try {
         // Verify the Use
-        let user = await User_1.UserModel.findOne({
+        let user = await models_1.UserModel.findOne({
             username: username
         }).exec();
         if (!user) {
-            await User_1.UserModel.findOne({
+            await models_1.UserModel.findOne({
                 email: username
             }).exec();
         }
@@ -79,7 +79,7 @@ exports.verifyToken = verifyToken;
 const getAuthenticatedUser = async (token) => {
     try {
         let decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        let user = await User_1.UserModel.find({ email: decoded.email });
+        let user = await models_1.UserModel.find({ email: decoded.email });
         return user;
     }
     catch (error) {

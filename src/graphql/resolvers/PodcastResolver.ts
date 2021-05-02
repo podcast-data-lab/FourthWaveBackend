@@ -1,7 +1,8 @@
 import { Arg, Mutation, Query, Resolver } from 'type-graphql'
 import { registerPodcasts, work } from '../../lib/buildPodcasts'
 import { getImagePalettes } from '../../lib/functions'
-import { Episode, EpisodeModel } from '../../models/Episode'
+import { EpisodeModel } from '../../models'
+import { Episode } from '../../models/Episode'
 
 import { Podcast, PodcastModel } from '../../models/Podcast'
 

@@ -1,13 +1,22 @@
 import { prop } from '@typegoose/typegoose'
-import { Field, ObjectType } from 'type-graphql'
+import { ObjectType, Field } from 'type-graphql'
+import { Episode } from './Episode'
 
 @ObjectType()
 export class Play {
-  @Field({ description: 'The slug of the epiosde' })
-  @prop()
-  episode: string
+  @Field(type => Episode, { description: 'The slug of the epiosde' })
+  @prop({ type: () => Episode })
+  episode: Episode
 
-  @Field()
-  @prop()
+  @Field(type => Number)
+  @prop({ type: () => Number })
   position: number
+
+  @Field(type => Boolean)
+  @prop({ type: () => Boolean, default: false })
+  started: boolean
+
+  @Field(type => Boolean, { nullable: true })
+  @prop({ type: () => Boolean, default: false })
+  completed: boolean
 }

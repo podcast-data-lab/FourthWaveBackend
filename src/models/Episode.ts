@@ -6,6 +6,7 @@ import { Person } from './Person'
 import { Theme } from './Theme'
 import { User } from './User'
 import { Topic } from './Topic'
+import { Play } from './Play'
 
 @ObjectType()
 export class Episode {
@@ -69,9 +70,9 @@ export class Episode {
   @prop({ ref: 'Locale', default: [] })
   public locations: Ref<Locale>[]
 
-  @Field({ nullable: true })
-  @prop({ default: 0 })
-  public plays: number
+  @Field(type => Play, { nullable: true })
+  @prop({ ref: () => 'Play', default: 0 })
+  public plays: Ref<Play>[]
 
   @Field({ nullable: true })
   @prop({
@@ -80,5 +81,3 @@ export class Episode {
   })
   public slug: string
 }
-
-export const EpisodeModel = getModelForClass(Episode)

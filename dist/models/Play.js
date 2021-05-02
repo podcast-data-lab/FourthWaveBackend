@@ -12,18 +12,29 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Play = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
+const Episode_1 = require("./Episode");
 let Play = class Play {
 };
 __decorate([
-    type_graphql_1.Field({ description: 'The slug of the epiosde' }),
-    typegoose_1.prop(),
-    __metadata("design:type", String)
+    type_graphql_1.Field(type => Episode_1.Episode, { description: 'The slug of the epiosde' }),
+    typegoose_1.prop({ type: () => Episode_1.Episode }),
+    __metadata("design:type", Episode_1.Episode)
 ], Play.prototype, "episode", void 0);
 __decorate([
-    type_graphql_1.Field(),
-    typegoose_1.prop(),
+    type_graphql_1.Field(type => Number),
+    typegoose_1.prop({ type: () => Number }),
     __metadata("design:type", Number)
 ], Play.prototype, "position", void 0);
+__decorate([
+    type_graphql_1.Field(type => Boolean),
+    typegoose_1.prop({ type: () => Boolean, default: false }),
+    __metadata("design:type", Boolean)
+], Play.prototype, "started", void 0);
+__decorate([
+    type_graphql_1.Field(type => Boolean, { nullable: true }),
+    typegoose_1.prop({ type: () => Boolean, default: false }),
+    __metadata("design:type", Boolean)
+], Play.prototype, "completed", void 0);
 Play = __decorate([
     type_graphql_1.ObjectType()
 ], Play);

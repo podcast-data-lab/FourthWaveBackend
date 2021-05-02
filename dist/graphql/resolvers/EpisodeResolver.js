@@ -13,10 +13,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
+const models_1 = require("../../models");
 const Episode_1 = require("../../models/Episode");
 let EpisodeResolver = class EpisodeResolver {
     async findEpisodes(searchString) {
-        const searchResult = await Episode_1.EpisodeModel.aggregate([
+        const searchResult = await models_1.EpisodeModel.aggregate([
             {
                 $search: {
                     index: 'episodes',
@@ -68,7 +69,7 @@ let EpisodeResolver = class EpisodeResolver {
         return searchResult;
     }
     async topEpisodes() {
-        const eps = await Episode_1.EpisodeModel.find({})
+        const eps = await models_1.EpisodeModel.find({})
             .limit(5)
             .skip(120);
         return eps;

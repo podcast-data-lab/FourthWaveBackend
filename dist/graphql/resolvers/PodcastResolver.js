@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const type_graphql_1 = require("type-graphql");
 const functions_1 = require("../../lib/functions");
+const models_1 = require("../../models");
 const Episode_1 = require("../../models/Episode");
 const Podcast_1 = require("../../models/Podcast");
 let PodcastResolver = class PodcastResolver {
@@ -24,7 +25,7 @@ let PodcastResolver = class PodcastResolver {
         return podcasts;
     }
     async getPodcastEpisodes(slug, page) {
-        const episodes = await Episode_1.EpisodeModel.find({
+        const episodes = await models_1.EpisodeModel.find({
             podcast: slug
         })
             .sort({ datePublished: -1 })
