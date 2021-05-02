@@ -116,7 +116,7 @@ __decorate([
 ], User.prototype, "admin", void 0);
 __decorate([
     type_graphql_1.Field(),
-    typegoose_1.prop({ default: 'false' }),
+    typegoose_1.prop({ default: '' }),
     __metadata("design:type", String)
 ], User.prototype, "authtoken", void 0);
 User = __decorate([

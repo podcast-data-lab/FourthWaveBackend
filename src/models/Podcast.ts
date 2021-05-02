@@ -19,7 +19,7 @@ export class Podcast {
   @prop()
   publisher: string
 
-  @Field()
+  @Field({ nullable: true })
   @prop()
   rssFeed: string
 
@@ -47,7 +47,7 @@ export class Podcast {
     this.palette = palette
     await this.save()
   }
-  @Field(type => Date)
+  @Field(type => Date, { nullable: true })
   @prop({ type: () => Date })
   lastRssBuildDate: Date
 
@@ -59,15 +59,17 @@ export class Podcast {
   })
   slug: string
 
-  @Field(type => [String])
+  @Field(type => [String], { nullable: true })
   @prop({ type: () => [String] })
   categories: string[]
 
-  @Field(type => [Topic])
-  @prop({ type: () => [Topic] })
+  @Field(type => [Topic], {
+    nullable: true
+  })
+  @prop({ type: () => [Topic], nullable: true })
   public topics?: Topic[]
 
-  @Field(type => [String])
+  @Field(type => [String], { nullable: true })
   @prop({ type: () => [mongoose.Types.ObjectId], default: [] })
   episodes: mongoose.Types.ObjectId[]
 }

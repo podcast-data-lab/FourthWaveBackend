@@ -44,10 +44,57 @@ export default class PodcastResolver {
   async findPodcasts (
     @Arg('searchString') searchString: String
   ): Promise<Podcast[]> {
-    const regex = new RegExp(`^${searchString}`)
-    const podcasts: Podcast[] = await PodcastModel.find({
-      title: { $regex: regex, $options: 'ix' }
-    })
+    const podcasts: Podcast[] = await PodcastModel.aggregate([
+      {
+        $search: {
+          index: 'default',
+          compound: {
+            should: [
+              {
+                autocomplete: {
+                  query: searchString,
+                  path: 'title',
+                  fuzzy: {
+                    maxEdits: 2,
+                    prefixLength: 3
+                  }
+                }
+              },
+              {
+                autocomplete: {
+                  query: searchString,
+                  path: 'description',
+                  fuzzy: {
+                    maxEdits: 2,
+                    prefixLength: 3
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        $limit: 10
+      },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          link: 1,
+          image: 1,
+          datePublished: 1,
+          duration: 1,
+          podcast: 1,
+          palette: 1,
+          slug: 1,
+          categories: 1,
+          topics: 1,
+          _id: 0,
+          score: { $meta: 'searchScore' }
+        }
+      }
+    ])
 
     return podcasts
   }
@@ -78,7 +125,7 @@ export default class PodcastResolver {
   async getTrending (): Promise<Podcast[]> {
     const pods = await PodcastModel.find({})
       .limit(5)
-      .skip(170)
+      .skip(40)
     return pods
   }
 

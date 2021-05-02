@@ -21,15 +21,15 @@ type Episode {
   datePublished: DateTime!
   description: String
   duration: String
-  epNo: Float!
+  epNo: Float
   image: String
   likes: [User!]
   locations: [Locale!]
   people: [Person!]
-  plays: Float!
+  plays: Float
   podcast: String
   slug: String
-  snNo: Float!
+  snNo: Float
   sourceUrl: String!
   themes: [Theme!]
   title: String!
@@ -68,18 +68,18 @@ type Play {
 
 type Podcast {
   base64image: String
-  categories: [String!]!
+  categories: [String!]
   description: String!
-  episodes: [String!]!
+  episodes: [String!]
   image: String!
-  lastRssBuildDate: DateTime!
+  lastRssBuildDate: DateTime
   link: String
   palette: [String!]!
   publisher: String
-  rssFeed: String!
+  rssFeed: String
   slug: String!
   title: String!
-  topics: [Topic!]!
+  topics: [Topic!]
 }
 
 type Query {

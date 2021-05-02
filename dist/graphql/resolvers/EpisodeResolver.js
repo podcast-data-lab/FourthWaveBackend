@@ -16,11 +16,56 @@ const type_graphql_1 = require("type-graphql");
 const Episode_1 = require("../../models/Episode");
 let EpisodeResolver = class EpisodeResolver {
     async findEpisodes(searchString) {
-        const regex = new RegExp(`^${searchString}`);
-        const episodes = await Episode_1.EpisodeModel.find({
-            title: { $regex: regex, $options: 'ix' }
-        });
-        return episodes;
+        const searchResult = await Episode_1.EpisodeModel.aggregate([
+            {
+                $search: {
+                    index: 'episodes',
+                    compound: {
+                        should: [
+                            {
+                                autocomplete: {
+                                    query: searchString,
+                                    path: 'title',
+                                    fuzzy: {
+                                        maxEdits: 2,
+                                        prefixLength: 3
+                                    }
+                                }
+                            },
+                            {
+                                autocomplete: {
+                                    query: searchString,
+                                    path: 'description',
+                                    fuzzy: {
+                                        maxEdits: 2,
+                                        prefixLength: 3
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                $limit: 10
+            },
+            {
+                $project: {
+                    title: 1,
+                    description: 1,
+                    sourceUrl: 1,
+                    image: 1,
+                    datePublished: 1,
+                    duration: 1,
+                    podcast: 1,
+                    _id: 0,
+                    score: { $meta: 'searchScore' }
+                }
+            }
+        ]);
+        console.log('result : ');
+        console.log(searchResult);
+        return searchResult;
     }
     async topEpisodes() {
         const eps = await Episode_1.EpisodeModel.find({})

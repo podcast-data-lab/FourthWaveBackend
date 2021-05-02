@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", String)
 ], Podcast.prototype, "publisher", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_1.Field({ nullable: true }),
     typegoose_1.prop(),
     __metadata("design:type", String)
 ], Podcast.prototype, "rssFeed", void 0);
@@ -60,7 +60,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Podcast.prototype, "palette", void 0);
 __decorate([
-    type_graphql_1.Field(type => Date),
+    type_graphql_1.Field(type => Date, { nullable: true }),
     typegoose_1.prop({ type: () => Date }),
     __metadata("design:type", Date)
 ], Podcast.prototype, "lastRssBuildDate", void 0);
@@ -74,17 +74,19 @@ __decorate([
     __metadata("design:type", String)
 ], Podcast.prototype, "slug", void 0);
 __decorate([
-    type_graphql_1.Field(type => [String]),
+    type_graphql_1.Field(type => [String], { nullable: true }),
     typegoose_1.prop({ type: () => [String] }),
     __metadata("design:type", Array)
 ], Podcast.prototype, "categories", void 0);
 __decorate([
-    type_graphql_1.Field(type => [Topic_1.Topic]),
-    typegoose_1.prop({ type: () => [Topic_1.Topic] }),
+    type_graphql_1.Field(type => [Topic_1.Topic], {
+        nullable: true
+    }),
+    typegoose_1.prop({ type: () => [Topic_1.Topic], nullable: true }),
     __metadata("design:type", Array)
 ], Podcast.prototype, "topics", void 0);
 __decorate([
-    type_graphql_1.Field(type => [String]),
+    type_graphql_1.Field(type => [String], { nullable: true }),
     typegoose_1.prop({ type: () => [typegoose_1.mongoose.Types.ObjectId], default: [] }),
     __metadata("design:type", Array)
 ], Podcast.prototype, "episodes", void 0);

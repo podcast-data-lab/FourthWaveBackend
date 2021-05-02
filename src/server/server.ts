@@ -46,8 +46,6 @@ import { verifyToken } from '../db/authentication'
   const server = new ApolloServer({
     schema,
     context: ({ request, reply }) => {
-      console.log(request.headers.authorization)
-      //@ts-ignore
       let token = request.headers.authorization || ''
       const user = verifyToken(token)
 

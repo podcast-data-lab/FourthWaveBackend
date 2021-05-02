@@ -103,7 +103,7 @@ export class User {
   public admin: boolean
 
   @Field()
-  @prop({ default: 'false' })
+  @prop({ default: '' })
   public authtoken: string
 
   public async comparePassword (this: DocumentType<User>, candidate: string) {

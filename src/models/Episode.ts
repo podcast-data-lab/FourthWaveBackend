@@ -37,11 +37,11 @@ export class Episode {
   @prop()
   public podcast: string
 
-  @Field()
+  @Field({ nullable: true })
   @prop({ default: 0 })
   public epNo: number
 
-  @Field()
+  @Field({ nullable: true })
   @prop({ default: 0 })
   public snNo: number
 
@@ -69,7 +69,7 @@ export class Episode {
   @prop({ ref: 'Locale', default: [] })
   public locations: Ref<Locale>[]
 
-  @Field()
+  @Field({ nullable: true })
   @prop({ default: 0 })
   public plays: number
 

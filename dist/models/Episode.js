@@ -56,12 +56,12 @@ __decorate([
     __metadata("design:type", String)
 ], Episode.prototype, "podcast", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_1.Field({ nullable: true }),
     typegoose_1.prop({ default: 0 }),
     __metadata("design:type", Number)
 ], Episode.prototype, "epNo", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_1.Field({ nullable: true }),
     typegoose_1.prop({ default: 0 }),
     __metadata("design:type", Number)
 ], Episode.prototype, "snNo", void 0);
@@ -96,7 +96,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Episode.prototype, "locations", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_1.Field({ nullable: true }),
     typegoose_1.prop({ default: 0 }),
     __metadata("design:type", Number)
 ], Episode.prototype, "plays", void 0);
