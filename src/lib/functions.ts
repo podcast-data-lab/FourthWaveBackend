@@ -1,5 +1,5 @@
 import Parser from 'rss-parser'
-import { Episode, EpisodeModel } from '../models/Episode'
+import { Episode } from '../models/Episode'
 import { Podcast, PodcastModel } from '../models/Podcast'
 const imageToBase64 = require('image-to-base64')
 const image2colors = require('image2colors')
@@ -7,6 +7,7 @@ const rgbHex = require('rgb-hex')
 import mongoose from 'mongoose'
 import { ObjectId } from 'mongodb'
 import { Ref } from '@typegoose/typegoose'
+import { EpisodeModel } from '../models'
 export const getImagePalettes = async podcast => {
   console.log(`coloring:  ${podcast.title}...`)
 

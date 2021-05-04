@@ -15,7 +15,7 @@ const type_graphql_1 = require("type-graphql");
 const Locale_1 = require("./Locale");
 const Comment_1 = require("./Comment");
 const Person_1 = require("./Person");
-const Theme_1 = require("./Theme");
+const Category_1 = require("./Category");
 const User_1 = require("./User");
 const Topic_1 = require("./Topic");
 const Play_1 = require("./Play");
@@ -73,14 +73,14 @@ __decorate([
 ], Episode.prototype, "likes", void 0);
 __decorate([
     type_graphql_1.Field(type => [Topic_1.Topic]),
-    typegoose_1.prop({ type: () => [Topic_1.Topic] }),
+    typegoose_1.prop({ ref: 'Topic' }),
     __metadata("design:type", Array)
 ], Episode.prototype, "topics", void 0);
 __decorate([
-    type_graphql_1.Field(type => [Theme_1.Theme], { nullable: true }),
-    typegoose_1.prop({ ref: () => 'Theme', default: [] }),
+    type_graphql_1.Field(type => [Category_1.Category], { nullable: true }),
+    typegoose_1.prop({ ref: () => 'Category', default: [] }),
     __metadata("design:type", Array)
-], Episode.prototype, "themes", void 0);
+], Episode.prototype, "categories", void 0);
 __decorate([
     type_graphql_1.Field(type => [Comment_1.Comment], { nullable: true }),
     typegoose_1.prop({ ref: 'Comment', default: [] }),

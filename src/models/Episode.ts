@@ -3,7 +3,7 @@ import { Field, InputType, ObjectType } from 'type-graphql'
 import { Locale } from './Locale'
 import { Comment } from './Comment'
 import { Person } from './Person'
-import { Theme } from './Theme'
+import { Category } from './Category'
 import { User } from './User'
 import { Topic } from './Topic'
 import { Play } from './Play'
@@ -51,12 +51,12 @@ export class Episode {
   public likes: Ref<User>[]
 
   @Field(type => [Topic])
-  @prop({ type: () => [Topic] })
-  public topics?: Topic[]
+  @prop({ ref: 'Topic' })
+  public topics?: Ref<Topic>[]
 
-  @Field(type => [Theme], { nullable: true })
-  @prop({ ref: () => 'Theme', default: [] })
-  public themes?: Ref<Theme>[]
+  @Field(type => [Category], { nullable: true })
+  @prop({ ref: () => 'Category', default: [] })
+  public categories?: Ref<Category>[]
 
   @Field(type => [Comment], { nullable: true })
   @prop({ ref: 'Comment', default: [] })

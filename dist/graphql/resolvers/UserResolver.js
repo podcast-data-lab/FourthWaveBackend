@@ -268,14 +268,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "setUserVolume", null);
 __decorate([
-    type_graphql_1.Mutation(returns => Play_1.Play),
+    type_graphql_1.Mutation(returns => Play_1.Play, {
+        description: 'Starts the playing of a Play object'
+    }),
     __param(0, type_graphql_1.Arg('slug')), __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "startPlay", null);
 __decorate([
-    type_graphql_1.Mutation(returns => Play_1.Play),
+    type_graphql_1.Mutation(returns => Play_1.Play, {
+        description: 'Updates the play position of a Play object'
+    }),
     __param(0, type_graphql_1.Arg('position')),
     __param(1, type_graphql_1.Arg('playId')),
     __metadata("design:type", Function),
@@ -310,7 +314,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "addToBeginningOfQueue", null);
 __decorate([
-    type_graphql_1.Mutation(returns => Play_1.Play),
+    type_graphql_1.Mutation(returns => Play_1.Play, { description: "Updates a user's player queue" }),
     __param(0, type_graphql_1.Arg('queue')),
     __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
@@ -318,7 +322,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "updatePlayerQueue", null);
 __decorate([
-    type_graphql_1.Mutation(returns => Number),
+    type_graphql_1.Mutation(returns => Number, {
+        description: "Changes a user's playing speed"
+    }),
     __param(0, type_graphql_1.Arg('speed')),
     __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
@@ -326,7 +332,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "changePlayingSpeed", null);
 __decorate([
-    type_graphql_1.Mutation(returns => Play_1.Play),
+    type_graphql_1.Mutation(returns => Play_1.Play, {
+        description: "Updates the position of a user's Play object"
+    }),
     __param(0, type_graphql_1.Arg('playId')),
     __param(1, type_graphql_1.Arg('position')),
     __param(2, type_graphql_1.Ctx()),
@@ -335,7 +343,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "updatePosition", null);
 __decorate([
-    type_graphql_1.Mutation(returns => [Play_1.Play]),
+    type_graphql_1.Mutation(returns => [Play_1.Play], {
+        description: "Deletes/Clears a user's playing queue"
+    }),
     __param(0, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

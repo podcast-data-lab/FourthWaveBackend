@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PodcastModel = exports.Podcast = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
+const Category_1 = require("./Category");
 const Topic_1 = require("./Topic");
 let Podcast = class Podcast {
     async setPalette(palette) {
@@ -74,15 +75,15 @@ __decorate([
     __metadata("design:type", String)
 ], Podcast.prototype, "slug", void 0);
 __decorate([
-    type_graphql_1.Field(type => [String], { nullable: true }),
-    typegoose_1.prop({ type: () => [String] }),
+    type_graphql_1.Field(type => [Category_1.Category], { nullable: true }),
+    typegoose_1.prop({ ref: 'Category' }),
     __metadata("design:type", Array)
 ], Podcast.prototype, "categories", void 0);
 __decorate([
     type_graphql_1.Field(type => [Topic_1.Topic], {
         nullable: true
     }),
-    typegoose_1.prop({ type: () => [Topic_1.Topic], nullable: true }),
+    typegoose_1.prop({ ref: 'Topic', nullable: true }),
     __metadata("design:type", Array)
 ], Podcast.prototype, "topics", void 0);
 __decorate([

@@ -3,11 +3,18 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Category {
+  comments: [Comment!]!
+  contributor: User!
+  episodes: [Episode!]!
+  title: String!
+}
+
 type Comment {
+  categories: Category!
   content: String!
   likes: [User!]!
   podcast: Podcast!
-  theme: Theme!
   userId: User!
 }
 
@@ -17,6 +24,7 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Episode {
+  categories: [Category!]
   comments: [Comment!]
   datePublished: DateTime!
   description: String
@@ -31,7 +39,6 @@ type Episode {
   slug: String
   snNo: Float
   sourceUrl: String!
-  themes: [Theme!]
   title: String!
   topics: [Topic!]!
 }
@@ -49,7 +56,11 @@ type Mutation {
 
   """Adds an episode to a player's queue"""
   addToPlayerQueue(slug: String!): [Play!]!
+
+  """Changes a user's playing speed"""
   changePlayingSpeed(speed: Float!): Float!
+
+  """Deletes/Clears a user's playing queue"""
   clearQueue: [Play!]!
 
   """Generates the palettes of a podcast based on the podcasts image"""
@@ -62,9 +73,17 @@ type Mutation {
   signin(password: String!, username: String!): User!
   signout: Boolean!
   signup(email: String!, firstname: String!, lastname: String, password: String, username: String!): String!
+
+  """Starts the playing of a Play object"""
   startPlay(slug: String!): Play!
+
+  """Updates the play position of a Play object"""
   updatePlayPosition(playId: Float!, position: Float!): Play!
+
+  """Updates a user's player queue"""
   updatePlayerQueue(queue: String!): Play!
+
+  """Updates the position of a user's Play object"""
   updatePosition(playId: String!, position: Float!): Play!
 }
 
@@ -87,7 +106,7 @@ type Play {
 
 type Podcast {
   base64image: String
-  categories: [String!]
+  categories: [Category!]
   description: String!
   episodes: [String!]
   image: String!
@@ -124,6 +143,9 @@ type Query {
   """Get all podcasts"""
   getPodcasts(page: Float!): [Podcast!]!
 
+  """Returns a list of recommended topics"""
+  getRecommendedTopics: [Topic!]!
+
   """Returns the Most Played Podcasts"""
   getTopPlayed: [Podcast!]!
 
@@ -138,15 +160,10 @@ type Query {
   topEpisodes: [Episode!]!
 }
 
-type Theme {
-  comments: [Comment!]!
-  contributor: User!
-  podcastEpisodes: [Episode!]!
-  title: String!
-}
-
 type Topic {
+  episodes: [Episode!]!
   name: String!
+  podcasts: [Podcast!]!
   type: String!
 }
 

@@ -1,5 +1,5 @@
 import Parser from 'rss-parser'
-import { EpisodeModel } from '../models/Episode'
+import { EpisodeModel } from '../models'
 import { PodcastModel } from '../models/Podcast'
 import { TopicModel } from '../models/Topic'
 import { feeds } from './feeds'
@@ -77,7 +77,7 @@ export function registerPodcasts (podcasts) {
           name: name
         })
         newTopic.save()
-        podcast.topics.push(newTopic)
+        podcast.topics.push(newTopic._id)
       })
     })
 

@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseAndSave = exports.getImagePalettes = void 0;
-const Episode_1 = require("../models/Episode");
 const Podcast_1 = require("../models/Podcast");
 const imageToBase64 = require('image-to-base64');
 const image2colors = require('image2colors');
 const rgbHex = require('rgb-hex');
+const models_1 = require("../models");
 const getImagePalettes = async (podcast) => {
     console.log(`coloring:  ${podcast.title}...`);
     const imageBase64 = await imageToBase64(podcast.image);
@@ -57,7 +57,7 @@ const parseAndSave = async (feed, rss) => {
     const episodeList = [];
     feed.items.forEach(async (item) => {
         var _a, _b, _c, _d, _e, _f;
-        let episode = new Episode_1.EpisodeModel({
+        let episode = new models_1.EpisodeModel({
             title: item.title,
             subtitle: (_a = item.itunes) === null || _a === void 0 ? void 0 : _a.subtitle,
             image: (_b = feed.itunes) === null || _b === void 0 ? void 0 : _b.image,

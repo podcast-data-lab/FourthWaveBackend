@@ -42,7 +42,7 @@ const User = new Schema(
     contributions: {
       podcasts: [{ type: Schema.Types.ObjectId, ref: "Podcast" }],
       comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-      themes: [{ type: Schema.Types.ObjectId, ref: "Theme" }],
+      categoriess: [{ type: Schema.Types.ObjectId, ref: "Category" }],
       people: [{ type: Schema.Types.ObjectId, ref: "Person" }],
       locations: [{ type: Schema.Types.ObjectId, ref: "Location" }],
     },
@@ -83,7 +83,7 @@ const Podcast = new Schema(
       required: true,
       index: { unique: true },
     },
-    categories: [],
+    categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
     topics: [],
     episodes: [{ type: Schema.Types.ObjectId, ref: "Episode" }],
   },
@@ -100,12 +100,11 @@ const Episode = new Schema(
     sourceUrl: String,
     image: String,
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    themes: [{ type: Schema.Types.ObjectId, ref: "Theme" }],
+    topics: [{ type: Schema.Types.ObjectId, ref: "Topic" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
     people: [{ type: Schema.Types.ObjectId, ref: "Person" }],
     locations: [{ type: Schema.Types.ObjectId, ref: "Location" }],
     podcast: String,
-    topics: [],
     slug: {
       type: String,
       required: true,
@@ -121,6 +120,13 @@ const Topic = new Schema(
   {
     type: String,
     name: String,
+    episodes: [{ type: Schema.Types.ObjectId, ref: "Episode" }],
+    podcasts: [{ type: Schema.ObjectId, ref: "Podcast" }],
+    slug: {
+      type: String,
+      required: true,
+      index: { unique: true },
+    },
   },
   {
     timestamps: true,
@@ -129,7 +135,7 @@ const Topic = new Schema(
 const Comment = new Schema(
   {
     content: String,
-    theme: [{ type: Schema.ObjectId, ref: "Theme" }],
+    Category: [{ type: Schema.ObjectId, ref: "Category" }],
     podcast: { type: Schema.ObjectId, ref: "Podcast" },
     userId: { type: Schema.ObjectId, ref: "User" },
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
@@ -138,15 +144,17 @@ const Comment = new Schema(
     timestamps: true,
   }
 );
-const Theme = new Schema(
+const Category = new Schema(
   {
     title: {
       type: String,
       required: true,
-      index: { unique: true },
+    },
+    podcasts: {
+      type: [{ type: Schema.ObjectId, ref: "Podcast" }],
+      default: [],
     },
     contributor: { type: Schema.ObjectId, ref: "User" },
-    podcastEpisodes: [{ type: Schema.ObjectId, ref: "Podcast" }],
     comments: [{ type: Schema.ObjectId, ref: "Comment" }],
     slug: {
       type: String,
@@ -205,7 +213,7 @@ mongoose.model("User", User);
 mongoose.model("Podcast", Podcast);
 mongoose.model("Episode", Episode);
 mongoose.model("Comment", Comment);
-mongoose.model("Theme", Theme);
+mongoose.model("Category", Category);
 mongoose.model("Location", Location);
 mongoose.model("Person", Person);
 mongoose.model("Topic", Topic);

@@ -111,7 +111,9 @@ export default class UserResolver {
     return volume
   }
 
-  @Mutation(returns => Play)
+  @Mutation(returns => Play, {
+    description: 'Starts the playing of a Play object'
+  })
   async startPlay (@Arg('slug') slug: string, @Ctx() context): Promise<Play> {
     const user = await UserModel.findOne({ username: context.username })
 
@@ -135,7 +137,9 @@ export default class UserResolver {
     return play
   }
 
-  @Mutation(returns => Play)
+  @Mutation(returns => Play, {
+    description: 'Updates the play position of a Play object'
+  })
   async updatePlayPosition (
     @Arg('position') position: number,
     @Arg('playId') playId: number
@@ -239,7 +243,7 @@ export default class UserResolver {
     return play
   }
 
-  @Mutation(returns => Play)
+  @Mutation(returns => Play, { description: "Updates a user's player queue" })
   async updatePlayerQueue (
     @Arg('queue') queue: string,
     @Ctx() context
@@ -262,7 +266,9 @@ export default class UserResolver {
     return userDeets[0].queue
   }
 
-  @Mutation(returns => Number)
+  @Mutation(returns => Number, {
+    description: "Changes a user's playing speed"
+  })
   async changePlayingSpeed (
     @Arg('speed') speed: number,
     @Ctx() context
@@ -275,7 +281,9 @@ export default class UserResolver {
     return user.playingSpeed
   }
 
-  @Mutation(returns => Play)
+  @Mutation(returns => Play, {
+    description: "Updates the position of a user's Play object"
+  })
   async updatePosition (
     @Arg('playId') playId: string,
     @Arg('position') position: number,
@@ -301,7 +309,9 @@ export default class UserResolver {
     return userDeets[0].queue[0]
   }
 
-  @Mutation(returns => [Play])
+  @Mutation(returns => [Play], {
+    description: "Deletes/Clears a user's playing queue"
+  })
   async clearQueue (@Ctx() context): Promise<Play[]> {
     const user = await UserModel.findOne({ username: context.username })
     user.queue = []

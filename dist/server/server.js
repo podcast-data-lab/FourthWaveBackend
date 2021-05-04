@@ -27,7 +27,9 @@ const authentication_1 = require("../db/authentication");
             resolvers_1.PersonResolver,
             resolvers_1.PodcastResolver,
             resolvers_1.ThemeResolver,
-            resolvers_1.UserResolver
+            resolvers_1.UserResolver,
+            resolvers_1.CategoryResolver,
+            resolvers_1.TopicResolver
         ],
         emitSchemaFile: true,
         authChecker: AuthChecker_1.AuthCheckerFn,

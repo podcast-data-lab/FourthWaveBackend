@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TopicModel = exports.Topic = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
+const Episode_1 = require("./Episode");
+const Podcast_1 = require("./Podcast");
 let Topic = class Topic {
 };
 __decorate([
@@ -24,6 +26,16 @@ __decorate([
     typegoose_1.prop(),
     __metadata("design:type", String)
 ], Topic.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(type => [Episode_1.Episode]),
+    typegoose_1.prop({ ref: 'Episode', default: [] }),
+    __metadata("design:type", Array)
+], Topic.prototype, "episodes", void 0);
+__decorate([
+    type_graphql_1.Field(type => [Podcast_1.Podcast]),
+    typegoose_1.prop({ ref: 'Podcast', default: [] }),
+    __metadata("design:type", Array)
+], Topic.prototype, "podcasts", void 0);
 Topic = __decorate([
     type_graphql_1.ObjectType()
 ], Topic);

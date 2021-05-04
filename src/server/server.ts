@@ -21,7 +21,9 @@ import {
   PersonResolver,
   PodcastResolver,
   ThemeResolver,
-  UserResolver
+  UserResolver,
+  CategoryResolver,
+  TopicResolver
 } from '../graphql/resolvers'
 import { AuthCheckerFn } from '../graphql/AuthChecker'
 import { verifyToken } from '../db/authentication'
@@ -34,7 +36,9 @@ import { verifyToken } from '../db/authentication'
       PersonResolver,
       PodcastResolver,
       ThemeResolver,
-      UserResolver
+      UserResolver,
+      CategoryResolver,
+      TopicResolver
     ],
 
     emitSchemaFile: true,

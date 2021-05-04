@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerPodcasts = exports.work = void 0;
 const rss_parser_1 = __importDefault(require("rss-parser"));
-const Episode_1 = require("../models/Episode");
+const models_1 = require("../models");
 const Podcast_1 = require("../models/Podcast");
 const Topic_1 = require("../models/Topic");
 const feeds_1 = require("./feeds");
@@ -79,12 +79,12 @@ function registerPodcasts(podcasts) {
                     name: name
                 });
                 newTopic.save();
-                podcast.topics.push(newTopic);
+                podcast.topics.push(newTopic._id);
             });
         });
         const episodeList = [];
         pod.episodes.forEach(async (item) => {
-            let episode = new Episode_1.EpisodeModel({
+            let episode = new models_1.EpisodeModel({
                 title: item.title,
                 subtitle: item.subtitle,
                 image: item.image,

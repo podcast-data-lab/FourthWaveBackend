@@ -5361,10 +5361,10 @@ sliced@1.0.1:
   resolved "https://registry.yarnpkg.com/sliced/-/sliced-1.0.1.tgz#0b3a662b5d04c3177b1926bea82b03f837a2ef41"
   integrity sha1-CzpmK10Ewxd7GSa+qCsD+Dei70E=
 
-slug@^4.0.2:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/slug/-/slug-4.0.4.tgz#87138f22e2f5062e6522995dc4e8c5df63841b1f"
-  integrity sha512-GwSsWjX2rcIAtbKWGaxnzASWljWraPQry0RmCnRkji2pEggVjgb5HjXdqN0Gb6JOPg19rsC3hHUYXbOnHXKv2Q==
+slug@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/slug/-/slug-5.0.0.tgz#d47dbabeba7578408bb9a1cd07daac4c660e7f1c"
+  integrity sha512-PW24qSh/Hrao5R4LEeJm6aBhQm2lwYDK4cZxncz0UuNApaNKmrtP6AAdNnIejRUEyBAE/7kfWbRFzlrqWmgqtw==
 
 sonic-boom@^1.0.2:
   version "1.4.1"

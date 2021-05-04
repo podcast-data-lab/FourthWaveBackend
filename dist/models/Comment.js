@@ -13,7 +13,7 @@ exports.CommentModel = exports.Comment = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
 const Podcast_1 = require("./Podcast");
-const Theme_1 = require("./Theme");
+const Category_1 = require("./Category");
 const User_1 = require("./User");
 let Comment = class Comment {
 };
@@ -23,22 +23,22 @@ __decorate([
     __metadata("design:type", String)
 ], Comment.prototype, "content", void 0);
 __decorate([
-    type_graphql_1.Field((type) => Theme_1.Theme),
-    typegoose_1.prop({ ref: () => Theme_1.Theme }),
+    type_graphql_1.Field(type => Category_1.Category),
+    typegoose_1.prop({ ref: () => Category_1.Category }),
     __metadata("design:type", Array)
-], Comment.prototype, "theme", void 0);
+], Comment.prototype, "categories", void 0);
 __decorate([
-    type_graphql_1.Field((type) => Podcast_1.Podcast),
+    type_graphql_1.Field(type => Podcast_1.Podcast),
     typegoose_1.prop({ ref: () => Podcast_1.Podcast }),
     __metadata("design:type", Object)
 ], Comment.prototype, "podcast", void 0);
 __decorate([
-    type_graphql_1.Field((type) => User_1.User),
+    type_graphql_1.Field(type => User_1.User),
     typegoose_1.prop({ type: () => User_1.User }),
     __metadata("design:type", Object)
 ], Comment.prototype, "userId", void 0);
 __decorate([
-    type_graphql_1.Field((type) => [User_1.User]),
+    type_graphql_1.Field(type => [User_1.User]),
     typegoose_1.prop({ ref: () => User_1.User }),
     __metadata("design:type", Array)
 ], Comment.prototype, "likes", void 0);

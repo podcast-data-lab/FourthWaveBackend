@@ -6,6 +6,7 @@ import {
   mongoose
 } from '@typegoose/typegoose'
 import { Field, ObjectType } from 'type-graphql'
+import { Category } from './Category'
 import { Episode } from './Episode'
 import { Topic } from './Topic'
 
@@ -59,15 +60,15 @@ export class Podcast {
   })
   slug: string
 
-  @Field(type => [String], { nullable: true })
-  @prop({ type: () => [String] })
-  categories: string[]
+  @Field(type => [Category], { nullable: true })
+  @prop({ ref: 'Category' })
+  categories: Ref<Category>[]
 
   @Field(type => [Topic], {
     nullable: true
   })
-  @prop({ type: () => [Topic], nullable: true })
-  public topics?: Topic[]
+  @prop({ ref: 'Topic', nullable: true })
+  public topics?: Ref<Topic>[]
 
   @Field(type => [String], { nullable: true })
   @prop({ type: () => [mongoose.Types.ObjectId], default: [] })
