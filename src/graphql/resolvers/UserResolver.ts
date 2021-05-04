@@ -1,4 +1,4 @@
-import { Episode } from './../../models/Episode'
+import { Episode, EpisodeInput } from './../../models/Episode'
 import { authenticateUser } from './../../db/authentication'
 import { UserModel, EpisodeModel, PlayModel } from './../../models'
 import {
@@ -7,6 +7,7 @@ import {
   ArgsType,
   Ctx,
   Field,
+  InputType,
   Mutation,
   Query,
   Resolver
@@ -32,6 +33,7 @@ class UserSignUpArgs {
   @Field(type => String, { nullable: true })
   password: string
 }
+
 @Resolver(of => User)
 export default class UserResolver {
   @Mutation(returns => String)
@@ -59,7 +61,8 @@ export default class UserResolver {
     @Arg('username') username: string,
     @Arg('password') password: string
   ) {
-    const user = await authenticateUser(username, password)
+    const user: User | Error = await authenticateUser(username, password)
+
     return user
   }
 
@@ -70,9 +73,29 @@ export default class UserResolver {
 
   @Mutation(returns => User)
   async signInWithToken (@Ctx() context): Promise<User> {
-    const userContext = context
-    const user = await UserModel.findOne({ username: userContext.username })
-    return user
+    const user = await UserModel.aggregate([
+      { $match: { username: context.username } },
+      {
+        $lookup: {
+          from: 'plays',
+          foreignField: '_id',
+          localField: 'queue',
+          as: 'queue'
+        }
+      }
+    ])
+
+    TODO: 'Move this sorting work to the database'
+
+    const userQueue = await (
+      await UserModel.findOne({ username: context.username })
+    ).queue
+
+    user[0].queue = user[0].queue.sort(
+      (a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
+    )
+
+    return user[0]
   }
 
   @Mutation(returns => Number, { description: 'Sets a user Volume' })
@@ -80,6 +103,7 @@ export default class UserResolver {
     @Arg('volume') volume: number,
     @Ctx() context
   ): Promise<number> {
+    console.log(context)
     const user = await UserModel.findOne({ username: context.username })
     user.volume = volume
     await user.save()
@@ -114,23 +138,38 @@ export default class UserResolver {
   @Mutation(returns => Play)
   async updatePlayPosition (
     @Arg('position') position: number,
-    @Arg('playId') playId: number,
-    @Ctx() context
+    @Arg('playId') playId: number
   ) {
     const play = await PlayModel.findById(playId)
+    if (play.position > 0 && play.started == false) play.started = true
+
     play.position = position
 
-    play.save()
+    await play.save()
 
     return play
   }
 
   @Query(returns => [Play], { description: "Returns a user's player queue" })
   async getUserQueue (@Ctx() context): Promise<Play[]> {
-    const user = await UserModel.findOne({ username: context.username })
-    const queue = user.queue
-
-    return queue
+    const userQueue = await (
+      await UserModel.findOne({ username: context.username })
+    ).queue
+    const user = await UserModel.aggregate([
+      { $match: { username: context.username } },
+      {
+        $lookup: {
+          from: 'plays',
+          foreignField: '_id',
+          localField: 'queue',
+          as: 'queue'
+        }
+      }
+    ])
+    user[0].queue = user[0].queue.sort(
+      (a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
+    )
+    return user[0].queue
   }
 
   @Mutation(returns => [Play], {
@@ -141,7 +180,7 @@ export default class UserResolver {
     @Ctx() context
   ): Promise<Play[]> {
     const user = await UserModel.findOne({ username: context.username })
-
+    console.log(user.queue)
     const episode = await EpisodeModel.findOne({ slug: slug })
     const play = new PlayModel({
       episode: episode,
@@ -151,13 +190,123 @@ export default class UserResolver {
     })
 
     episode.plays.push(play._id)
-    user.plays.push(play)
+    user.plays.push(play._id)
     user.queue.push(play)
     await user.save()
     await episode.save()
     await play.save()
 
-    console.log(slug)
-    return user.queue
+    const userDetails = await UserModel.aggregate([
+      { $match: { username: context.username } },
+      {
+        $lookup: {
+          from: 'plays',
+          foreignField: '_id',
+          localField: 'queue',
+          as: 'queue'
+        }
+      }
+    ])
+
+    return userDetails[0].queue
+  }
+
+  @Mutation(returns => Play, {
+    description: "Adds an episode to a player's queue"
+  })
+  async addToBeginningOfQueue (
+    @Arg('slug') slug: string,
+    @Ctx() context
+  ): Promise<Play> {
+    const user = await UserModel.findOne({ username: context.username })
+
+    TODO: 'Check if the episode is already in the users queue!!!'
+    const episode = await EpisodeModel.findOne({ slug: slug })
+    const play = new PlayModel({
+      episode: episode,
+      position: 0,
+      started: false,
+      completed: false
+    })
+
+    episode.plays.push(play._id)
+    user.plays.push(play._id)
+    user.queue.unshift(play._id)
+    await user.save()
+    await episode.save()
+    await play.save()
+
+    return play
+  }
+
+  @Mutation(returns => Play)
+  async updatePlayerQueue (
+    @Arg('queue') queue: string,
+    @Ctx() context
+  ): Promise<Play[]> {
+    const user = await UserModel.findOne({ username: context.username })
+    console.log(queue)
+
+    const userDeets = await UserModel.aggregate([
+      { $match: { username: context.username } },
+      {
+        $lookup: {
+          from: 'plays',
+          foreignField: '_id',
+          localField: 'queue',
+          as: 'queue'
+        }
+      }
+    ])
+
+    return userDeets[0].queue
+  }
+
+  @Mutation(returns => Number)
+  async changePlayingSpeed (
+    @Arg('speed') speed: number,
+    @Ctx() context
+  ): Promise<Number> {
+    const user = await UserModel.findOne({ username: context.username })
+    console.log(user.queue)
+
+    user.playingSpeed = speed
+    await user.save()
+    return user.playingSpeed
+  }
+
+  @Mutation(returns => Play)
+  async updatePosition (
+    @Arg('playId') playId: string,
+    @Arg('position') position: number,
+    @Ctx() context
+  ): Promise<Play> {
+    const play = await PlayModel.findById(playId)
+    play.position = position
+
+    await play.save()
+
+    const userDeets = await UserModel.aggregate([
+      { $match: { username: context.username } },
+      {
+        $lookup: {
+          from: 'plays',
+          foreignField: '_id',
+          localField: 'queue',
+          as: 'queue'
+        }
+      }
+    ])
+
+    return userDeets[0].queue[0]
+  }
+
+  @Mutation(returns => [Play])
+  async clearQueue (@Ctx() context): Promise<Play[]> {
+    const user = await UserModel.findOne({ username: context.username })
+    user.queue = []
+    await user.save()
+
+    return []
   }
 }

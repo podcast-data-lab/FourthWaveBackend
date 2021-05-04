@@ -16,6 +16,10 @@ const Episode_1 = require("./Episode");
 let Play = class Play {
 };
 __decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], Play.prototype, "_id", void 0);
+__decorate([
     type_graphql_1.Field(type => Episode_1.Episode, { description: 'The slug of the epiosde' }),
     typegoose_1.prop({ type: () => Episode_1.Episode }),
     __metadata("design:type", Episode_1.Episode)

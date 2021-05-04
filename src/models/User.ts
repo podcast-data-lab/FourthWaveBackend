@@ -91,8 +91,8 @@ export class User {
   public plays: Ref<Play>[]
 
   @Field(type => [Play])
-  @prop({ type: () => Play, default: [] })
-  public queue: Play[]
+  @prop({ ref: 'Play', default: [] })
+  public queue: Ref<Play>[]
 
   @Field()
   @prop({ default: 1 })

@@ -38,7 +38,8 @@ import { verifyToken } from '../db/authentication'
     ],
 
     emitSchemaFile: true,
-    authChecker: AuthCheckerFn
+    authChecker: AuthCheckerFn,
+    validate: false
   })
 
   const app = fastify()

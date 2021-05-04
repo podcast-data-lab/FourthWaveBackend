@@ -41,7 +41,25 @@ export const authenticateUser = async (
     const token = generateToken(user.username, user.admin)
     user.authtoken = token
     await user.save()
-    return user
+
+    const userQueue = user.queue
+    let userData = await UserModel.aggregate([
+      { $match: { username: user.username } },
+      {
+        $lookup: {
+          from: 'plays',
+          foreignField: '_id',
+          localField: 'queue',
+          as: 'queue'
+        }
+      }
+    ])
+
+    userData[0].queue = userData[0].queue.sort(
+      (a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
+    )
+
+    return userData[0]
   } catch (error) {
     console.log(error.message)
     return Error['INCORRECT_PASSWORD']

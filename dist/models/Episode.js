@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Episode = void 0;
+exports.EpisodeInput = exports.Episode = void 0;
 const typegoose_1 = require("@typegoose/typegoose");
 const type_graphql_1 = require("type-graphql");
 const Locale_1 = require("./Locale");
@@ -113,3 +113,49 @@ Episode = __decorate([
     type_graphql_1.ObjectType()
 ], Episode);
 exports.Episode = Episode;
+let EpisodeInput = class EpisodeInput {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], EpisodeInput.prototype, "title", void 0);
+__decorate([
+    type_graphql_1.Field(type => Date),
+    __metadata("design:type", Date)
+], EpisodeInput.prototype, "datePublished", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], EpisodeInput.prototype, "description", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], EpisodeInput.prototype, "duration", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], EpisodeInput.prototype, "sourceUrl", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], EpisodeInput.prototype, "image", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], EpisodeInput.prototype, "podcast", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", Number)
+], EpisodeInput.prototype, "epNo", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", Number)
+], EpisodeInput.prototype, "snNo", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], EpisodeInput.prototype, "slug", void 0);
+EpisodeInput = __decorate([
+    type_graphql_1.InputType()
+], EpisodeInput);
+exports.EpisodeInput = EpisodeInput;

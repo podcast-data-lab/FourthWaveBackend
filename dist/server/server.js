@@ -30,7 +30,8 @@ const authentication_1 = require("../db/authentication");
             resolvers_1.UserResolver
         ],
         emitSchemaFile: true,
-        authChecker: AuthChecker_1.AuthCheckerFn
+        authChecker: AuthChecker_1.AuthCheckerFn,
+        validate: false
     });
     const app = fastify_1.default();
     const server = new apollo_server_fastify_1.ApolloServer({

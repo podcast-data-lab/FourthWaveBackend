@@ -116,17 +116,13 @@ export default class PodcastResolver {
 
   @Query(returns => [Podcast], { description: 'Returns the featured podcasts' })
   async getFeatured (): Promise<Podcast[]> {
-    const pods = await PodcastModel.find({})
-      .limit(7)
-      .skip(110)
+    const pods = await PodcastModel.aggregate([{ $sample: { size: 7 } }])
     return pods
   }
 
   @Query(returns => [Podcast], { description: 'Returns the Trending Podcasts' })
   async getTrending (): Promise<Podcast[]> {
-    const pods = await PodcastModel.find({})
-      .limit(5)
-      .skip(40)
+    const pods = await PodcastModel.aggregate([{ $sample: { size: 5 } }])
     return pods
   }
 
@@ -134,9 +130,7 @@ export default class PodcastResolver {
     description: 'Returns the Most Played Podcasts'
   })
   async getTopPlayed (): Promise<Podcast[]> {
-    const pods = await PodcastModel.find({})
-      .limit(5)
-      .skip(170)
+    const pods = await PodcastModel.aggregate([{ $sample: { size: 5 } }])
     return pods
   }
 

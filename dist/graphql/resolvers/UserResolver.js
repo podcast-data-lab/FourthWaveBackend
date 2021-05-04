@@ -70,11 +70,24 @@ let UserResolver = class UserResolver {
         return true;
     }
     async signInWithToken(context) {
-        const userContext = context;
-        const user = await models_1.UserModel.findOne({ username: userContext.username });
-        return user;
+        const user = await models_1.UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue'
+                }
+            }
+        ]);
+        TODO: 'Move this sorting work to the database';
+        const userQueue = await (await models_1.UserModel.findOne({ username: context.username })).queue;
+        user[0].queue = user[0].queue.sort((a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id));
+        return user[0];
     }
     async setUserVolume(volume, context) {
+        console.log(context);
         const user = await models_1.UserModel.findOne({ username: context.username });
         user.volume = volume;
         await user.save();
@@ -100,19 +113,33 @@ let UserResolver = class UserResolver {
         await user.save();
         return play;
     }
-    async updatePlayPosition(position, playId, context) {
+    async updatePlayPosition(position, playId) {
         const play = await models_1.PlayModel.findById(playId);
+        if (play.position > 0 && play.started == false)
+            play.started = true;
         play.position = position;
-        play.save();
+        await play.save();
         return play;
     }
     async getUserQueue(context) {
-        const user = await models_1.UserModel.findOne({ username: context.username });
-        const queue = user.queue;
-        return queue;
+        const userQueue = await (await models_1.UserModel.findOne({ username: context.username })).queue;
+        const user = await models_1.UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue'
+                }
+            }
+        ]);
+        user[0].queue = user[0].queue.sort((a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id));
+        return user[0].queue;
     }
     async addToPlayerQueue(slug, context) {
         const user = await models_1.UserModel.findOne({ username: context.username });
+        console.log(user.queue);
         const episode = await models_1.EpisodeModel.findOne({ slug: slug });
         const play = new models_1.PlayModel({
             episode: episode,
@@ -121,13 +148,87 @@ let UserResolver = class UserResolver {
             completed: false
         });
         episode.plays.push(play._id);
-        user.plays.push(play);
+        user.plays.push(play._id);
         user.queue.push(play);
         await user.save();
         await episode.save();
         await play.save();
-        console.log(slug);
-        return user.queue;
+        const userDetails = await models_1.UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue'
+                }
+            }
+        ]);
+        return userDetails[0].queue;
+    }
+    async addToBeginningOfQueue(slug, context) {
+        const user = await models_1.UserModel.findOne({ username: context.username });
+        TODO: 'Check if the episode is already in the users queue!!!';
+        const episode = await models_1.EpisodeModel.findOne({ slug: slug });
+        const play = new models_1.PlayModel({
+            episode: episode,
+            position: 0,
+            started: false,
+            completed: false
+        });
+        episode.plays.push(play._id);
+        user.plays.push(play._id);
+        user.queue.unshift(play._id);
+        await user.save();
+        await episode.save();
+        await play.save();
+        return play;
+    }
+    async updatePlayerQueue(queue, context) {
+        const user = await models_1.UserModel.findOne({ username: context.username });
+        console.log(queue);
+        const userDeets = await models_1.UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue'
+                }
+            }
+        ]);
+        return userDeets[0].queue;
+    }
+    async changePlayingSpeed(speed, context) {
+        const user = await models_1.UserModel.findOne({ username: context.username });
+        console.log(user.queue);
+        user.playingSpeed = speed;
+        await user.save();
+        return user.playingSpeed;
+    }
+    async updatePosition(playId, position, context) {
+        const play = await models_1.PlayModel.findById(playId);
+        play.position = position;
+        await play.save();
+        const userDeets = await models_1.UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue'
+                }
+            }
+        ]);
+        return userDeets[0].queue[0];
+    }
+    async clearQueue(context) {
+        const user = await models_1.UserModel.findOne({ username: context.username });
+        user.queue = [];
+        await user.save();
+        return [];
     }
 };
 __decorate([
@@ -177,9 +278,8 @@ __decorate([
     type_graphql_1.Mutation(returns => Play_1.Play),
     __param(0, type_graphql_1.Arg('position')),
     __param(1, type_graphql_1.Arg('playId')),
-    __param(2, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, Object]),
+    __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "updatePlayPosition", null);
 __decorate([
@@ -199,6 +299,48 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "addToPlayerQueue", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Play_1.Play, {
+        description: "Adds an episode to a player's queue"
+    }),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "addToBeginningOfQueue", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Play_1.Play),
+    __param(0, type_graphql_1.Arg('queue')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "updatePlayerQueue", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Number),
+    __param(0, type_graphql_1.Arg('speed')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "changePlayingSpeed", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Play_1.Play),
+    __param(0, type_graphql_1.Arg('playId')),
+    __param(1, type_graphql_1.Arg('position')),
+    __param(2, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "updatePosition", null);
+__decorate([
+    type_graphql_1.Mutation(returns => [Play_1.Play]),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "clearQueue", null);
 UserResolver = __decorate([
     type_graphql_1.Resolver(of => User_1.User)
 ], UserResolver);

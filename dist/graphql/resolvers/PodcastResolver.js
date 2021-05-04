@@ -100,21 +100,15 @@ let PodcastResolver = class PodcastResolver {
         return 'generating palettes';
     }
     async getFeatured() {
-        const pods = await Podcast_1.PodcastModel.find({})
-            .limit(7)
-            .skip(110);
+        const pods = await Podcast_1.PodcastModel.aggregate([{ $sample: { size: 7 } }]);
         return pods;
     }
     async getTrending() {
-        const pods = await Podcast_1.PodcastModel.find({})
-            .limit(5)
-            .skip(40);
+        const pods = await Podcast_1.PodcastModel.aggregate([{ $sample: { size: 5 } }]);
         return pods;
     }
     async getTopPlayed() {
-        const pods = await Podcast_1.PodcastModel.find({})
-            .limit(5)
-            .skip(170);
+        const pods = await Podcast_1.PodcastModel.aggregate([{ $sample: { size: 5 } }]);
         return pods;
     }
     async getGenres() {

@@ -67,9 +67,7 @@ export default class EpisodeResolver {
     description: 'Returns the Most Popular Podcast Episodes'
   })
   async topEpisodes (): Promise<Episode[]> {
-    const eps = await EpisodeModel.find({})
-      .limit(5)
-      .skip(120)
+    const eps = await EpisodeModel.aggregate([{ $sample: { size: 5 } }])
     return eps
   }
 }

@@ -69,9 +69,7 @@ let EpisodeResolver = class EpisodeResolver {
         return searchResult;
     }
     async topEpisodes() {
-        const eps = await models_1.EpisodeModel.find({})
-            .limit(5)
-            .skip(120);
+        const eps = await models_1.EpisodeModel.aggregate([{ $sample: { size: 5 } }]);
         return eps;
     }
 };

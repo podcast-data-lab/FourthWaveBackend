@@ -45,7 +45,12 @@ type Locale {
 
 type Mutation {
   """Adds an episode to a player's queue"""
+  addToBeginningOfQueue(slug: String!): Play!
+
+  """Adds an episode to a player's queue"""
   addToPlayerQueue(slug: String!): [Play!]!
+  changePlayingSpeed(speed: Float!): Float!
+  clearQueue: [Play!]!
 
   """Generates the palettes of a podcast based on the podcasts image"""
   generatePalettes(slug: String!): String!
@@ -59,6 +64,8 @@ type Mutation {
   signup(email: String!, firstname: String!, lastname: String, password: String, username: String!): String!
   startPlay(slug: String!): Play!
   updatePlayPosition(playId: Float!, position: Float!): Play!
+  updatePlayerQueue(queue: String!): Play!
+  updatePosition(playId: String!, position: Float!): Play!
 }
 
 type Person {
@@ -69,6 +76,7 @@ type Person {
 }
 
 type Play {
+  _id: String!
   completed: Boolean
 
   """The slug of the epiosde"""

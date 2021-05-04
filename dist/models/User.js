@@ -101,7 +101,7 @@ __decorate([
 ], User.prototype, "plays", void 0);
 __decorate([
     type_graphql_1.Field(type => [Play_1.Play]),
-    typegoose_1.prop({ type: () => Play_1.Play, default: [] }),
+    typegoose_1.prop({ ref: 'Play', default: [] }),
     __metadata("design:type", Array)
 ], User.prototype, "queue", void 0);
 __decorate([
