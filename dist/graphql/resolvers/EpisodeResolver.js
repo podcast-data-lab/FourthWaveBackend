@@ -59,8 +59,17 @@ let EpisodeResolver = class EpisodeResolver {
                     datePublished: 1,
                     duration: 1,
                     podcast: 1,
+                    topics: 1,
                     _id: 0,
                     score: { $meta: 'searchScore' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
                 }
             }
         ]);
@@ -69,7 +78,17 @@ let EpisodeResolver = class EpisodeResolver {
         return searchResult;
     }
     async topEpisodes() {
-        const eps = await models_1.EpisodeModel.aggregate([{ $sample: { size: 5 } }]);
+        const eps = await models_1.EpisodeModel.aggregate([
+            { $sample: { size: 5 } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
         return eps;
     }
 };

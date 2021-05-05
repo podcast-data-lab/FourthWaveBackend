@@ -25,23 +25,44 @@ let PodcastResolver = class PodcastResolver {
         return podcasts;
     }
     async getPodcastEpisodes(slug, page) {
-        const episodes = await models_1.EpisodeModel.find({
-            podcast: slug
-        })
-            .sort({ datePublished: -1 })
-            .skip(15 * page)
-            .limit(15);
+        const episodes = await models_1.EpisodeModel.aggregate([
+            { $match: { podcast: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            },
+            {
+                $skip: 15 * (page + 1)
+            },
+            {
+                $limit: 15
+            }
+        ]);
         return episodes;
     }
     async getPodcast(slug) {
-        const podcast = await Podcast_1.PodcastModel.findOne({ slug: `${slug}` });
-        return podcast;
+        const podcast = await Podcast_1.PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            }
+        ]);
+        return podcast[0];
     }
     async findPodcasts(searchString) {
         const podcasts = await Podcast_1.PodcastModel.aggregate([
             {
                 $search: {
-                    index: 'default',
+                    index: 'podcasts',
                     compound: {
                         should: [
                             {
@@ -87,6 +108,14 @@ let PodcastResolver = class PodcastResolver {
                     _id: 0,
                     score: { $meta: 'searchScore' }
                 }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
             }
         ]);
         return podcasts;
@@ -100,29 +129,70 @@ let PodcastResolver = class PodcastResolver {
         return 'generating palettes';
     }
     async getFeatured() {
-        const pods = await Podcast_1.PodcastModel.aggregate([{ $sample: { size: 7 } }]);
+        const pods = await Podcast_1.PodcastModel.aggregate([
+            { $sample: { size: 7 } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
         return pods;
     }
     async getTrending() {
-        const pods = await Podcast_1.PodcastModel.aggregate([{ $sample: { size: 5 } }]);
+        const pods = await Podcast_1.PodcastModel.aggregate([
+            { $sample: { size: 5 } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
         return pods;
     }
     async getTopPlayed() {
-        const pods = await Podcast_1.PodcastModel.aggregate([{ $sample: { size: 5 } }]);
+        const pods = await Podcast_1.PodcastModel.aggregate([
+            { $sample: { size: 5 } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
         return pods;
-    }
-    async getGenres() {
-        return Podcast_1.PodcastModel.find({}).then(podcasts => {
-            const categories = [];
-            podcasts.forEach(pod => {
-                return pod.categories.forEach(category => {
-                    const indx = categories.indexOf(category);
-                    if (indx == -1)
-                        categories.push(category);
-                });
-            });
-            return categories;
-        });
     }
 };
 __decorate([
@@ -193,14 +263,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PodcastResolver.prototype, "getTopPlayed", null);
-__decorate([
-    type_graphql_1.Query(returns => [String], {
-        description: 'Returns a list of all the genres'
-    }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PodcastResolver.prototype, "getGenres", null);
 PodcastResolver = __decorate([
     type_graphql_1.Resolver(of => Podcast_1.Podcast)
 ], PodcastResolver);

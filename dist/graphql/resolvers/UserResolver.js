@@ -46,6 +46,7 @@ UserSignUpArgs = __decorate([
 ], UserSignUpArgs);
 let UserResolver = class UserResolver {
     async signup({ username, email, firstname, lastname, password }) {
+        console.log(username, email);
         const user = new models_1.UserModel({
             username: username,
             email: email,
@@ -60,7 +61,7 @@ let UserResolver = class UserResolver {
             console.log(error);
             return new graphql_1.GraphQLError(error.message);
         }
-        return JSON.stringify(user);
+        return user;
     }
     async signin(username, password) {
         const user = await authentication_1.authenticateUser(username, password);
@@ -224,6 +225,30 @@ let UserResolver = class UserResolver {
         ]);
         return userDeets[0].queue[0];
     }
+    async completeAndGoToNext(playId, context) {
+        const play = await models_1.PlayModel.findById(playId);
+        play.completed = true;
+        await play.save();
+        const user = await models_1.UserModel.findOne({ username: context.username });
+        if (user.queue.length == 1)
+            user.queue = [];
+        else
+            user.queue.shift();
+        await user.save();
+        const userDeets = await models_1.UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue'
+                }
+            }
+        ]);
+        console.log(userDeets[0].queue);
+        return userDeets[0].queue;
+    }
     async clearQueue(context) {
         const user = await models_1.UserModel.findOne({ username: context.username });
         user.queue = [];
@@ -232,7 +257,7 @@ let UserResolver = class UserResolver {
     }
 };
 __decorate([
-    type_graphql_1.Mutation(returns => String),
+    type_graphql_1.Mutation(returns => User_1.User),
     __param(0, type_graphql_1.Args()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [UserSignUpArgs]),
@@ -342,6 +367,16 @@ __decorate([
     __metadata("design:paramtypes", [String, Number, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "updatePosition", null);
+__decorate([
+    type_graphql_1.Mutation(returns => [Play_1.Play], {
+        description: 'completes the currently playing item and loads the current queue'
+    }),
+    __param(0, type_graphql_1.Arg('playId')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "completeAndGoToNext", null);
 __decorate([
     type_graphql_1.Mutation(returns => [Play_1.Play], {
         description: "Deletes/Clears a user's playing queue"

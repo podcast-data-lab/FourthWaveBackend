@@ -52,8 +52,17 @@ export default class EpisodeResolver {
           datePublished: 1,
           duration: 1,
           podcast: 1,
+          topics: 1,
           _id: 0,
           score: { $meta: 'searchScore' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
         }
       }
     ])
@@ -67,7 +76,17 @@ export default class EpisodeResolver {
     description: 'Returns the Most Popular Podcast Episodes'
   })
   async topEpisodes (): Promise<Episode[]> {
-    const eps = await EpisodeModel.aggregate([{ $sample: { size: 5 } }])
+    const eps = await EpisodeModel.aggregate([
+      { $sample: { size: 5 } },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+    ])
     return eps
   }
 }

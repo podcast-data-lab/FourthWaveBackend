@@ -6,8 +6,9 @@ export class TopicResolver {
   @Query(returns => [Topic], {
     description: 'Returns a list of recommended topics'
   })
-  async getRecommendedTopics (): Promise<Topic[]> {
-    const topics = TopicModel.aggregate()
+  @Query(returns => [Topic])
+  async getTopicSearchRecommendations (): Promise<Topic[]> {
+    const topics = await TopicModel.aggregate([{ $sample: { size: 7 } }])
 
     return topics
   }

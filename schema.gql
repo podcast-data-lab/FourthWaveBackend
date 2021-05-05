@@ -63,6 +63,9 @@ type Mutation {
   """Deletes/Clears a user's playing queue"""
   clearQueue: [Play!]!
 
+  """completes the currently playing item and loads the current queue"""
+  completeAndGoToNext(playId: String!): [Play!]!
+
   """Generates the palettes of a podcast based on the podcasts image"""
   generatePalettes(slug: String!): String!
   rerunPods: String!
@@ -72,7 +75,7 @@ type Mutation {
   signInWithToken: User!
   signin(password: String!, username: String!): User!
   signout: Boolean!
-  signup(email: String!, firstname: String!, lastname: String, password: String, username: String!): String!
+  signup(email: String!, firstname: String!, lastname: String, password: String, username: String!): User!
 
   """Starts the playing of a Play object"""
   startPlay(slug: String!): Play!
@@ -126,13 +129,14 @@ type Query {
 
   """Searches for a podcast based on a search string"""
   findPodcasts(searchString: String!): [Podcast!]!
+
+  """Returns a list of all the genres"""
+  getCategories: [Category!]!
+  getCategorySearchRecommendations: [Category!]!
   getComment: Comment
 
   """Returns the featured podcasts"""
   getFeatured: [Podcast!]!
-
-  """Returns a list of all the genres"""
-  getGenres: [String!]!
 
   """Find a podcast based on it's slug"""
   getPodcast(slug: String!): Podcast!
@@ -143,11 +147,11 @@ type Query {
   """Get all podcasts"""
   getPodcasts(page: Float!): [Podcast!]!
 
-  """Returns a list of recommended topics"""
-  getRecommendedTopics: [Topic!]!
-
   """Returns the Most Played Podcasts"""
   getTopPlayed: [Podcast!]!
+
+  """Returns a list of recommended topics"""
+  getTopicSearchRecommendations: [Topic!]!
 
   """Returns the Trending Podcasts"""
   getTrending: [Podcast!]!

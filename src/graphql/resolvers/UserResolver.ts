@@ -36,10 +36,11 @@ class UserSignUpArgs {
 
 @Resolver(of => User)
 export default class UserResolver {
-  @Mutation(returns => String)
+  @Mutation(returns => User)
   async signup (
     @Args() { username, email, firstname, lastname, password }: UserSignUpArgs
-  ): Promise<string | GraphQLError> {
+  ): Promise<User | GraphQLError> {
+    console.log(username, email)
     const user = new UserModel({
       username: username,
       email: email,
@@ -53,7 +54,7 @@ export default class UserResolver {
       console.log(error)
       return new GraphQLError(error.message)
     }
-    return JSON.stringify(user)
+    return user
   }
 
   @Mutation(returns => User)
@@ -196,6 +197,7 @@ export default class UserResolver {
     episode.plays.push(play._id)
     user.plays.push(play._id)
     user.queue.push(play)
+
     await user.save()
     await episode.save()
     await play.save()
@@ -309,6 +311,39 @@ export default class UserResolver {
     return userDeets[0].queue[0]
   }
 
+  @Mutation(returns => [Play], {
+    description:
+      'completes the currently playing item and loads the current queue'
+  })
+  async completeAndGoToNext (
+    @Arg('playId') playId: string,
+    @Ctx() context
+  ): Promise<Play[]> {
+    const play = await PlayModel.findById(playId)
+    play.completed = true
+
+    await play.save()
+
+    const user = await UserModel.findOne({ username: context.username })
+    if (user.queue.length == 1) user.queue = []
+    else user.queue.shift()
+
+    await user.save()
+    const userDeets = await UserModel.aggregate([
+      { $match: { username: context.username } },
+      {
+        $lookup: {
+          from: 'plays',
+          foreignField: '_id',
+          localField: 'queue',
+          as: 'queue'
+        }
+      }
+    ])
+
+    console.log(userDeets[0].queue)
+    return userDeets[0].queue
+  }
   @Mutation(returns => [Play], {
     description: "Deletes/Clears a user's playing queue"
   })

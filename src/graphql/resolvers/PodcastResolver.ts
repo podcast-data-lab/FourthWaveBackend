@@ -21,12 +21,23 @@ export default class PodcastResolver {
     @Arg('slug') slug: string,
     @Arg('page') page: number
   ): Promise<Episode[]> {
-    const episodes: Episode[] = await EpisodeModel.find({
-      podcast: slug
-    })
-      .sort({ datePublished: -1 })
-      .skip(15 * page)
-      .limit(15)
+    const episodes: Episode[] = await EpisodeModel.aggregate([
+      { $match: { podcast: slug } },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      },
+      {
+        $skip: 15 * (page + 1)
+      },
+      {
+        $limit: 15
+      }
+    ])
     return episodes
   }
 
@@ -34,9 +45,19 @@ export default class PodcastResolver {
     description: "Find a podcast based on it's slug"
   })
   async getPodcast (@Arg('slug') slug: string): Promise<Podcast> {
-    const podcast: Podcast = await PodcastModel.findOne({ slug: `${slug}` })
+    const podcast: Podcast[] = await PodcastModel.aggregate([
+      { $match: { slug: slug } },
+      {
+        $lookup: {
+          from: 'categories',
+          foreignField: '_id',
+          localField: 'categories',
+          as: 'categories'
+        }
+      }
+    ])
 
-    return podcast
+    return podcast[0]
   }
 
   @Query(returns => [Podcast], {
@@ -48,7 +69,7 @@ export default class PodcastResolver {
     const podcasts: Podcast[] = await PodcastModel.aggregate([
       {
         $search: {
-          index: 'default',
+          index: 'podcasts',
           compound: {
             should: [
               {
@@ -94,6 +115,14 @@ export default class PodcastResolver {
           _id: 0,
           score: { $meta: 'searchScore' }
         }
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          foreignField: '_id',
+          localField: 'categories',
+          as: 'categories'
+        }
       }
     ])
 
@@ -116,13 +145,49 @@ export default class PodcastResolver {
 
   @Query(returns => [Podcast], { description: 'Returns the featured podcasts' })
   async getFeatured (): Promise<Podcast[]> {
-    const pods = await PodcastModel.aggregate([{ $sample: { size: 7 } }])
+    const pods = await PodcastModel.aggregate([
+      { $sample: { size: 7 } },
+      {
+        $lookup: {
+          from: 'categories',
+          foreignField: '_id',
+          localField: 'categories',
+          as: 'categories'
+        }
+      },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+    ])
     return pods
   }
 
   @Query(returns => [Podcast], { description: 'Returns the Trending Podcasts' })
   async getTrending (): Promise<Podcast[]> {
-    const pods = await PodcastModel.aggregate([{ $sample: { size: 5 } }])
+    const pods = await PodcastModel.aggregate([
+      { $sample: { size: 5 } },
+      {
+        $lookup: {
+          from: 'categories',
+          foreignField: '_id',
+          localField: 'categories',
+          as: 'categories'
+        }
+      },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+    ])
     return pods
   }
 
@@ -130,24 +195,25 @@ export default class PodcastResolver {
     description: 'Returns the Most Played Podcasts'
   })
   async getTopPlayed (): Promise<Podcast[]> {
-    const pods = await PodcastModel.aggregate([{ $sample: { size: 5 } }])
+    const pods = await PodcastModel.aggregate([
+      { $sample: { size: 5 } },
+      {
+        $lookup: {
+          from: 'categories',
+          foreignField: '_id',
+          localField: 'categories',
+          as: 'categories'
+        }
+      },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+    ])
     return pods
-  }
-
-  @Query(returns => [String], {
-    description: 'Returns a list of all the genres'
-  })
-  async getGenres (): Promise<string[]> {
-    return PodcastModel.find({}).then(podcasts => {
-      const categories = []
-
-      podcasts.forEach(pod => {
-        return pod.categories.forEach(category => {
-          const indx = categories.indexOf(category)
-          if (indx == -1) categories.push(category)
-        })
-      })
-      return categories
-    })
   }
 }
