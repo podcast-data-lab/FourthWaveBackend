@@ -54,7 +54,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    type_graphql_1.Field(),
+    type_graphql_1.Field({ nullable: true }),
     typegoose_1.prop({
         type: String,
         required: true,
@@ -78,7 +78,7 @@ __decorate([
     type_graphql_1.Field(type => [Podcast_1.Podcast]),
     typegoose_1.prop({ ref: 'Podcast', default: [] }),
     __metadata("design:type", Array)
-], User.prototype, "LikedPodcasts", void 0);
+], User.prototype, "likedPodcasts", void 0);
 __decorate([
     type_graphql_1.Field(type => [Podcast_1.Podcast]),
     typegoose_1.prop({ ref: 'Podcast', default: [] }),

@@ -19,6 +19,7 @@ const type_graphql_1 = require("type-graphql");
 const User_1 = require("../../models/User");
 const graphql_1 = require("graphql");
 const Play_1 = require("../../models/Play");
+const Podcast_1 = require("../../models/Podcast");
 let UserSignUpArgs = class UserSignUpArgs {
 };
 __decorate([
@@ -64,7 +65,8 @@ let UserResolver = class UserResolver {
         return user;
     }
     async signin(username, password) {
-        const user = await authentication_1.authenticateUser(username, password);
+        let user = await authentication_1.authenticateUser(username, password);
+        console.log(user);
         return user;
     }
     async signout() {
@@ -80,6 +82,38 @@ let UserResolver = class UserResolver {
                     localField: 'queue',
                     as: 'queue'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'subscribedPodcasts',
+                    as: 'subscribedPodcasts'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'likedPodcasts',
+                    as: 'likedPodcasts'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'likedEpisodes',
+                    as: 'likedEpisodes'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'bookmarkedEpisodes',
+                    as: 'bookmarkedEpisodes'
+                }
             }
         ]);
         TODO: 'Move this sorting work to the database';
@@ -89,13 +123,13 @@ let UserResolver = class UserResolver {
     }
     async setUserVolume(volume, context) {
         console.log(context);
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         user.volume = volume;
         await user.save();
         return volume;
     }
     async startPlay(slug, context) {
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         const episode = await models_1.EpisodeModel.findOne({ slug: slug });
         const play = new models_1.PlayModel({
             episode: Episode_1.Episode,
@@ -139,7 +173,7 @@ let UserResolver = class UserResolver {
         return user[0].queue;
     }
     async addToPlayerQueue(slug, context) {
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         console.log(user.queue);
         const episode = await models_1.EpisodeModel.findOne({ slug: slug });
         const play = new models_1.PlayModel({
@@ -168,7 +202,7 @@ let UserResolver = class UserResolver {
         return userDetails[0].queue;
     }
     async addToBeginningOfQueue(slug, context) {
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         TODO: 'Check if the episode is already in the users queue!!!';
         const episode = await models_1.EpisodeModel.findOne({ slug: slug });
         const play = new models_1.PlayModel({
@@ -186,7 +220,7 @@ let UserResolver = class UserResolver {
         return play;
     }
     async updatePlayerQueue(queue, context) {
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         console.log(queue);
         const userDeets = await models_1.UserModel.aggregate([
             { $match: { username: context.username } },
@@ -202,7 +236,7 @@ let UserResolver = class UserResolver {
         return userDeets[0].queue;
     }
     async changePlayingSpeed(speed, context) {
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         console.log(user.queue);
         user.playingSpeed = speed;
         await user.save();
@@ -229,7 +263,7 @@ let UserResolver = class UserResolver {
         const play = await models_1.PlayModel.findById(playId);
         play.completed = true;
         await play.save();
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         if (user.queue.length == 1)
             user.queue = [];
         else
@@ -250,10 +284,98 @@ let UserResolver = class UserResolver {
         return userDeets[0].queue;
     }
     async clearQueue(context) {
-        const user = await models_1.UserModel.findOne({ username: context.username });
+        const user = context;
         user.queue = [];
         await user.save();
         return [];
+    }
+    async subscribeToPodcast(slug, context) {
+        const podcasts = await Podcast_1.PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+            // { $project: { _id: 1 } }
+        ]);
+        console.log(podcasts[0]);
+        const user = context;
+        user.subscribedPodcasts
+            ? user.subscribedPodcasts.push(podcasts[0]._id)
+            : (user.subscribedPodcasts = [podcasts[0]._id]);
+        await user.save();
+        return podcasts[0];
+    }
+    async likePodcast(slug, context) {
+        const podcast = await Podcast_1.PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
+        const user = context;
+        user.likedPodcasts.push(podcast[0]._id);
+        await user.save();
+        return podcast[0];
+    }
+    async likeEpisode(slug, context) {
+        const episode = await models_1.EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
+        const user = context;
+        user.likedEpisodes.push(episode[0]._id);
+        await user.save();
+        return episode[0];
+    }
+    async bookmarkEpisode(slug, context) {
+        const episode = await models_1.EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
+        const user = context;
+        user.bookmarkedEpisodes.push(episode[0]._id);
+        await user.save();
+        return episode[0];
     }
 };
 __decorate([
@@ -386,6 +508,38 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "clearQueue", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Podcast_1.Podcast),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "subscribeToPodcast", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Podcast_1.Podcast),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "likePodcast", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Episode_1.Episode),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "likeEpisode", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Episode_1.Episode),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "bookmarkEpisode", null);
 UserResolver = __decorate([
     type_graphql_1.Resolver(of => User_1.User)
 ], UserResolver);

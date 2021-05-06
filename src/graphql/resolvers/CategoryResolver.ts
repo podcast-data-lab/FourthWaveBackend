@@ -20,7 +20,9 @@ export default class CategoryResolver {
   }
   @Query(returns => [Category])
   async getCategorySearchRecommendations (): Promise<Category[]> {
-    const categories = await CategoryModel.aggregate([{ $sample: { size: 7 } }])
+    const categories = await CategoryModel.aggregate([
+      { $sample: { size: 10 } }
+    ])
 
     return categories
   }

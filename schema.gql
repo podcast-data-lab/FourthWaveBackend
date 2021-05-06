@@ -56,6 +56,7 @@ type Mutation {
 
   """Adds an episode to a player's queue"""
   addToPlayerQueue(slug: String!): [Play!]!
+  bookmarkEpisode(slug: String!): Episode!
 
   """Changes a user's playing speed"""
   changePlayingSpeed(speed: Float!): Float!
@@ -68,6 +69,8 @@ type Mutation {
 
   """Generates the palettes of a podcast based on the podcasts image"""
   generatePalettes(slug: String!): String!
+  likeEpisode(slug: String!): Episode!
+  likePodcast(slug: String!): Podcast!
   rerunPods: String!
 
   """Sets a user Volume"""
@@ -79,6 +82,7 @@ type Mutation {
 
   """Starts the playing of a Play object"""
   startPlay(slug: String!): Play!
+  subscribeToPodcast(slug: String!): Podcast!
 
   """Updates the play position of a Play object"""
   updatePlayPosition(playId: Float!, position: Float!): Play!
@@ -172,7 +176,6 @@ type Topic {
 }
 
 type User {
-  LikedPodcasts: [Podcast!]!
   active: Boolean!
   admin: Boolean!
   authtoken: String!
@@ -182,7 +185,8 @@ type User {
   firstname: String!
   lastname: String!
   likedEpisodes: [Episode!]!
-  password: String!
+  likedPodcasts: [Podcast!]!
+  password: String
   playingSpeed: Float!
   plays: [Play!]!
   queue: [Play!]!

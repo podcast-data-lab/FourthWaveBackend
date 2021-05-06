@@ -52,7 +52,7 @@ export class User {
   })
   public email: string
 
-  @Field()
+  @Field({ nullable: true })
   @prop({
     type: String,
     required: true,
@@ -72,7 +72,7 @@ export class User {
 
   @Field(type => [Podcast])
   @prop({ ref: 'Podcast', default: [] })
-  public LikedPodcasts: Ref<Podcast>[]
+  public likedPodcasts: Ref<Podcast>[]
 
   @Field(type => [Podcast])
   @prop({ ref: 'Podcast', default: [] })

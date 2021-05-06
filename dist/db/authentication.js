@@ -36,8 +36,9 @@ const authenticateUser = async (username, password) => {
         const token = exports.generateToken(user.username, user.admin);
         user.authtoken = token;
         await user.save();
+        console.log(user);
         const userQueue = user.queue;
-        let userData = await models_1.UserModel.aggregate([
+        let usr = await models_1.UserModel.aggregate([
             { $match: { username: user.username } },
             {
                 $lookup: {
@@ -46,10 +47,50 @@ const authenticateUser = async (username, password) => {
                     localField: 'queue',
                     as: 'queue'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'subscribedPodcasts',
+                    as: 'subscribedPodcasts'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'likedPodcasts',
+                    as: 'likedPodcasts'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'likedEpisodes',
+                    as: 'likedEpisodes'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'bookmarkedEpisodes',
+                    as: 'bookmarkedEpisodes'
+                }
+            },
+            {
+                $project: {
+                    password: 0
+                }
             }
         ]);
-        userData[0].queue = userData[0].queue.sort((a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id));
-        return userData[0];
+        console.log(usr);
+        usr[0].queue = user.queue.sort((a, b) => {
+            return userQueue.indexOf(a._id) - userQueue.indexOf(b._id);
+        });
+        return usr[0];
     }
     catch (error) {
         console.log(error.message);
@@ -75,10 +116,10 @@ exports.generateToken = generateToken;
  * Verifies if a token is valid, otherwise throws an error
  * @param token
  */
-const verifyToken = (token) => {
+const verifyToken = async (token) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        return decoded;
+        return await models_1.UserModel.findOne({ username: decoded.username });
     }
     catch (e) {
         return null;

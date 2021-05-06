@@ -23,6 +23,7 @@ export default class PodcastResolver {
   ): Promise<Episode[]> {
     const episodes: Episode[] = await EpisodeModel.aggregate([
       { $match: { podcast: slug } },
+      { $sort: { datePublished: -1 } },
       {
         $lookup: {
           from: 'topics',
@@ -32,7 +33,7 @@ export default class PodcastResolver {
         }
       },
       {
-        $skip: 15 * (page + 1)
+        $skip: 15 * page
       },
       {
         $limit: 15
@@ -54,6 +55,25 @@ export default class PodcastResolver {
           localField: 'categories',
           as: 'categories'
         }
+      },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      },
+      {
+        $lookup: {
+          from: 'episodes',
+          foreignField: '_id',
+          localField: 'episodes',
+          as: 'episodes'
+        }
+      },
+      {
+        $limit: 10
       }
     ])
 

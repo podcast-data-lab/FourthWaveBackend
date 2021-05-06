@@ -27,6 +27,7 @@ import {
 } from '../graphql/resolvers'
 import { AuthCheckerFn } from '../graphql/AuthChecker'
 import { verifyToken } from '../db/authentication'
+import { User } from '../models/User'
 ;(async () => {
   const schema = await buildSchema({
     resolvers: [
@@ -50,10 +51,9 @@ import { verifyToken } from '../db/authentication'
 
   const server = new ApolloServer({
     schema,
-    context: ({ request, reply }) => {
+    context: async ({ request, reply }): Promise<User> => {
       let token = request.headers.authorization || ''
-      const user = verifyToken(token)
-
+      const user: User = await verifyToken(token)
       return user
     }
   })

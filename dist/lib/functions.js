@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseAndSave = exports.getImagePalettes = void 0;
+exports.shuffle = exports.parseAndSave = exports.getImagePalettes = void 0;
 const Podcast_1 = require("../models/Podcast");
 const imageToBase64 = require('image-to-base64');
 const image2colors = require('image2colors');
@@ -101,3 +101,12 @@ const parseAndSave = async (feed, rss) => {
     return podcast;
 };
 exports.parseAndSave = parseAndSave;
+function shuffle(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+exports.shuffle = shuffle;

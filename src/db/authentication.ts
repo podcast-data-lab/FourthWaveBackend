@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql'
 import jwt from 'jsonwebtoken'
 import { UserModel } from '../models'
+import { Play } from '../models/Play'
 import { User } from '../models/User'
 
 // let conf = require("dotenv").config("../../").parsed;
@@ -42,8 +43,9 @@ export const authenticateUser = async (
     user.authtoken = token
     await user.save()
 
+    console.log(user)
     const userQueue = user.queue
-    let userData = await UserModel.aggregate([
+    let usr: User[] = await UserModel.aggregate([
       { $match: { username: user.username } },
       {
         $lookup: {
@@ -52,14 +54,53 @@ export const authenticateUser = async (
           localField: 'queue',
           as: 'queue'
         }
+      },
+      {
+        $lookup: {
+          from: 'podcasts',
+          foreignField: '_id',
+          localField: 'subscribedPodcasts',
+          as: 'subscribedPodcasts'
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'podcasts',
+          foreignField: '_id',
+          localField: 'likedPodcasts',
+          as: 'likedPodcasts'
+        }
+      },
+      {
+        $lookup: {
+          from: 'episodes',
+          foreignField: '_id',
+          localField: 'likedEpisodes',
+          as: 'likedEpisodes'
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'episodes',
+          foreignField: '_id',
+          localField: 'bookmarkedEpisodes',
+          as: 'bookmarkedEpisodes'
+        }
+      },
+      {
+        $project: {
+          password: 0
+        }
       }
     ])
+    console.log(usr)
+    usr[0].queue = user.queue.sort((a: Play, b: Play) => {
+      return userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
+    })
 
-    userData[0].queue = userData[0].queue.sort(
-      (a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
-    )
-
-    return userData[0]
+    return usr[0]
   } catch (error) {
     console.log(error.message)
     return Error['INCORRECT_PASSWORD']
@@ -88,10 +129,10 @@ export const generateToken = (username, admin): string => {
  * Verifies if a token is valid, otherwise throws an error
  * @param token
  */
-export const verifyToken = (token: string) => {
+export const verifyToken = async (token: string) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    return decoded
+    return await UserModel.findOne({ username: decoded.username })
   } catch (e) {
     return null
   }

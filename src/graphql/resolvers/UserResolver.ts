@@ -15,6 +15,7 @@ import {
 import { User } from '../../models/User'
 import { GraphQLError } from 'graphql'
 import { Play } from '../../models/Play'
+import { Podcast, PodcastModel } from '../../models/Podcast'
 
 @ArgsType()
 class UserSignUpArgs {
@@ -62,7 +63,8 @@ export default class UserResolver {
     @Arg('username') username: string,
     @Arg('password') password: string
   ) {
-    const user: User | Error = await authenticateUser(username, password)
+    let user: User | Error = await authenticateUser(username, password)
+    console.log(user)
 
     return user
   }
@@ -82,6 +84,41 @@ export default class UserResolver {
           foreignField: '_id',
           localField: 'queue',
           as: 'queue'
+        }
+      },
+      {
+        $lookup: {
+          from: 'podcasts',
+          foreignField: '_id',
+          localField: 'subscribedPodcasts',
+          as: 'subscribedPodcasts'
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'podcasts',
+          foreignField: '_id',
+          localField: 'likedPodcasts',
+          as: 'likedPodcasts'
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'episodes',
+          foreignField: '_id',
+          localField: 'likedEpisodes',
+          as: 'likedEpisodes'
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'episodes',
+          foreignField: '_id',
+          localField: 'bookmarkedEpisodes',
+          as: 'bookmarkedEpisodes'
         }
       }
     ])
@@ -105,7 +142,7 @@ export default class UserResolver {
     @Ctx() context
   ): Promise<number> {
     console.log(context)
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
     user.volume = volume
     await user.save()
 
@@ -116,7 +153,7 @@ export default class UserResolver {
     description: 'Starts the playing of a Play object'
   })
   async startPlay (@Arg('slug') slug: string, @Ctx() context): Promise<Play> {
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
 
     const episode = await EpisodeModel.findOne({ slug: slug })
     const play = new PlayModel({
@@ -184,7 +221,7 @@ export default class UserResolver {
     @Arg('slug') slug: string,
     @Ctx() context
   ): Promise<Play[]> {
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
     console.log(user.queue)
     const episode = await EpisodeModel.findOne({ slug: slug })
     const play = new PlayModel({
@@ -224,7 +261,7 @@ export default class UserResolver {
     @Arg('slug') slug: string,
     @Ctx() context
   ): Promise<Play> {
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
 
     TODO: 'Check if the episode is already in the users queue!!!'
     const episode = await EpisodeModel.findOne({ slug: slug })
@@ -250,7 +287,7 @@ export default class UserResolver {
     @Arg('queue') queue: string,
     @Ctx() context
   ): Promise<Play[]> {
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
     console.log(queue)
 
     const userDeets = await UserModel.aggregate([
@@ -275,7 +312,7 @@ export default class UserResolver {
     @Arg('speed') speed: number,
     @Ctx() context
   ): Promise<Number> {
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
     console.log(user.queue)
 
     user.playingSpeed = speed
@@ -324,7 +361,7 @@ export default class UserResolver {
 
     await play.save()
 
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
     if (user.queue.length == 1) user.queue = []
     else user.queue.shift()
 
@@ -348,10 +385,120 @@ export default class UserResolver {
     description: "Deletes/Clears a user's playing queue"
   })
   async clearQueue (@Ctx() context): Promise<Play[]> {
-    const user = await UserModel.findOne({ username: context.username })
+    const user = context
     user.queue = []
     await user.save()
 
     return []
+  }
+
+  @Mutation(returns => Podcast)
+  async subscribeToPodcast (
+    @Arg('slug') slug: string,
+    @Ctx() context
+  ): Promise<Podcast> {
+    const podcasts = await PodcastModel.aggregate([
+      { $match: { slug: slug } },
+      {
+        $lookup: {
+          from: 'categories',
+          foreignField: '_id',
+          localField: 'categories',
+          as: 'categories'
+        }
+      },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+      // { $project: { _id: 1 } }
+    ])
+    console.log(podcasts[0])
+    const user = context
+    user.subscribedPodcasts
+      ? user.subscribedPodcasts.push(podcasts[0]._id)
+      : (user.subscribedPodcasts = [podcasts[0]._id])
+    await user.save()
+    return podcasts[0]
+  }
+
+  @Mutation(returns => Podcast)
+  async likePodcast (
+    @Arg('slug') slug: string,
+    @Ctx() context
+  ): Promise<Podcast> {
+    const podcast = await PodcastModel.aggregate([
+      { $match: { slug: slug } },
+      {
+        $lookup: {
+          from: 'categories',
+          foreignField: '_id',
+          localField: 'categories',
+          as: 'categories'
+        }
+      },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+    ])
+    const user = context
+    user.likedPodcasts.push(podcast[0]._id)
+    await user.save()
+    return podcast[0]
+  }
+
+  @Mutation(returns => Episode)
+  async likeEpisode (
+    @Arg('slug') slug: string,
+    @Ctx() context
+  ): Promise<Episode> {
+    const episode = await EpisodeModel.aggregate([
+      { $match: { slug: slug } },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+    ])
+
+    const user = context
+    user.likedEpisodes.push(episode[0]._id)
+    await user.save()
+    return episode[0]
+  }
+
+  @Mutation(returns => Episode)
+  async bookmarkEpisode (
+    @Arg('slug') slug: string,
+    @Ctx() context
+  ): Promise<Episode> {
+    const episode = await EpisodeModel.aggregate([
+      { $match: { slug: slug } },
+      {
+        $lookup: {
+          from: 'topics',
+          foreignField: '_id',
+          localField: 'topics',
+          as: 'topics'
+        }
+      }
+    ])
+
+    const user = context
+    user.bookmarkedEpisodes.push(episode[0]._id)
+    await user.save()
+    return episode[0]
   }
 }

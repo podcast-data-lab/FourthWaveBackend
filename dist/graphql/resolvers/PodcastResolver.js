@@ -27,6 +27,7 @@ let PodcastResolver = class PodcastResolver {
     async getPodcastEpisodes(slug, page) {
         const episodes = await models_1.EpisodeModel.aggregate([
             { $match: { podcast: slug } },
+            { $sort: { datePublished: -1 } },
             {
                 $lookup: {
                     from: 'topics',
@@ -36,7 +37,7 @@ let PodcastResolver = class PodcastResolver {
                 }
             },
             {
-                $skip: 15 * (page + 1)
+                $skip: 15 * page
             },
             {
                 $limit: 15
@@ -54,6 +55,25 @@ let PodcastResolver = class PodcastResolver {
                     localField: 'categories',
                     as: 'categories'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'episodes',
+                    as: 'episodes'
+                }
+            },
+            {
+                $limit: 10
             }
         ]);
         return podcast[0];

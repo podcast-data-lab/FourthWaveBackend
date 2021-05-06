@@ -38,9 +38,9 @@ const authentication_1 = require("../db/authentication");
     const app = fastify_1.default();
     const server = new apollo_server_fastify_1.ApolloServer({
         schema,
-        context: ({ request, reply }) => {
+        context: async ({ request, reply }) => {
             let token = request.headers.authorization || '';
-            const user = authentication_1.verifyToken(token);
+            const user = await authentication_1.verifyToken(token);
             return user;
         }
     });
