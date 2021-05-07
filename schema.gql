@@ -83,6 +83,10 @@ type Mutation {
   """Starts the playing of a Play object"""
   startPlay(slug: String!): Play!
   subscribeToPodcast(slug: String!): Podcast!
+  unbookmarkEpisode(slug: String!): Episode!
+  unlikeEpisode(slug: String!): Episode!
+  unlikePodcast(slug: String!): Podcast!
+  unsubscribeToPodcast(slug: String!): Podcast!
 
   """Updates the play position of a Play object"""
   updatePlayPosition(playId: Float!, position: Float!): Play!

@@ -377,6 +377,96 @@ let UserResolver = class UserResolver {
         await user.save();
         return episode[0];
     }
+    // UNDO AN ACTION
+    async unsubscribeToPodcast(slug, context) {
+        const podcasts = await Podcast_1.PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+            // { $project: { _id: 1 } }
+        ]);
+        const user = context;
+        const indx = user.subscribedPodcasts.findIndex(podcast_id => podcast_id == podcasts[0]._id);
+        user.subscribedPodcasts.splice(indx, 1);
+        await user.save();
+        return podcasts[0];
+    }
+    async unlikePodcast(slug, context) {
+        const podcasts = await Podcast_1.PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
+        const user = context;
+        const indx = user.subscribedPodcasts.findIndex(podcast_id => podcast_id == podcasts[0]._id);
+        user.subscribedPodcasts.splice(indx, 1);
+        await user.save();
+        return podcasts[0];
+    }
+    async unlikeEpisode(slug, context) {
+        const episodes = await models_1.EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
+        const user = context;
+        const indx = user.likedEpisodes.findIndex(episode_id => episode_id == episodes[0]._id);
+        user.likedEpisodes.splice(indx, 1);
+        await user.save();
+        return episodes[0];
+    }
+    async unbookmarkEpisode(slug, context) {
+        const episodes = await models_1.EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics'
+                }
+            }
+        ]);
+        const user = context;
+        const indx = user.bookmarkedEpisodes.findIndex(episode_id => episode_id == episodes[0]._id);
+        user.bookmarkedEpisodes.splice(indx, 1);
+        await user.save();
+        return episodes[0];
+    }
 };
 __decorate([
     type_graphql_1.Mutation(returns => User_1.User),
@@ -540,6 +630,38 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "bookmarkEpisode", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Podcast_1.Podcast),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "unsubscribeToPodcast", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Podcast_1.Podcast),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "unlikePodcast", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Episode_1.Episode),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "unlikeEpisode", null);
+__decorate([
+    type_graphql_1.Mutation(returns => Episode_1.Episode),
+    __param(0, type_graphql_1.Arg('slug')),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "unbookmarkEpisode", null);
 UserResolver = __decorate([
     type_graphql_1.Resolver(of => User_1.User)
 ], UserResolver);
