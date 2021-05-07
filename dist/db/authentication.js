@@ -14,7 +14,7 @@ const models_1 = require("../models");
  * @param password
  * @returns null if a user can't be authenticated, the email and token if otherwise
  */
-exports.authenticateUser = async (username, password) => {
+const authenticateUser = async (username, password) => {
     try {
         // Verify the Use
         let user = await models_1.UserModel.findOne({
@@ -36,7 +36,6 @@ exports.authenticateUser = async (username, password) => {
         const token = exports.generateToken(user.username, user.admin);
         user.authtoken = token;
         await user.save();
-        console.log(user);
         const userQueue = user.queue;
         let usr = await models_1.UserModel.aggregate([
             { $match: { username: user.username } },
@@ -86,7 +85,6 @@ exports.authenticateUser = async (username, password) => {
                 }
             }
         ]);
-        console.log(usr);
         usr[0].queue = user.queue.sort((a, b) => {
             return userQueue.indexOf(a._id) - userQueue.indexOf(b._id);
         });
@@ -97,12 +95,13 @@ exports.authenticateUser = async (username, password) => {
         return Error['INCORRECT_PASSWORD'];
     }
 };
+exports.authenticateUser = authenticateUser;
 /**
  * Generates a JWT Token
  * @param email
  * @param password
  */
-exports.generateToken = (username, admin) => {
+const generateToken = (username, admin) => {
     const token = jsonwebtoken_1.default.sign({
         username: username,
         admin: admin,
@@ -110,11 +109,12 @@ exports.generateToken = (username, admin) => {
     }, process.env.JWT_SECRET, { expiresIn: '24h' });
     return token;
 };
+exports.generateToken = generateToken;
 /**
  * Verifies if a token is valid, otherwise throws an error
  * @param token
  */
-exports.verifyToken = async (token) => {
+const verifyToken = async (token) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         return await models_1.UserModel.findOne({ username: decoded.username });
@@ -123,11 +123,12 @@ exports.verifyToken = async (token) => {
         return null;
     }
 };
+exports.verifyToken = verifyToken;
 /**
  * Retrieves an authenticated user if a token is valid
  * @param token
  */
-exports.getAuthenticatedUser = async (token) => {
+const getAuthenticatedUser = async (token) => {
     try {
         let decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         let user = await models_1.UserModel.find({ email: decoded.email });
@@ -138,7 +139,8 @@ exports.getAuthenticatedUser = async (token) => {
         return null;
     }
 };
-exports.resetPassword = async (email) => {
+exports.getAuthenticatedUser = getAuthenticatedUser;
+const resetPassword = async (email) => {
     // try {
     //   let user = await UserModel.findOne({ email: email })
     //   let random = Math.floor(Math.random() * passes.length)
@@ -151,8 +153,10 @@ exports.resetPassword = async (email) => {
     //   return [null, null]
     // }
 };
-exports.genPassword = async (email) => {
+exports.resetPassword = resetPassword;
+const genPassword = async (email) => {
     // let random = Math.floor(Math.random() * passes.length)
     // let randomPass = passes[random]
     // return randomPass
 };
+exports.genPassword = genPassword;

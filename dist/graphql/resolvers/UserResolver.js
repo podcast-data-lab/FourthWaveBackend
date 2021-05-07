@@ -47,7 +47,6 @@ UserSignUpArgs = __decorate([
 ], UserSignUpArgs);
 let UserResolver = class UserResolver {
     async signup({ username, email, firstname, lastname, password }) {
-        console.log(username, email);
         const user = new models_1.UserModel({
             username: username,
             email: email,
@@ -59,14 +58,12 @@ let UserResolver = class UserResolver {
             await user.save();
         }
         catch (error) {
-            console.log(error);
             return new graphql_1.GraphQLError(error.message);
         }
         return user;
     }
     async signin(username, password) {
         let user = await authentication_1.authenticateUser(username, password);
-        console.log(user);
         return user;
     }
     async signout() {
@@ -122,7 +119,6 @@ let UserResolver = class UserResolver {
         return user[0];
     }
     async setUserVolume(volume, context) {
-        console.log(context);
         const user = context;
         user.volume = volume;
         await user.save();
@@ -174,7 +170,6 @@ let UserResolver = class UserResolver {
     }
     async addToPlayerQueue(slug, context) {
         const user = context;
-        console.log(user.queue);
         const episode = await models_1.EpisodeModel.findOne({ slug: slug });
         const play = new models_1.PlayModel({
             episode: episode,
@@ -221,7 +216,6 @@ let UserResolver = class UserResolver {
     }
     async updatePlayerQueue(queue, context) {
         const user = context;
-        console.log(queue);
         const userDeets = await models_1.UserModel.aggregate([
             { $match: { username: context.username } },
             {
@@ -237,7 +231,6 @@ let UserResolver = class UserResolver {
     }
     async changePlayingSpeed(speed, context) {
         const user = context;
-        console.log(user.queue);
         user.playingSpeed = speed;
         await user.save();
         return user.playingSpeed;
@@ -310,7 +303,6 @@ let UserResolver = class UserResolver {
             }
             // { $project: { _id: 1 } }
         ]);
-        console.log(podcasts[0]);
         const user = context;
         user.subscribedPodcasts
             ? user.subscribedPodcasts.push(podcasts[0]._id)

@@ -6,7 +6,7 @@ exports.AuthCheckerFn = void 0;
  * @param { root, arguments, context, info }
  * @param roles
  */
-exports.AuthCheckerFn = ({ root, args, context, info }, roles) => {
+const AuthCheckerFn = ({ root, args, context, info }, roles) => {
     // If no roles are required
     if (roles.length == 0) {
         return true;
@@ -28,3 +28,4 @@ exports.AuthCheckerFn = ({ root, args, context, info }, roles) => {
     // If none of the above checks pass
     return false; // or false if access id denied
 };
+exports.AuthCheckerFn = AuthCheckerFn;

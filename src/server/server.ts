@@ -98,7 +98,7 @@ import { User } from '../models/User'
     endpointURL: '/graphql'
   })
 
-  var PORT = process.env.PORT || 80
+  var PORT = process.env.PORT || 8000
 
   app.listen(PORT, () => {
     console.log(`api listening on port ${PORT}`)

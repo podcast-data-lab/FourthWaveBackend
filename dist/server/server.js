@@ -81,7 +81,7 @@ const authentication_1 = require("../db/authentication");
         baseURL: '/altair/',
         endpointURL: '/graphql'
     });
-    const PORT = +process.env.PORT || 6500;
+    var PORT = process.env.PORT || 8000;
     app.listen(PORT, () => {
         console.log(`api listening on port ${PORT}`);
     });

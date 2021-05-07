@@ -32,10 +32,8 @@ const generatedPodcasts = (podcast_list) => {
     podcast_list.forEach(async (rss) => {
         try {
             const feed = await parser.parseURL(rss);
-            // console.log(feed)
             functions_1.parseAndSave(feed, rss);
             // const topics = await findNamedEntities(podcast.description)
-            // // console.log(topics)
             // let topicList = []
             // for (let topic in topics) {
             //   const newTopic = {
@@ -45,7 +43,6 @@ const generatedPodcasts = (podcast_list) => {
             //   topicList.push(newTopic)
             // }
             // podcast.topics = topicList
-            // console.log(`Processed ${podcast.title}`)
         }
         catch (error) {
             console.log(`error processing: ${rss}. Error: ${error.message}`);
@@ -57,7 +54,6 @@ function work() {
 }
 exports.work = work;
 function registerPodcasts(podcasts) {
-    console.log(podcasts);
     podcasts.forEach(pod => {
         const podcast = new Podcast_1.PodcastModel({
             title: pod.title,

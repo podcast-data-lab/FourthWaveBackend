@@ -13,8 +13,7 @@ const type_graphql_1 = require("type-graphql");
 const Locale_1 = require("../../models/Locale");
 let LocationResolver = class LocationResolver {
     print() {
-        console.log("here");
-        return "Hello";
+        return 'Hello';
     }
 };
 __decorate([
@@ -24,6 +23,6 @@ __decorate([
     __metadata("design:returntype", String)
 ], LocationResolver.prototype, "print", null);
 LocationResolver = __decorate([
-    type_graphql_1.Resolver((of) => Locale_1.Locale)
+    type_graphql_1.Resolver(of => Locale_1.Locale)
 ], LocationResolver);
 exports.default = LocationResolver;

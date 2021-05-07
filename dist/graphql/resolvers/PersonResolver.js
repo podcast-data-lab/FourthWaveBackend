@@ -13,8 +13,7 @@ const type_graphql_1 = require("type-graphql");
 const Person_1 = require("../../models/Person");
 let PersonResolver = class PersonResolver {
     print() {
-        console.log("here");
-        return "Hello";
+        return 'Hello';
     }
 };
 __decorate([
@@ -24,6 +23,6 @@ __decorate([
     __metadata("design:returntype", String)
 ], PersonResolver.prototype, "print", null);
 PersonResolver = __decorate([
-    type_graphql_1.Resolver((of) => Person_1.Person)
+    type_graphql_1.Resolver(of => Person_1.Person)
 ], PersonResolver);
 exports.default = PersonResolver;
