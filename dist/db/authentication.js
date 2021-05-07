@@ -85,9 +85,10 @@ const authenticateUser = async (username, password) => {
                 }
             }
         ]);
-        usr[0].queue = user.queue.sort((a, b) => {
+        usr[0].queue = usr[0].queue.sort((a, b) => {
             return userQueue.indexOf(a._id) - userQueue.indexOf(b._id);
         });
+        console.log(usr[0].queue);
         return usr[0];
     }
     catch (error) {

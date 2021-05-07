@@ -16,7 +16,7 @@ import { User } from '../models/User'
 export const authenticateUser = async (
   username,
   password
-): Promise<User | Error> => {
+): Promise<User | GraphQLError> => {
   try {
     // Verify the Use
     let user = await UserModel.findOne({
@@ -94,9 +94,10 @@ export const authenticateUser = async (
         }
       }
     ])
-    usr[0].queue = user.queue.sort((a: Play, b: Play) => {
+    usr[0].queue = usr[0].queue.sort((a: Play, b: Play) => {
       return userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
     })
+    console.log(usr[0].queue)
 
     return usr[0]
   } catch (error) {

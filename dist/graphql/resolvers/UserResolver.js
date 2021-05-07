@@ -60,13 +60,16 @@ let UserResolver = class UserResolver {
         catch (error) {
             return new graphql_1.GraphQLError(error.message);
         }
-        return user;
+        return await authentication_1.authenticateUser(username, password);
     }
     async signin(username, password) {
         let user = await authentication_1.authenticateUser(username, password);
         return user;
     }
-    async signout() {
+    async signout(context) {
+        const user = context;
+        user.authtoken = '';
+        await user.save();
         return true;
     }
     async signInWithToken(context) {
@@ -477,8 +480,9 @@ __decorate([
 ], UserResolver.prototype, "signin", null);
 __decorate([
     type_graphql_1.Mutation(returns => Boolean),
+    __param(0, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "signout", null);
 __decorate([

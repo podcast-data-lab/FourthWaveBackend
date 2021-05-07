@@ -53,7 +53,7 @@ export default class UserResolver {
     } catch (error) {
       return new GraphQLError(error.message)
     }
-    return user
+    return await authenticateUser(username, password)
   }
 
   @Mutation(returns => User)
@@ -67,7 +67,10 @@ export default class UserResolver {
   }
 
   @Mutation(returns => Boolean)
-  async signout () {
+  async signout (@Ctx() context) {
+    const user = context
+    user.authtoken = ''
+    await user.save()
     return true
   }
 

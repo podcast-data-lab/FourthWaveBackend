@@ -61,32 +61,23 @@ const authentication_1 = require("../db/authentication");
             cb(new Error('Not allowed'));
         }
     });
-    // app.register(require("fastify-cors"), {
-    //   origin: (origin, cb) => {
-    //     if (/localhost/.test(origin) || !origin) {
-    //       //  Request from localhost will pass
-    //       cb(null, true);
-    //       return;
-    //     }
-    //     if (checkAllowedOrigins(origin)) {
-    //       cb(null, true);
-    //       return;
-    //     }
-    //     // Generate an error on other origins, disabling access
-    //     cb(new Error("Not allowed"));
-    //   },
-    // });
     app.register(AltairFastify, {
         path: '/altair',
         baseURL: '/altair/',
         endpointURL: '/graphql'
     });
-    var PORT = process.env.PORT || 8000;
-    app.listen(PORT, () => {
-        console.log(`api listening on port ${PORT}`);
+    const host = '0.0.0.0';
+    const port = process.env.PORT || 6500;
+    app.listen(port, host, () => {
+        console.log(`api listening on port some port if not 6500`);
     });
 })();
 function checkAllowedOrigins(origin) {
-    console.log(origin);
-    return false;
+    const allowedOrigins = [
+        'https://onthistopic.firebaseapp.com',
+        'https://onthistopic.web.app'
+    ];
+    // if (allowedOrigins.includes(origin)) return true
+    // else return true
+    return true;
 }
