@@ -12,7 +12,6 @@ export const getImagePalettes = async podcast => {
   console.log(`coloring:  ${podcast.title}...`)
 
   const imageBase64 = await imageToBase64(podcast.image)
-  // console.log(imageBase64)
   const stuff = image2colors(
     {
       image: `data:image/jpg;base64, ${imageBase64}`,

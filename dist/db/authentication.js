@@ -14,7 +14,7 @@ const models_1 = require("../models");
  * @param password
  * @returns null if a user can't be authenticated, the email and token if otherwise
  */
-const authenticateUser = async (username, password) => {
+exports.authenticateUser = async (username, password) => {
     try {
         // Verify the Use
         let user = await models_1.UserModel.findOne({
@@ -97,13 +97,12 @@ const authenticateUser = async (username, password) => {
         return Error['INCORRECT_PASSWORD'];
     }
 };
-exports.authenticateUser = authenticateUser;
 /**
  * Generates a JWT Token
  * @param email
  * @param password
  */
-const generateToken = (username, admin) => {
+exports.generateToken = (username, admin) => {
     const token = jsonwebtoken_1.default.sign({
         username: username,
         admin: admin,
@@ -111,12 +110,11 @@ const generateToken = (username, admin) => {
     }, process.env.JWT_SECRET, { expiresIn: '24h' });
     return token;
 };
-exports.generateToken = generateToken;
 /**
  * Verifies if a token is valid, otherwise throws an error
  * @param token
  */
-const verifyToken = async (token) => {
+exports.verifyToken = async (token) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         return await models_1.UserModel.findOne({ username: decoded.username });
@@ -125,12 +123,11 @@ const verifyToken = async (token) => {
         return null;
     }
 };
-exports.verifyToken = verifyToken;
 /**
  * Retrieves an authenticated user if a token is valid
  * @param token
  */
-const getAuthenticatedUser = async (token) => {
+exports.getAuthenticatedUser = async (token) => {
     try {
         let decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
         let user = await models_1.UserModel.find({ email: decoded.email });
@@ -141,8 +138,7 @@ const getAuthenticatedUser = async (token) => {
         return null;
     }
 };
-exports.getAuthenticatedUser = getAuthenticatedUser;
-const resetPassword = async (email) => {
+exports.resetPassword = async (email) => {
     // try {
     //   let user = await UserModel.findOne({ email: email })
     //   let random = Math.floor(Math.random() * passes.length)
@@ -155,10 +151,8 @@ const resetPassword = async (email) => {
     //   return [null, null]
     // }
 };
-exports.resetPassword = resetPassword;
-const genPassword = async (email) => {
+exports.genPassword = async (email) => {
     // let random = Math.floor(Math.random() * passes.length)
     // let randomPass = passes[random]
     // return randomPass
 };
-exports.genPassword = genPassword;

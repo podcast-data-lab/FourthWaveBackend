@@ -6,7 +6,7 @@ const imageToBase64 = require('image-to-base64');
 const image2colors = require('image2colors');
 const rgbHex = require('rgb-hex');
 const models_1 = require("../models");
-const getImagePalettes = async (podcast) => {
+exports.getImagePalettes = async (podcast) => {
     console.log(`coloring:  ${podcast.title}...`);
     const imageBase64 = await imageToBase64(podcast.image);
     // console.log(imageBase64)
@@ -29,9 +29,8 @@ const getImagePalettes = async (podcast) => {
         }
     });
 };
-exports.getImagePalettes = getImagePalettes;
 var slug = require('slug');
-const parseAndSave = async (feed, rss) => {
+exports.parseAndSave = async (feed, rss) => {
     var _a, _b, _c, _d, _e, _f;
     let imageBase64;
     try {
@@ -100,7 +99,6 @@ const parseAndSave = async (feed, rss) => {
     });
     return podcast;
 };
-exports.parseAndSave = parseAndSave;
 function shuffle(array) {
     for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));

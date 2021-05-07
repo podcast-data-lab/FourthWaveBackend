@@ -1,12 +1,11 @@
-import { Query, Resolver } from "type-graphql";
+import { Query, Resolver } from 'type-graphql'
 
-import { Person } from "../../models/Person";
+import { Person } from '../../models/Person'
 
-@Resolver((of) => Person)
+@Resolver(of => Person)
 export default class PersonResolver {
   @Query()
-  print(): String {
-    console.log("here");
-    return "Hello";
+  print (): String {
+    return 'Hello'
   }
 }

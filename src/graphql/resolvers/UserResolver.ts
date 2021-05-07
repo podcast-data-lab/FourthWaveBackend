@@ -41,7 +41,6 @@ export default class UserResolver {
   async signup (
     @Args() { username, email, firstname, lastname, password }: UserSignUpArgs
   ): Promise<User | GraphQLError> {
-    console.log(username, email)
     const user = new UserModel({
       username: username,
       email: email,
@@ -52,7 +51,6 @@ export default class UserResolver {
     try {
       await user.save()
     } catch (error) {
-      console.log(error)
       return new GraphQLError(error.message)
     }
     return user
@@ -64,7 +62,6 @@ export default class UserResolver {
     @Arg('password') password: string
   ) {
     let user: User | Error = await authenticateUser(username, password)
-    console.log(user)
 
     return user
   }
@@ -141,7 +138,6 @@ export default class UserResolver {
     @Arg('volume') volume: number,
     @Ctx() context
   ): Promise<number> {
-    console.log(context)
     const user = context
     user.volume = volume
     await user.save()
@@ -222,7 +218,6 @@ export default class UserResolver {
     @Ctx() context
   ): Promise<Play[]> {
     const user = context
-    console.log(user.queue)
     const episode = await EpisodeModel.findOne({ slug: slug })
     const play = new PlayModel({
       episode: episode,
@@ -288,7 +283,6 @@ export default class UserResolver {
     @Ctx() context
   ): Promise<Play[]> {
     const user = context
-    console.log(queue)
 
     const userDeets = await UserModel.aggregate([
       { $match: { username: context.username } },
@@ -313,7 +307,6 @@ export default class UserResolver {
     @Ctx() context
   ): Promise<Number> {
     const user = context
-    console.log(user.queue)
 
     user.playingSpeed = speed
     await user.save()
@@ -417,7 +410,6 @@ export default class UserResolver {
       }
       // { $project: { _id: 1 } }
     ])
-    console.log(podcasts[0])
     const user = context
     user.subscribedPodcasts
       ? user.subscribedPodcasts.push(podcasts[0]._id)

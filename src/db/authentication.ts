@@ -43,7 +43,6 @@ export const authenticateUser = async (
     user.authtoken = token
     await user.save()
 
-    console.log(user)
     const userQueue = user.queue
     let usr: User[] = await UserModel.aggregate([
       { $match: { username: user.username } },
@@ -95,7 +94,6 @@ export const authenticateUser = async (
         }
       }
     ])
-    console.log(usr)
     usr[0].queue = user.queue.sort((a: Play, b: Play) => {
       return userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
     })
