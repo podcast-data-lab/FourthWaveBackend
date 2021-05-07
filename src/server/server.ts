@@ -76,21 +76,6 @@ import { User } from '../models/User'
       cb(new Error('Not allowed'))
     }
   })
-  // app.register(require("fastify-cors"), {
-  //   origin: (origin, cb) => {
-  //     if (/localhost/.test(origin) || !origin) {
-  //       //  Request from localhost will pass
-  //       cb(null, true);
-  //       return;
-  //     }
-  //     if (checkAllowedOrigins(origin)) {
-  //       cb(null, true);
-  //       return;
-  //     }
-  //     // Generate an error on other origins, disabling access
-  //     cb(new Error("Not allowed"));
-  //   },
-  // });
 
   app.register(AltairFastify, {
     path: '/altair',
@@ -99,7 +84,7 @@ import { User } from '../models/User'
   })
 
   const host = '0.0.0.0'
-  const port = process.env.PORT || 3000
+  const port = process.env.PORT || 6500
 
   app.listen(port, host, () => {
     console.log(`api listening on port some port if not 6500`)
@@ -107,6 +92,11 @@ import { User } from '../models/User'
 })()
 
 function checkAllowedOrigins (origin: string): boolean {
-  console.log(origin)
-  return false
+  const allowedOrigins = [
+    'https://onthistopic.firebaseapp.com',
+    'https://onthistopic.web.app'
+  ]
+  // if (allowedOrigins.includes(origin)) return true
+  // else return true
+  return true
 }
