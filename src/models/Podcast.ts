@@ -52,6 +52,17 @@ export class Podcast {
   @prop({ type: () => Date })
   lastRssBuildDate: Date
 
+  @Field(type => Number, { nullable: true })
+  @prop({ type: () => Number })
+  frequency: number
+
+  @Field(type => Number, { nullable: true })
+  @prop({ type: () => Number })
+  releaseDay: number
+
+  @Field(type => Date, { nullable: true })
+  @prop({ type: () => Date })
+  lastEpisodeDate: Date
   @Field()
   @prop({
     type: String,

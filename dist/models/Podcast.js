@@ -66,6 +66,21 @@ __decorate([
     __metadata("design:type", Date)
 ], Podcast.prototype, "lastRssBuildDate", void 0);
 __decorate([
+    type_graphql_1.Field(type => Number, { nullable: true }),
+    typegoose_1.prop({ type: () => Number }),
+    __metadata("design:type", Number)
+], Podcast.prototype, "frequency", void 0);
+__decorate([
+    type_graphql_1.Field(type => Number, { nullable: true }),
+    typegoose_1.prop({ type: () => Number }),
+    __metadata("design:type", Number)
+], Podcast.prototype, "releaseDay", void 0);
+__decorate([
+    type_graphql_1.Field(type => Date, { nullable: true }),
+    typegoose_1.prop({ type: () => Date }),
+    __metadata("design:type", Date)
+], Podcast.prototype, "lastEpisodeDate", void 0);
+__decorate([
     type_graphql_1.Field(),
     typegoose_1.prop({
         type: String,

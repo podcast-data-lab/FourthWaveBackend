@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const slug = require("slug");
+const { getFrequency, getReleaseDay } = require("./functions");
 require("./db/db");
 const Podcast = mongoose.model("Podcast");
 const Episode = mongoose.model("Episode");
@@ -24,6 +25,7 @@ const results = Promise.all(
       } else {
         lastRssbuild = new Date(pod.lastUpdate);
       }
+      console.log(pod.title);
       const podcast = new Podcast({
         title: pod.title,
         publisher: pod.publisher,
@@ -37,6 +39,9 @@ const results = Promise.all(
         slug: pod.slug,
         topics: [],
         episodes: [],
+        lastEpisodeDate: pod["episodes"][0].datePublished,
+        frequency: getFrequency(pod["episodes"].slice(0, 22)),
+        releaseDay: getReleaseDay(pod["episodes"].slice(0, 22)),
       });
       if (!!pod.categories) {
         console.log(pod.categories);
@@ -104,23 +109,6 @@ const results = Promise.all(
           locations: [],
           topics: [],
         });
-        // for (let type in ep.topics) {
-        //   ep.topics[type].map(async (topic) => {
-        //     const _slug = slug(topic);
-        //     let currTopic = await Topic.findOne({ slug: slug });
-        //     if (!currTopic) {
-        //       currTopic = new Topic({
-        //         type: type,
-        //         name: topic,
-        //         slug: _slug,
-        //       });
-        //     }
-
-        //     newEp.topics.push(currTopic._id);
-        //     currTopic.episodes.push(newEp._id);
-        //     await currTopic.save();
-        //   });
-        // }
         for (let type in ep.topics) {
           ep.topics[type].map(async (topic) => {
             const _slug = slug(topic);
@@ -162,8 +150,12 @@ const results = Promise.all(
 results.then((podcasts) => {
   const save = Promise.all([
     ...podcasts.map((podcast) => {
-      console.log(`saved ${podcast.title}`);
-      return podcast.save();
+      try {
+        console.log(`saved ${podcast.title}`);
+        return podcast.save();
+      } catch (error) {
+        console.log(error.message);
+      }
     }),
     ...categories.map((category) => {
       console.log(`  --> saved ${category.title}`);

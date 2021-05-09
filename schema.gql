@@ -120,11 +120,14 @@ type Podcast {
   categories: [Category!]
   description: String!
   episodes: [String!]
+  frequency: Float
   image: String!
+  lastEpisodeDate: DateTime
   lastRssBuildDate: DateTime
   link: String
   palette: [String!]!
   publisher: String
+  releaseDay: Float
   rssFeed: String
   slug: String!
   title: String!
