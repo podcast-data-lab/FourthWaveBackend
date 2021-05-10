@@ -46,6 +46,7 @@
     "mongodb": "^3.6.3",
     "mongoose": "5.10.18",
     "ner-promise": "^1.0.1",
+    "node-fetch": "^2.6.1",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
@@ -53,7 +54,8 @@
     "rss-parser": "^3.9.0",
     "slug": "^5.0.0",
     "type-graphql": "^1.1.1",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "unsplash-js": "^7.0.11"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",

@@ -160,6 +160,7 @@ type Query {
 
   """Returns the Most Played Podcasts"""
   getTopPlayed: [Podcast!]!
+  getTopicCoverPhoto(title: String!): String!
 
   """Returns a list of recommended topics"""
   getTopicSearchRecommendations: [Topic!]!
