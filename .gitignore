@@ -2,4 +2,6 @@ node_modules
 src/config.json
 users.json
 .env
+# Production files
 dist
+dist/*
