@@ -81,9 +81,9 @@ export class Podcast {
   @prop({ ref: 'Topic', nullable: true })
   public topics?: Ref<Topic>[]
 
-  @Field(type => [String], { nullable: true })
-  @prop({ type: () => [mongoose.Types.ObjectId], default: [] })
-  episodes: mongoose.Types.ObjectId[]
+  @Field(type => [Episode], { nullable: true })
+  @prop({ ref: 'Episode', default: [] })
+  episodes: Ref<Episode>[]
 }
 
 export const PodcastModel = getModelForClass(Podcast)

@@ -40,7 +40,7 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
           podcasts: [podcast._id]
         })
       } else {
-        category.podcasts.push(podcast._id)
+        category.podcasts.push(podcast)
       }
       await category.save()
       podcast.categories.push(category)
@@ -57,11 +57,11 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
           topic = new TopicModel({
             type,
             name,
-            podcasts: [podcast.id]
+            podcasts: [podcast]
           })
           await topic.save()
         }
-        topicsList.push(topic._id)
+        topicsList.push(topic)
       }
     }
     podcast.topics = topicsList
@@ -88,7 +88,7 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
           slug: `${podcast.slug}/${slugify(_episode?.title ?? (_episode?.itunes?.season + '-' + _episode?.itunes?.episode) ?? _episode?.link ?? '')}`,
         })
       }
-      episodeList.push(episode._id)
+      episodeList.push(episode)
       await episode.save()
       console.log(`· ${chalk.hex('#D0CFCF')(((epCurrent/epTotal)*100).toFixed(2) + `%`)} - ${chalk.hex('#86BBD8')(episode.title)} saved. `)
     }
