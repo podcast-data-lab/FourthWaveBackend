@@ -1,0 +1,40 @@
+name: db
+"on":
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+        with:
+            submodules: recursive
+      - name: Set Up Env
+        run: |
+          touch .env
+          echo MONGO_DB=${{ secrets.MONGO_DB }} >> .env
+      - name: Use Node v16
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        env:
+            cache-name: node-cache
+        with:
+            path: ~/.npm
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+                ${{ runner.os }}-build-${{ env.cache-name }}-
+                ${{ runner.os }}-build-
+                ${{ runner.os }}-
+      - name: Install packages
+        run: yarn install
+      - name: Build 🔧
+        run: yarn build
+      - name: Build Database
+        run: node dist/lib/buildPodcasts.js
+      
+

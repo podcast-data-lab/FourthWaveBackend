@@ -1,6 +1,4 @@
 import { Arg, Mutation, Query, Resolver } from 'type-graphql'
-import { registerPodcasts, work } from '../../lib/buildPodcasts'
-import { getImagePalettes } from '../../lib/functions'
 import { EpisodeModel } from '../../models'
 import { Episode } from '../../models/Episode'
 
@@ -157,9 +155,9 @@ export default class PodcastResolver {
     description:
       'Generates the palettes of a podcast based on the podcasts image'
   })
+  // FIXME: Update function since generating palettes is already done
   async generatePalettes (@Arg('slug') slug: string): Promise<string> {
     const podcast = await PodcastModel.findOne({ slug: slug })
-    getImagePalettes(podcast)
     return 'generating palettes'
   }
 

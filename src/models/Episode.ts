@@ -71,7 +71,7 @@ export class Episode {
   public locations: Ref<Locale>[]
 
   @Field(type => Play, { nullable: true })
-  @prop({ ref: () => 'Play', default: 0 })
+  @prop({ ref: () => 'Play', default: [] })
   public plays: Ref<Play>[]
 
   @Field({ nullable: true })

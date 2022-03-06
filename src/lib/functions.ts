@@ -1,41 +1,9 @@
 import Parser from 'rss-parser'
-import { Episode } from '../models/Episode'
-import { Podcast, PodcastModel } from '../models/Podcast'
-const imageToBase64 = require('image-to-base64')
-const image2colors = require('image2colors')
-const rgbHex = require('rgb-hex')
-import mongoose from 'mongoose'
-import { ObjectId } from 'mongodb'
-import { Ref } from '@typegoose/typegoose'
+import { PodcastModel } from '../models/Podcast'
+import imageToBase64 from 'image-to-base64'
 import { EpisodeModel } from '../models'
-export const getImagePalettes = async podcast => {
-  console.log(`coloring:  ${podcast.title}...`)
+import slug from 'slugify'
 
-  const imageBase64 = await imageToBase64(podcast.image)
-  const stuff = image2colors(
-    {
-      image: `data:image/jpg;base64, ${imageBase64}`,
-      colors: 5,
-      sample: 1024,
-      scaleSvg: false
-    },
-    (err, colors) => {
-      if (err) {
-        console.log(err.message)
-      }
-      if (!!colors) {
-        const palettes = colors.map(color => {
-          return rgbHex(...color.color._rgb)
-        })
-        podcast.palette = palettes
-        podcast.setPalette(palettes)
-        console.log(`set palettes for ${podcast.title}`)
-      }
-    }
-  )
-}
-
-var slug = require('slug')
 export const parseAndSave = async (
   feed: { [key: string]: any } & Parser.Output<{ [key: string]: any }>,
   rss: string
@@ -59,7 +27,8 @@ export const parseAndSave = async (
     description: feed.description,
     categories: feed.itunes?.categories,
     slug: `${slug(feed?.itunes?.owner?.name + '-' + feed?.title)}`,
-    lastRssBuildDate: Date.now()
+    lastRssBuildDate: Date.now(),
+    palette: feed.palette
   })
   const episodeList = []
   feed.items.forEach(async item => {
@@ -86,29 +55,6 @@ export const parseAndSave = async (
   })
   podcast.episodes = episodeList
   console.log(`Processed ${podcast.title}`)
-  image2colors(
-    {
-      image: `data:image/jpg;base64, ${imageBase64}`,
-      colors: 5,
-      sample: 1024,
-      scaleSvg: false
-    },
-    async (err, colors) => {
-      if (err) {
-        console.log(err.message)
-      }
-      if (!!colors) {
-        const palettes = colors.map(color => {
-          return rgbHex(...color.color._rgb)
-        })
-        podcast.palette = palettes
-        podcast.setPalette(palettes)
-        await podcast.save()
-
-        console.log(`set palettes for ${podcast.title}`)
-      }
-    }
-  )
 
   return podcast
 }

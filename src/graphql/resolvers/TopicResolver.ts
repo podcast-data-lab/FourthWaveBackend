@@ -1,6 +1,5 @@
 import { Arg, Query, Resolver } from 'type-graphql'
 import { shuffle } from '../../lib/functions'
-import { getCoverPhoto } from '../../lib/unsplash.functions'
 import { Topic, TopicModel } from '../../models/Topic'
 
 @Resolver(of => Topic)
@@ -45,10 +44,9 @@ export class TopicResolver {
     return tpcs
   }
 
+  // TODO: Implement this
   @Query(returns => String)
   async getTopicCoverPhoto (@Arg('title') title: string) {
-    const photos = await getCoverPhoto(title)
-    const pic = photos.response.results[1].urls.small
-    return pic
+    return 'pic'
   }
 }
