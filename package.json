@@ -36,7 +36,7 @@
     "fastify-gql": "^5.8.2",
     "fastify-swagger": "^4.13.1",
     "get-image-colors": "^4.0.0",
-    "graphql": "^16.2.0",
+    "graphql": "^15.3.0",
     "http": "^0.0.1-security",
     "image-to-base64": "^2.2.0",
     "image2colors": "^2.0.7",
