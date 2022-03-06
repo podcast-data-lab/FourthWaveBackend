@@ -34,7 +34,7 @@ jobs:
         run: yarn install
       - name: Build 🔧
         run: yarn build
-      - name: Build Database
-        run: node dist/lib/buildPodcasts.js
+      # - name: Build Database
+        # run: node dist/lib/buildPodcasts.js
       
 
