@@ -14,7 +14,6 @@ jobs:
       - name: Set Up Env
         run: |
           touch .env
-          MONGO_DB="${{ secrets.MONGO_DB }}"
           echo MONGO_DB="${{ secrets.MONGO_DB }}" >> .env
       - name: Use Node v16
         uses: actions/setup-node@v2
