@@ -85,7 +85,7 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
           snNo: _episode?.itunes?.season,
           epNo: _episode?.itunes?.episode,
           podcast: podcast._id,
-          slug: `${podcast.slug}/${slugify(_episode.title)}`
+          slug: `${podcast.slug}/${slugify(_episode?.title ?? (_episode?.itunes?.season + '-' + _episode?.itunes?.episode) ?? '')}`,
         })
       }
       episodeList.push(episode._id)
