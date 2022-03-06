@@ -6,7 +6,6 @@ import fs from 'fs'
 import path from 'path'
 import { CategoryModel } from '../models/Category'
 import chalk from 'chalk'
-import randomString from 'randomstring'
 
 const mongoose = require('mongoose')
 const {MONGO_DB} = require('dotenv').config('../../').parsed
@@ -73,7 +72,7 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
     let epCurrent = 0
     for (let _episode of _podcast.items){
       epCurrent++
-      let episode = await EpisodeModel.findOne({slug:`${podcast.slug}/${slugify(_episode.title)}`})
+      let episode = await EpisodeModel.findOne({slug:`${podcast.slug}/${slugify(_episode.title ?? (_episode?.itunes?.season + '-' + _episode?.itunes?.episode) ?? _episode?.link)}`})
       if(!episode) {
         episode = new EpisodeModel({
           title: _episode.title,
@@ -86,7 +85,7 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
           snNo: _episode?.itunes?.season,
           epNo: _episode?.itunes?.episode,
           podcast: podcast._id,
-          slug: `${podcast.slug}/${slugify(_episode?.title ?? randomString.generate(16))}`,
+          slug: `${podcast.slug}/${slugify(_episode?.title ?? (_episode?.itunes?.season + '-' + _episode?.itunes?.episode) ?? _episode?.link ?? '')}`,
         })
       }
       episodeList.push(episode._id)
