@@ -14,7 +14,8 @@ jobs:
       - name: Set Up Env
         run: |
           touch .env
-          echo MONGO_DB=\"${{ secrets.MONGO_DB }}\" >> .env
+          MONGO_DB="${{ secrets.MONGO_DB }}"
+          echo MONGO_DB="${{ secrets.MONGO_DB }}" >> .env
       - name: Use Node v16
         uses: actions/setup-node@v2
         with:
@@ -34,7 +35,7 @@ jobs:
         run: yarn install
       - name: Build 🔧
         run: yarn build
-      # - name: Build Database
-        # run: node dist/lib/buildPodcasts.js
+      - name: Build Database
+        run: node dist/lib/buildPodcasts.js
       
 

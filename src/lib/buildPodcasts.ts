@@ -8,8 +8,8 @@ import { CategoryModel } from '../models/Category'
 import chalk from 'chalk'
 
 const mongoose = require('mongoose')
-const {MONGO_DB} = require('dotenv').config('../../').parsed
-
+let {MONGO_DB} = require('dotenv').config('../../').parsed
+if(!MONGO_DB) MONGO_DB = process.env.MONGO_DB
 mongoose.connect(MONGO_DB, {
   useNewUrlParser: true,
   useUnifiedTopology: true
