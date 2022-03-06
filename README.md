@@ -1,4 +1,4 @@
-![https://github.com/lbugasu/onthistopic-backend/actions/workflows/CI.yml/badge.svg](https://github.com/lbugasu/onthistopic-backend/actions/workflows/CI.yml/badge.svg)
+![https://github.com/lbugasu/eycho-backend/actions/workflows/db.yml/badge.svg](https://github.com/lbugasu/eycho-backend/actions/workflows/db.yml/badge.svg)
 
 ## Object Schemas
 
