@@ -40,11 +40,11 @@ export class Episode {
 
   @Field({ nullable: true })
   @prop({ default: 0 })
-  public epNo: number
+  public epNo: string
 
   @Field({ nullable: true })
   @prop({ default: 0 })
-  public snNo: number
+  public snNo: string
 
   @Field(type => [User], { nullable: true })
   @prop({ ref: () => User })
@@ -106,10 +106,10 @@ export class EpisodeInput {
   public podcast: string
 
   @Field({ nullable: true })
-  public epNo: number
+  public epNo: string
 
   @Field({ nullable: true })
-  public snNo: number
+  public snNo: string
 
   @Field({ nullable: true })
   public slug: string

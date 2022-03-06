@@ -30,7 +30,7 @@ type Episode {
   datePublished: DateTime!
   description: String
   duration: String
-  epNo: Float
+  epNo: String
   image: String
   likes: [User!]
   locations: [Locale!]
@@ -38,7 +38,7 @@ type Episode {
   plays: Play
   podcast: String
   slug: String
-  snNo: Float
+  snNo: String
   sourceUrl: String!
   title: String!
   topics: [Topic!]!
@@ -120,7 +120,7 @@ type Podcast {
   base64image: String
   categories: [Category!]
   description: String!
-  episodes: [String!]
+  episodes: [Episode!]
   frequency: Float
   image: String!
   lastEpisodeDate: DateTime
