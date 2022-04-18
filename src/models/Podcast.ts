@@ -8,7 +8,7 @@ import {
 import { Field, ObjectType } from 'type-graphql'
 import { Category } from './Category'
 import { Episode } from './Episode'
-import { Topic } from './Topic'
+import { Entity } from './Entity'
 
 @ObjectType()
 export class Podcast {
@@ -75,11 +75,11 @@ export class Podcast {
   @prop({ ref: 'Category' })
   categories: Ref<Category>[]
 
-  @Field(type => [Topic], {
+  @Field(type => [Entity], {
     nullable: true
   })
-  @prop({ ref: 'Topic', nullable: true })
-  public topics?: Ref<Topic>[]
+  @prop({ ref: 'Entity', nullable: true })
+  public entities?: Ref<Entity>[]
 
   @Field(type => [Episode], { nullable: true })
   @prop({ ref: 'Episode', default: [] })

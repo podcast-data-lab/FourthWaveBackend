@@ -5,7 +5,7 @@ import { Comment } from './Comment'
 import { Person } from './Person'
 import { Category } from './Category'
 import { User } from './User'
-import { Topic } from './Topic'
+import { Entity } from './Entity'
 import { Play } from './Play'
 
 @ObjectType()
@@ -50,9 +50,9 @@ export class Episode {
   @prop({ ref: () => User })
   public likes: Ref<User>[]
 
-  @Field(type => [Topic])
-  @prop({ ref: 'Topic' })
-  public topics?: Ref<Topic>[]
+  @Field(type => [Entity])
+  @prop({ ref: 'Entity' })
+  public entities?: Ref<Entity>[]
 
   @Field(type => [Category], { nullable: true })
   @prop({ ref: () => 'Category', default: [] })

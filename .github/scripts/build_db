@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Get the latest files from podcast data generator
+
+# mkdir temp
+
+# ORG_NAME=podcast-data-lab
+# REPO_NAME=entity-extraction
+# LATEST_VERSION=$(curl -s https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/releases/latest | grep "tag_name" | cut -d'v' -f2 | cut -d'"' -f1)
+
+# wget -P temp "https://github.com/${ORG_NAME}/${REPO_NAME}/archive/refs/tags/v${LATEST_VERSION}.zip"
+# unzip "temp/v${LATEST_VERSION}.zip" -d temp
+
+node dist/lib/buildPodcasts.js 0.1.0 #LATEST_VERSION

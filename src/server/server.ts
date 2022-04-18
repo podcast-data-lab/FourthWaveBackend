@@ -23,7 +23,7 @@ import {
   ThemeResolver,
   UserResolver,
   CategoryResolver,
-  TopicResolver
+  EntityResolver
 } from '../graphql/resolvers'
 import { AuthCheckerFn } from '../graphql/AuthChecker'
 import { verifyToken } from '../db/authentication'
@@ -39,7 +39,7 @@ import { User } from '../models/User'
       ThemeResolver,
       UserResolver,
       CategoryResolver,
-      TopicResolver
+      EntityResolver
     ],
 
     emitSchemaFile: true,

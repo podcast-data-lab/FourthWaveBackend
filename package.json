@@ -7,6 +7,7 @@
     "start": "node dist/server/server.js",
     "build": "tsc",
     "postinstall": "yarn build",
+    "build:pods": "yarn build && chmod +x .github/scripts/build_db && ./.github/scripts/build_db",
     "run:dev": "concurrently \"tsc -w\" \" nodemon dist/server/server.js\""
   },
   "author": "",
@@ -41,6 +42,7 @@
     "image-to-base64": "^2.2.0",
     "image2colors": "^2.0.7",
     "jsonwebtoken": "^8.5.1",
+    "just-unique": "^4.0.1",
     "mercurius": "^9.1.0",
     "mercurius-apollo-registry": "^1.0.1",
     "mongodb": "^4.3.1",

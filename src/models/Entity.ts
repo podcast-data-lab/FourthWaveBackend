@@ -4,12 +4,12 @@ import { Episode } from './Episode'
 import { Podcast } from './Podcast'
 
 @ObjectType()
-export class Topic {
+export class Entity {
   @Field()
   @prop()
   type!: string
 
-  @Field()
+  @Field(type => [String])
   @prop()
   name!: string
 
@@ -21,4 +21,4 @@ export class Topic {
   @prop({ ref: 'Podcast', default: [] })
   podcasts: Ref<Podcast>[]
 }
-export const TopicModel = getModelForClass(Topic)
+export const EntityModel = getModelForClass(Entity)

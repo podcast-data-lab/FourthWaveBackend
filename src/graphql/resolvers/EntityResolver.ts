@@ -1,15 +1,15 @@
 import { Arg, Query, Resolver } from 'type-graphql'
 import { shuffle } from '../../lib/functions'
-import { Topic, TopicModel } from '../../models/Topic'
+import { Entity, EntityModel } from '../../models/Entity'
 
-@Resolver(of => Topic)
-export class TopicResolver {
-  @Query(returns => [Topic], {
+@Resolver(of => Entity)
+export class EntityResolver {
+  @Query(returns => [Entity], {
     description: 'Returns a list of recommended topics'
   })
-  @Query(returns => [Topic])
-  async getTopicSearchRecommendations (): Promise<Topic[]> {
-    const tpcs = await TopicModel.aggregate([
+  @Query(returns => [Entity])
+  async getEntitySearchRecommendations (): Promise<Entity[]> {
+    const tpcs = await EntityModel.aggregate([
       {
         $project: {
           type: 1,
@@ -46,7 +46,7 @@ export class TopicResolver {
 
   // TODO: Implement this
   @Query(returns => String)
-  async getTopicCoverPhoto (@Arg('title') title: string) {
+  async getEntityCoverPhoto (@Arg('title') title: string) {
     return 'pic'
   }
 }

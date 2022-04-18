@@ -1,11 +1,12 @@
 import { EpisodeModel } from '../models'
 import { PodcastModel } from '../models/Podcast'
-import { TopicModel } from '../models/Topic'
+import { EntityModel } from '../models/Entity'
 import slugify from 'slugify'
 import fs from 'fs'
 import path from 'path'
 import { CategoryModel } from '../models/Category'
 import chalk from 'chalk'
+import unique from 'just-unique';
 
 const mongoose = require('mongoose')
 const {MONGO_DB} = require('dotenv').config('../../').parsed
@@ -45,26 +46,31 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
       await category.save()
       podcast.categories.push(category)
     }
-    const topicsList = []
-    for (let type in _podcast.entities){
-      const names = _podcast.entities[type]
-      for (let name of names){
-        let topic = await TopicModel.findOne({type, name})
-        if (topic){
-          topic.podcasts.push(podcast.id)
-          await topic.save()
+    const entities = []
+    for (let [type, list] of Object.entries(_podcast.entities)){
+      if(!Array.isArray(list)){
+          list = []
+           return
+        } 
+      list = unique(list)
+      for (let name of list as []) {
+        let entity = await EntityModel.findOne({type, name})
+        if (entity){
+          entity.podcasts.push(podcast.id)
+          entity.name = name
+          await entity.save()
         } else {
-          topic = new TopicModel({
+          entity = new EntityModel({
             type,
             name,
             podcasts: [podcast]
           })
-          await topic.save()
+          await entity.save()
         }
-        topicsList.push(topic)
+        entities.push(entity)
       }
     }
-    podcast.topics = topicsList
+    podcast.entities = entities
     await podcast.save()
 
     const episodeList = []
@@ -88,8 +94,35 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
           slug: `${podcast.slug}/${slugify(_episode?.title ?? (_episode?.itunes?.season + '-' + _episode?.itunes?.episode) ?? _episode?.link ?? '')}`,
         })
       }
+      const entities = []
+      for (let [type, list] of Object.entries(_episode.entities)){
+        if(!Array.isArray(list)){
+            list = []
+            return
+          } 
+        list = unique(list)
+        for (let name of list as []) {
+          let entity = await EntityModel.findOne({type, name})
+          if (entity){
+            entity.episodes.push(episode.id)
+            entity.name = name
+            await entity.save()
+          } else {
+            entity = new EntityModel({
+              type,
+              name,
+              episodes: [episode]
+            })
+            await entity.save()
+          }
+          entities.push(entity)
+        }
+      }
+      episode.entities = entities
+
       episodeList.push(episode)
       await episode.save()
+
       console.log(`· ${chalk.hex('#D0CFCF')(((epCurrent/epTotal)*100).toFixed(2) + `%`)} - ${chalk.hex('#86BBD8')(episode.title)} saved. `)
     }
     podcast.episodes = episodeList
@@ -101,14 +134,16 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
 
 
 (async ()=>{
-  const podcasts: string[] = fs.readdirSync(path.join(process.cwd(), 'data/podcasts'));
+
+  const podcastFolderPath = path.join(process.cwd(), `temp/entity-extraction-${process.argv[2]}/podcasts-with-entities`)
+  const podcasts: string[] = fs.readdirSync(podcastFolderPath);
 
   const totalNo = podcasts.length
   let currentNo = 0
   try {
-    for(const filename of podcasts){
+    for(const filename of podcasts.slice(0,1)) {
       currentNo++
-      const podcastPath = path.join(process.cwd(), 'data/podcasts', filename)
+      const podcastPath = path.join(podcastFolderPath, filename)
       const data = JSON.parse(fs.readFileSync(podcastPath, 'utf8'))
       await registerPodcast(data, totalNo, currentNo)
     }

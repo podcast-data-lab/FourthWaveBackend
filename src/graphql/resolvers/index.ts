@@ -6,7 +6,7 @@ import PodcastResolver from './PodcastResolver'
 import ThemeResolver from './CategoryResolver'
 import UserResolver from './UserResolver'
 import CategoryResolver from './CategoryResolver'
-import { TopicResolver } from './TopicResolver'
+import { EntityResolver } from './EntityResolver'
 export {
   CommentResolver,
   EpisodeResolver,
@@ -16,5 +16,5 @@ export {
   ThemeResolver,
   UserResolver,
   CategoryResolver,
-  TopicResolver
+  EntityResolver
 }

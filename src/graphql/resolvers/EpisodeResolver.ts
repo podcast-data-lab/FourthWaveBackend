@@ -2,6 +2,7 @@ import { Arg, Query, Resolver } from 'type-graphql'
 import { EpisodeModel } from '../../models'
 import { Episode } from '../../models/Episode'
 
+
 @Resolver(of => Episode)
 export default class EpisodeResolver {
   @Query(returns => [Episode], {
@@ -66,8 +67,6 @@ export default class EpisodeResolver {
         }
       }
     ])
-    console.log('result : ')
-    console.log(searchResult)
 
     return searchResult
   }
