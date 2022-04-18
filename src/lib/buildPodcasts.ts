@@ -141,7 +141,7 @@ export async function registerPodcast (_podcast, totalNo, currentNo) {
   const totalNo = podcasts.length
   let currentNo = 0
   try {
-    for(const filename of podcasts.slice(0,1)) {
+    for(const filename of podcasts) {
       currentNo++
       const podcastPath = path.join(podcastFolderPath, filename)
       const data = JSON.parse(fs.readFileSync(podcastPath, 'utf8'))
