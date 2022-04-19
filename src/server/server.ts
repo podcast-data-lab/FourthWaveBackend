@@ -44,7 +44,10 @@ import { User } from '../models/User'
             EntityResolver,
         ],
 
-        emitSchemaFile: true,
+        emitSchemaFile: {
+            path: './schema.graphql',
+            sortedSchema: true,
+        },
         authChecker: AuthCheckerFn,
         validate: false,
     })
@@ -65,7 +68,7 @@ import { User } from '../models/User'
             return user
         },
     })
-    
+
     await server.start()
     app.register(server.createHandler())
 
