@@ -15,9 +15,8 @@ jobs:
                   heroku_api_key: ${{secrets.HEROKU_API_KEY}}
                   heroku_app_name: 'fourthwave-api'
                   heroku_email: 'lbi213@nyu.edu'
-                  healthcheck: 'https://fourthwave-api.herokuapp.com/graphql'
-                  checkstring: 'ok'
-                  delay: 10
+                  healthcheck: 'https://fourthwave-api.herokuapp.com/health'
+                  delay: 15
                   rollbackonhealthcheckfailed: true
               env:
                   HD_MONGO_DB: ${{secrets.MONGO_DB}}

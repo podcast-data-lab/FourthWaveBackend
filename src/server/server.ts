@@ -51,6 +51,10 @@ import { User } from '../models/User'
 
     const app = fastify()
 
+    app.get('/health', async (request, reply) => {
+        reply.send('OK')
+    })
+
     const server = new ApolloServer({
         schema,
         context: async ({ request, reply }): Promise<User> => {
@@ -61,7 +65,7 @@ import { User } from '../models/User'
             return user
         },
     })
-
+    
     await server.start()
     app.register(server.createHandler())
 
