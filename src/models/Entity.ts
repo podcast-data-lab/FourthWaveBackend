@@ -5,20 +5,20 @@ import { Podcast } from './Podcast'
 
 @ObjectType()
 export class Entity {
-  @Field()
-  @prop()
-  type!: string
+    @Field()
+    @prop()
+    type!: string
 
-  @Field(type => [String])
-  @prop()
-  name!: string
+    @Field((type) => [String])
+    @prop()
+    name!: string
 
-  @Field(type => [Episode])
-  @prop({ ref: 'Episode', default: [] })
-  episodes: Ref<Episode>[]
+    @Field((type) => [Episode])
+    @prop({ ref: 'Episode', default: [] })
+    episodes: Ref<Episode>[]
 
-  @Field(type => [Podcast])
-  @prop({ ref: 'Podcast', default: [] })
-  podcasts: Ref<Podcast>[]
+    @Field((type) => [Podcast])
+    @prop({ ref: 'Podcast', default: [] })
+    podcasts: Ref<Podcast>[]
 }
 export const EntityModel = getModelForClass(Entity)

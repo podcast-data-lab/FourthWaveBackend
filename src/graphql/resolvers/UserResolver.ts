@@ -1,17 +1,7 @@
 import { Episode, EpisodeInput } from './../../models/Episode'
 import { authenticateUser } from './../../db/authentication'
 import { UserModel, EpisodeModel, PlayModel } from './../../models'
-import {
-  Arg,
-  Args,
-  ArgsType,
-  Ctx,
-  Field,
-  InputType,
-  Mutation,
-  Query,
-  Resolver
-} from 'type-graphql'
+import { Arg, Args, ArgsType, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql'
 import { User } from '../../models/User'
 import { GraphQLError } from 'graphql'
 import { Play } from '../../models/Play'
@@ -19,615 +9,542 @@ import { Podcast, PodcastModel } from '../../models/Podcast'
 
 @ArgsType()
 class UserSignUpArgs {
-  @Field(type => String, { nullable: false })
-  username: string
+    @Field((type) => String, { nullable: false })
+    username: string
 
-  @Field(type => String, { nullable: false })
-  email: string
+    @Field((type) => String, { nullable: false })
+    email: string
 
-  @Field(type => String, { nullable: false })
-  firstname: string
+    @Field((type) => String, { nullable: false })
+    firstname: string
 
-  @Field(type => String, { nullable: true })
-  lastname: string
+    @Field((type) => String, { nullable: true })
+    lastname: string
 
-  @Field(type => String, { nullable: true })
-  password: string
+    @Field((type) => String, { nullable: true })
+    password: string
 }
 
-@Resolver(of => User)
+@Resolver((of) => User)
 export default class UserResolver {
-  @Mutation(returns => User)
-  async signup (
-    @Args() { username, email, firstname, lastname, password }: UserSignUpArgs
-  ): Promise<User | GraphQLError> {
-    const user = new UserModel({
-      username: username,
-      email: email,
-      firstname: firstname,
-      lastname: lastname,
-      password: password
-    })
-    try {
-      await user.save()
-    } catch (error) {
-      return new GraphQLError(error.message)
+    @Mutation((returns) => User)
+    async signup(@Args() { username, email, firstname, lastname, password }: UserSignUpArgs): Promise<User | GraphQLError> {
+        const user = new UserModel({
+            username: username,
+            email: email,
+            firstname: firstname,
+            lastname: lastname,
+            password: password,
+        })
+        try {
+            await user.save()
+        } catch (error) {
+            return new GraphQLError(error.message)
+        }
+        return await authenticateUser(username, password)
     }
-    return await authenticateUser(username, password)
-  }
 
-  @Mutation(returns => User)
-  async signin (
-    @Arg('username') username: string,
-    @Arg('password') password: string
-  ) {
-    let user: User | Error = await authenticateUser(username, password)
+    @Mutation((returns) => User)
+    async signin(@Arg('username') username: string, @Arg('password') password: string) {
+        let user: User | Error = await authenticateUser(username, password)
 
-    return user
-  }
+        return user
+    }
 
-  @Mutation(returns => Boolean)
-  async signout (@Ctx() context) {
-    const user = context
-    user.authtoken = ''
-    await user.save()
-    return true
-  }
+    @Mutation((returns) => Boolean)
+    async signout(@Ctx() context) {
+        const user = context
+        user.authtoken = ''
+        await user.save()
+        return true
+    }
 
-  @Mutation(returns => User)
-  async signInWithToken (@Ctx() context): Promise<User> {
-    const user = await UserModel.aggregate([
-      { $match: { username: context.username } },
-      {
-        $lookup: {
-          from: 'plays',
-          foreignField: '_id',
-          localField: 'queue',
-          as: 'queue'
-        }
-      },
-      {
-        $lookup: {
-          from: 'podcasts',
-          foreignField: '_id',
-          localField: 'subscribedPodcasts',
-          as: 'subscribedPodcasts'
-        }
-      },
+    @Mutation((returns) => User)
+    async signInWithToken(@Ctx() context): Promise<User> {
+        const user = await UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'subscribedPodcasts',
+                    as: 'subscribedPodcasts',
+                },
+            },
 
-      {
-        $lookup: {
-          from: 'podcasts',
-          foreignField: '_id',
-          localField: 'likedPodcasts',
-          as: 'likedPodcasts'
-        }
-      },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'likedPodcasts',
+                    as: 'likedPodcasts',
+                },
+            },
 
-      {
-        $lookup: {
-          from: 'episodes',
-          foreignField: '_id',
-          localField: 'likedEpisodes',
-          as: 'likedEpisodes'
-        }
-      },
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'likedEpisodes',
+                    as: 'likedEpisodes',
+                },
+            },
 
-      {
-        $lookup: {
-          from: 'episodes',
-          foreignField: '_id',
-          localField: 'bookmarkedEpisodes',
-          as: 'bookmarkedEpisodes'
-        }
-      }
-    ])
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'bookmarkedEpisodes',
+                    as: 'bookmarkedEpisodes',
+                },
+            },
+        ])
 
-    TODO: 'Move this sorting work to the database'
+        TODO: 'Move this sorting work to the database'
 
-    const userQueue = await (
-      await UserModel.findOne({ username: context.username })
-    ).queue
+        const userQueue = await (await UserModel.findOne({ username: context.username })).queue
 
-    user[0].queue = user[0].queue.sort(
-      (a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
-    )
+        user[0].queue = user[0].queue.sort((a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id))
 
-    return user[0]
-  }
+        return user[0]
+    }
 
-  @Mutation(returns => Number, { description: 'Sets a user Volume' })
-  async setUserVolume (
-    @Arg('volume') volume: number,
-    @Ctx() context
-  ): Promise<number> {
-    const user = context
-    user.volume = volume
-    await user.save()
+    @Mutation((returns) => Number, { description: 'Sets a user Volume' })
+    async setUserVolume(@Arg('volume') volume: number, @Ctx() context): Promise<number> {
+        const user = context
+        user.volume = volume
+        await user.save()
 
-    return volume
-  }
+        return volume
+    }
 
-  @Mutation(returns => Play, {
-    description: 'Starts the playing of a Play object'
-  })
-  async startPlay (@Arg('slug') slug: string, @Ctx() context): Promise<Play> {
-    const user = context
-
-    const episode = await EpisodeModel.findOne({ slug: slug })
-    const play = new PlayModel({
-      episode: Episode,
-      position: 0,
-      started: true,
-      completed: false
+    @Mutation((returns) => Play, {
+        description: 'Starts the playing of a Play object',
     })
+    async startPlay(@Arg('slug') slug: string, @Ctx() context): Promise<Play> {
+        const user = context
 
-    if (!episode.plays) episode.plays = []
-    if (!user.plays) user.plays = []
-    episode.plays.push(play)
-    user.plays.push(play)
+        const episode = await EpisodeModel.findOne({ slug: slug })
+        const play = new PlayModel({
+            episode: Episode,
+            position: 0,
+            started: true,
+            completed: false,
+        })
 
-    await episode.save()
-    await play.save()
-    await user.save()
+        if (!episode.plays) episode.plays = []
+        if (!user.plays) user.plays = []
+        episode.plays.push(play)
+        user.plays.push(play)
 
-    return play
-  }
+        await episode.save()
+        await play.save()
+        await user.save()
 
-  @Mutation(returns => Play, {
-    description: 'Updates the play position of a Play object'
-  })
-  async updatePlayPosition (
-    @Arg('position') position: number,
-    @Arg('playId') playId: number
-  ) {
-    const play = await PlayModel.findById(playId)
-    if (play.position > 0 && play.started == false) play.started = true
+        return play
+    }
 
-    play.position = position
-
-    await play.save()
-
-    return play
-  }
-
-  @Query(returns => [Play], { description: "Returns a user's player queue" })
-  async getUserQueue (@Ctx() context): Promise<Play[]> {
-    const userQueue = await (
-      await UserModel.findOne({ username: context.username })
-    ).queue
-    const user = await UserModel.aggregate([
-      { $match: { username: context.username } },
-      {
-        $lookup: {
-          from: 'plays',
-          foreignField: '_id',
-          localField: 'queue',
-          as: 'queue'
-        }
-      }
-    ])
-    user[0].queue = user[0].queue.sort(
-      (a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id)
-    )
-    return user[0].queue
-  }
-
-  @Mutation(returns => [Play], {
-    description: "Adds an episode to a player's queue"
-  })
-  async addToPlayerQueue (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Play[]> {
-    const user = context
-    const episode = await EpisodeModel.findOne({ slug: slug })
-    const play = new PlayModel({
-      episode: episode,
-      position: 0,
-      started: false,
-      completed: false
+    @Mutation((returns) => Play, {
+        description: 'Updates the play position of a Play object',
     })
+    async updatePlayPosition(@Arg('position') position: number, @Arg('playId') playId: number) {
+        const play = await PlayModel.findById(playId)
+        if (play.position > 0 && play.started == false) play.started = true
 
-    episode.plays.push(play._id)
-    user.plays.push(play._id)
-    user.queue.push(play)
+        play.position = position
 
-    await user.save()
-    await episode.save()
-    await play.save()
+        await play.save()
 
-    const userDetails = await UserModel.aggregate([
-      { $match: { username: context.username } },
-      {
-        $lookup: {
-          from: 'plays',
-          foreignField: '_id',
-          localField: 'queue',
-          as: 'queue'
-        }
-      }
-    ])
+        return play
+    }
 
-    return userDetails[0].queue
-  }
+    @Query((returns) => [Play], { description: "Returns a user's player queue" })
+    async getUserQueue(@Ctx() context): Promise<Play[]> {
+        const userQueue = await (await UserModel.findOne({ username: context.username })).queue
+        const user = await UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue',
+                },
+            },
+        ])
+        user[0].queue = user[0].queue.sort((a, b) => userQueue.indexOf(a._id) - userQueue.indexOf(b._id))
+        return user[0].queue
+    }
 
-  @Mutation(returns => Play, {
-    description: "Adds an episode to a player's queue"
-  })
-  async addToBeginningOfQueue (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Play> {
-    const user = context
-
-    TODO: 'Check if the episode is already in the users queue!!!'
-    const episode = await EpisodeModel.findOne({ slug: slug })
-    const play = new PlayModel({
-      episode: episode,
-      position: 0,
-      started: false,
-      completed: false
+    @Mutation((returns) => [Play], {
+        description: "Adds an episode to a player's queue",
     })
+    async addToPlayerQueue(@Arg('slug') slug: string, @Ctx() context): Promise<Play[]> {
+        const user = context
+        const episode = await EpisodeModel.findOne({ slug: slug })
+        const play = new PlayModel({
+            episode: episode,
+            position: 0,
+            started: false,
+            completed: false,
+        })
 
-    episode.plays.push(play._id)
-    user.plays.push(play._id)
-    user.queue.unshift(play._id)
-    await user.save()
-    await episode.save()
-    await play.save()
+        episode.plays.push(play._id)
+        user.plays.push(play._id)
+        user.queue.push(play)
 
-    return play
-  }
+        await user.save()
+        await episode.save()
+        await play.save()
 
-  @Mutation(returns => Play, { description: "Updates a user's player queue" })
-  async updatePlayerQueue (
-    @Arg('queue') queue: string,
-    @Ctx() context
-  ): Promise<Play[]> {
-    const user = context
+        const userDetails = await UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue',
+                },
+            },
+        ])
 
-    const userDeets = await UserModel.aggregate([
-      { $match: { username: context.username } },
-      {
-        $lookup: {
-          from: 'plays',
-          foreignField: '_id',
-          localField: 'queue',
-          as: 'queue'
-        }
-      }
-    ])
+        return userDetails[0].queue
+    }
 
-    return userDeets[0].queue
-  }
+    @Mutation((returns) => Play, {
+        description: "Adds an episode to a player's queue",
+    })
+    async addToBeginningOfQueue(@Arg('slug') slug: string, @Ctx() context): Promise<Play> {
+        const user = context
 
-  @Mutation(returns => Number, {
-    description: "Changes a user's playing speed"
-  })
-  async changePlayingSpeed (
-    @Arg('speed') speed: number,
-    @Ctx() context
-  ): Promise<Number> {
-    const user = context
+        TODO: 'Check if the episode is already in the users queue!!!'
+        const episode = await EpisodeModel.findOne({ slug: slug })
+        const play = new PlayModel({
+            episode: episode,
+            position: 0,
+            started: false,
+            completed: false,
+        })
 
-    user.playingSpeed = speed
-    await user.save()
-    return user.playingSpeed
-  }
+        episode.plays.push(play._id)
+        user.plays.push(play._id)
+        user.queue.unshift(play._id)
+        await user.save()
+        await episode.save()
+        await play.save()
 
-  @Mutation(returns => Play, {
-    description: "Updates the position of a user's Play object"
-  })
-  async updatePosition (
-    @Arg('playId') playId: string,
-    @Arg('position') position: number,
-    @Ctx() context
-  ): Promise<Play> {
-    const play = await PlayModel.findById(playId)
-    play.position = position
+        return play
+    }
 
-    await play.save()
+    @Mutation((returns) => Play, { description: "Updates a user's player queue" })
+    async updatePlayerQueue(@Arg('queue') queue: string, @Ctx() context): Promise<Play[]> {
+        const user = context
 
-    const userDeets = await UserModel.aggregate([
-      { $match: { username: context.username } },
-      {
-        $lookup: {
-          from: 'plays',
-          foreignField: '_id',
-          localField: 'queue',
-          as: 'queue'
-        }
-      }
-    ])
+        const userDeets = await UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue',
+                },
+            },
+        ])
 
-    return userDeets[0].queue[0]
-  }
+        return userDeets[0].queue
+    }
 
-  @Mutation(returns => [Play], {
-    description:
-      'completes the currently playing item and loads the current queue'
-  })
-  async completeAndGoToNext (
-    @Arg('playId') playId: string,
-    @Ctx() context
-  ): Promise<Play[]> {
-    const play = await PlayModel.findById(playId)
-    play.completed = true
+    @Mutation((returns) => Number, {
+        description: "Changes a user's playing speed",
+    })
+    async changePlayingSpeed(@Arg('speed') speed: number, @Ctx() context): Promise<Number> {
+        const user = context
 
-    await play.save()
+        user.playingSpeed = speed
+        await user.save()
+        return user.playingSpeed
+    }
 
-    const user = context
-    if (user.queue.length == 1) user.queue = []
-    else user.queue.shift()
+    @Mutation((returns) => Play, {
+        description: "Updates the position of a user's Play object",
+    })
+    async updatePosition(@Arg('playId') playId: string, @Arg('position') position: number, @Ctx() context): Promise<Play> {
+        const play = await PlayModel.findById(playId)
+        play.position = position
 
-    await user.save()
-    const userDeets = await UserModel.aggregate([
-      { $match: { username: context.username } },
-      {
-        $lookup: {
-          from: 'plays',
-          foreignField: '_id',
-          localField: 'queue',
-          as: 'queue'
-        }
-      }
-    ])
+        await play.save()
 
-    console.log(userDeets[0].queue)
-    return userDeets[0].queue
-  }
-  @Mutation(returns => [Play], {
-    description: "Deletes/Clears a user's playing queue"
-  })
-  async clearQueue (@Ctx() context): Promise<Play[]> {
-    const user = context
-    user.queue = []
-    await user.save()
+        const userDeets = await UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue',
+                },
+            },
+        ])
 
-    return []
-  }
+        return userDeets[0].queue[0]
+    }
 
-  @Mutation(returns => Podcast)
-  async subscribeToPodcast (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Podcast> {
-    const podcasts = await PodcastModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'categories',
-          foreignField: '_id',
-          localField: 'categories',
-          as: 'categories'
-        }
-      },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-      // { $project: { _id: 1 } }
-    ])
-    const user = context
-    user.subscribedPodcasts
-      ? user.subscribedPodcasts.push(podcasts[0]._id)
-      : (user.subscribedPodcasts = [podcasts[0]._id])
-    await user.save()
-    return podcasts[0]
-  }
+    @Mutation((returns) => [Play], {
+        description: 'completes the currently playing item and loads the current queue',
+    })
+    async completeAndGoToNext(@Arg('playId') playId: string, @Ctx() context): Promise<Play[]> {
+        const play = await PlayModel.findById(playId)
+        play.completed = true
 
-  @Mutation(returns => Podcast)
-  async likePodcast (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Podcast> {
-    const podcast = await PodcastModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'categories',
-          foreignField: '_id',
-          localField: 'categories',
-          as: 'categories'
-        }
-      },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-    ])
-    const user = context
-    user.likedPodcasts.push(podcast[0]._id)
-    await user.save()
-    return podcast[0]
-  }
+        await play.save()
 
-  @Mutation(returns => Episode)
-  async likeEpisode (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Episode> {
-    const episode = await EpisodeModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-    ])
+        const user = context
+        if (user.queue.length == 1) user.queue = []
+        else user.queue.shift()
 
-    const user = context
-    user.likedEpisodes.push(episode[0]._id)
-    await user.save()
-    return episode[0]
-  }
+        await user.save()
+        const userDeets = await UserModel.aggregate([
+            { $match: { username: context.username } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue',
+                },
+            },
+        ])
 
-  @Mutation(returns => Episode)
-  async bookmarkEpisode (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Episode> {
-    const episode = await EpisodeModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-    ])
+        console.log(userDeets[0].queue)
+        return userDeets[0].queue
+    }
+    @Mutation((returns) => [Play], {
+        description: "Deletes/Clears a user's playing queue",
+    })
+    async clearQueue(@Ctx() context): Promise<Play[]> {
+        const user = context
+        user.queue = []
+        await user.save()
 
-    const user = context
-    user.bookmarkedEpisodes.push(episode[0]._id)
-    await user.save()
-    return episode[0]
-  }
+        return []
+    }
 
-  // UNDO AN ACTION
+    @Mutation((returns) => Podcast)
+    async subscribeToPodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+        const podcasts = await PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+            // { $project: { _id: 1 } }
+        ])
+        const user = context
+        user.subscribedPodcasts ? user.subscribedPodcasts.push(podcasts[0]._id) : (user.subscribedPodcasts = [podcasts[0]._id])
+        await user.save()
+        return podcasts[0]
+    }
 
-  @Mutation(returns => Podcast)
-  async unsubscribeToPodcast (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Podcast> {
-    const podcasts = await PodcastModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'categories',
-          foreignField: '_id',
-          localField: 'categories',
-          as: 'categories'
-        }
-      },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-      // { $project: { _id: 1 } }
-    ])
+    @Mutation((returns) => Podcast)
+    async likePodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+        const podcast = await PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+        ])
+        const user = context
+        user.likedPodcasts.push(podcast[0]._id)
+        await user.save()
+        return podcast[0]
+    }
 
-    const user = context
+    @Mutation((returns) => Episode)
+    async likeEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+        const episode = await EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+        ])
 
-    const indx = user.subscribedPodcasts.findIndex(
-      podcast_id => podcast_id == podcasts[0]._id
-    )
+        const user = context
+        user.likedEpisodes.push(episode[0]._id)
+        await user.save()
+        return episode[0]
+    }
 
-    user.subscribedPodcasts.splice(indx, 1)
+    @Mutation((returns) => Episode)
+    async bookmarkEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+        const episode = await EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+        ])
 
-    await user.save()
-    return podcasts[0]
-  }
+        const user = context
+        user.bookmarkedEpisodes.push(episode[0]._id)
+        await user.save()
+        return episode[0]
+    }
 
-  @Mutation(returns => Podcast)
-  async unlikePodcast (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Podcast> {
-    const podcasts = await PodcastModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'categories',
-          foreignField: '_id',
-          localField: 'categories',
-          as: 'categories'
-        }
-      },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-    ])
-    const user = context
+    // UNDO AN ACTION
 
-    const indx = user.subscribedPodcasts.findIndex(
-      podcast_id => podcast_id == podcasts[0]._id
-    )
+    @Mutation((returns) => Podcast)
+    async unsubscribeToPodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+        const podcasts = await PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+            // { $project: { _id: 1 } }
+        ])
 
-    user.subscribedPodcasts.splice(indx, 1)
+        const user = context
 
-    await user.save()
-    return podcasts[0]
-  }
+        const indx = user.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts[0]._id)
 
-  @Mutation(returns => Episode)
-  async unlikeEpisode (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Episode> {
-    const episodes = await EpisodeModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-    ])
+        user.subscribedPodcasts.splice(indx, 1)
 
-    const user = context
+        await user.save()
+        return podcasts[0]
+    }
 
-    const indx = user.likedEpisodes.findIndex(
-      episode_id => episode_id == episodes[0]._id
-    )
+    @Mutation((returns) => Podcast)
+    async unlikePodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+        const podcasts = await PodcastModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+        ])
+        const user = context
 
-    user.likedEpisodes.splice(indx, 1)
+        const indx = user.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts[0]._id)
 
-    await user.save()
-    return episodes[0]
-  }
+        user.subscribedPodcasts.splice(indx, 1)
 
-  @Mutation(returns => Episode)
-  async unbookmarkEpisode (
-    @Arg('slug') slug: string,
-    @Ctx() context
-  ): Promise<Episode> {
-    const episodes = await EpisodeModel.aggregate([
-      { $match: { slug: slug } },
-      {
-        $lookup: {
-          from: 'topics',
-          foreignField: '_id',
-          localField: 'topics',
-          as: 'topics'
-        }
-      }
-    ])
+        await user.save()
+        return podcasts[0]
+    }
 
-    const user = context
+    @Mutation((returns) => Episode)
+    async unlikeEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+        const episodes = await EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+        ])
 
-    const indx = user.bookmarkedEpisodes.findIndex(
-      episode_id => episode_id == episodes[0]._id
-    )
+        const user = context
 
-    user.bookmarkedEpisodes.splice(indx, 1)
+        const indx = user.likedEpisodes.findIndex((episode_id) => episode_id == episodes[0]._id)
 
-    await user.save()
-    return episodes[0]
-  }
+        user.likedEpisodes.splice(indx, 1)
+
+        await user.save()
+        return episodes[0]
+    }
+
+    @Mutation((returns) => Episode)
+    async unbookmarkEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+        const episodes = await EpisodeModel.aggregate([
+            { $match: { slug: slug } },
+            {
+                $lookup: {
+                    from: 'topics',
+                    foreignField: '_id',
+                    localField: 'topics',
+                    as: 'topics',
+                },
+            },
+        ])
+
+        const user = context
+
+        const indx = user.bookmarkedEpisodes.findIndex((episode_id) => episode_id == episodes[0]._id)
+
+        user.bookmarkedEpisodes.splice(indx, 1)
+
+        await user.save()
+        return episodes[0]
+    }
 }

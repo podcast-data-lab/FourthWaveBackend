@@ -8,13 +8,13 @@ import UserResolver from './UserResolver'
 import CategoryResolver from './CategoryResolver'
 import { EntityResolver } from './EntityResolver'
 export {
-  CommentResolver,
-  EpisodeResolver,
-  LocationResolver,
-  PersonResolver,
-  PodcastResolver,
-  ThemeResolver,
-  UserResolver,
-  CategoryResolver,
-  EntityResolver
+    CommentResolver,
+    EpisodeResolver,
+    LocationResolver,
+    PersonResolver,
+    PodcastResolver,
+    ThemeResolver,
+    UserResolver,
+    CategoryResolver,
+    EntityResolver,
 }
