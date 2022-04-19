@@ -3,8 +3,8 @@ const swaggerOptions = {
     exposeRoute: true,
     swagger: {
         info: {
-            title: 'Eycho API',
-            description: 'Eycho API - A podcast platform for the future.',
+            title: '4thWave API',
+            description: '4thWave API - A podcast platform for the future.',
             version: '1.0.0',
         },
         externalDocs: {

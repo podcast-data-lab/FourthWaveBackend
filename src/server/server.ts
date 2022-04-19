@@ -17,27 +17,29 @@ const AltairFastify = require('altair-fastify-plugin')
 import {
     EpisodeResolver,
     CommentResolver,
-    LocationResolver,
-    PersonResolver,
     PodcastResolver,
     ThemeResolver,
-    UserResolver,
+    LibraryResolver,
+    PlayingQueueResolver,
+    PreferencesResolver,
     CategoryResolver,
     EntityResolver,
+    AuthResolver,
 } from '../graphql/resolvers'
 import { AuthCheckerFn } from '../graphql/AuthChecker'
-import { verifyToken } from '../db/authentication'
+import { verifyTokenAndGetUser } from '../db/authentication'
 import { User } from '../models/User'
 ;(async () => {
     const schema = await buildSchema({
         resolvers: [
+            AuthResolver,
             CommentResolver,
             EpisodeResolver,
-            LocationResolver,
-            PersonResolver,
             PodcastResolver,
             ThemeResolver,
-            UserResolver,
+            LibraryResolver,
+            PlayingQueueResolver,
+            PreferencesResolver,
             CategoryResolver,
             EntityResolver,
         ],
@@ -52,8 +54,10 @@ import { User } from '../models/User'
     const server = new ApolloServer({
         schema,
         context: async ({ request, reply }): Promise<User> => {
-            let token = request.headers.authorization || ''
-            const user: User = await verifyToken(token)
+            let token = request.headers.authorization
+            if (!token) return null
+            let user = verifyTokenAndGetUser(token)
+            if (!user) return null
             return user
         },
     })
