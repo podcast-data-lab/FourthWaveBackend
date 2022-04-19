@@ -5,10 +5,10 @@
   "main": "dist/server/server.js",
   "scripts": {
     "start": "node dist/server/server.js",
+    "dev": "concurrently \"tsc -w\" \"nodemon dist/server/server.js\"",
     "build": "tsc",
     "postinstall": "yarn build",
-    "build:pods": "yarn build && chmod +x .github/scripts/build_db && ./.github/scripts/build_db",
-    "run:dev": "concurrently \"tsc -w\" \" nodemon dist/server/server.js\""
+    "build:pods": "yarn build && chmod +x .github/scripts/build_db && ./.github/scripts/build_db"
   },
   "author": "",
   "license": "ISC",

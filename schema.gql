@@ -24,30 +24,28 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
+type Entity {
+  episodes: [Episode!]!
+  name: [String!]!
+  podcasts: [Podcast!]!
+  type: String!
+}
+
 type Episode {
   categories: [Category!]
   comments: [Comment!]
   datePublished: DateTime!
   description: String
   duration: String
+  entities: [Entity!]!
   epNo: String
   image: String
   likes: [User!]
-  locations: [Locale!]
-  people: [Person!]
   plays: Play
   podcast: String
   slug: String
   snNo: String
   sourceUrl: String!
-  title: String!
-  topics: [Topic!]!
-}
-
-type Locale {
-  comments: [Comment!]!
-  contributor: User!
-  podcastEpisodes: [Episode!]!
   title: String!
 }
 
@@ -99,13 +97,6 @@ type Mutation {
   updatePosition(playId: String!, position: Float!): Play!
 }
 
-type Person {
-  comments: [Comment!]!
-  contributor: User!
-  podcastEpisodes: [Episode!]!
-  title: String!
-}
-
 type Play {
   _id: String!
   completed: Boolean
@@ -120,6 +111,7 @@ type Podcast {
   base64image: String
   categories: [Category!]
   description: String!
+  entities: [Entity!]
   episodes: [Episode!]
   frequency: Float
   image: String!
@@ -132,7 +124,6 @@ type Podcast {
   rssFeed: String
   slug: String!
   title: String!
-  topics: [Topic!]
 }
 
 type Query {
@@ -146,6 +137,10 @@ type Query {
   getCategories: [Category!]!
   getCategorySearchRecommendations: [Category!]!
   getComment: Comment
+  getEntityCoverPhoto(title: String!): String!
+
+  """Returns a list of recommended topics"""
+  getEntitySearchRecommendations: [Entity!]!
 
   """Returns the featured podcasts"""
   getFeatured: [Podcast!]!
@@ -161,10 +156,6 @@ type Query {
 
   """Returns the Most Played Podcasts"""
   getTopPlayed: [Podcast!]!
-  getTopicCoverPhoto(title: String!): String!
-
-  """Returns a list of recommended topics"""
-  getTopicSearchRecommendations: [Topic!]!
 
   """Returns the Trending Podcasts"""
   getTrending: [Podcast!]!
@@ -177,29 +168,19 @@ type Query {
   topEpisodes: [Episode!]!
 }
 
-type Topic {
-  episodes: [Episode!]!
-  name: String!
-  podcasts: [Podcast!]!
-  type: String!
-}
-
 type User {
   active: Boolean!
   admin: Boolean!
-  authtoken: String!
   bookmarkedEpisodes: [Episode!]!
   contributions: [String!]!
   email: String!
-  firstname: String!
-  lastname: String!
   likedEpisodes: [Episode!]!
   likedPodcasts: [Podcast!]!
-  password: String
+  name: String!
   playingSpeed: Float!
   plays: [Play!]!
   queue: [Play!]!
   subscribedPodcasts: [Podcast!]!
-  username: String!
+  uid: String
   volume: Float!
 }

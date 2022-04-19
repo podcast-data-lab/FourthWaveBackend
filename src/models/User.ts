@@ -10,33 +10,13 @@ import { Episode } from './Episode'
 import { Play } from './Play'
 import { Podcast } from './Podcast'
 const emailValidator = require('email-validator')
-const bcrypt = require('bcrypt')
-const SALT_ROUNDS = 12
 
-@pre<User>('save', async function preSave (next) {
-  const user = this
-  if (!user.isModified('password')) return next()
-  try {
-    const hash = await bcrypt.hash(user.password, SALT_ROUNDS)
-    user.password = hash
-    return next()
-  } catch (err) {
-    return next(err)
-  }
-})
 @ObjectType()
 export class User {
   @Field()
   @prop()
-  public firstname: string
+  public name: string
 
-  @Field()
-  @prop()
-  public lastname: string
-
-  @Field()
-  @prop({ required: true, minlength: 4, unique: true, trim: true })
-  public username: string
 
   @Field()
   @prop({
@@ -60,7 +40,7 @@ export class User {
     unique: true,
     minlength: 8
   })
-  public password: string
+  public uid: string
 
   @Field(type => Boolean)
   @prop({ default: false })
@@ -106,11 +86,4 @@ export class User {
   @prop({ default: false })
   public admin: boolean
 
-  @Field()
-  @prop({ default: '' })
-  public authtoken: string
-
-  public async comparePassword (this: DocumentType<User>, candidate: string) {
-    return bcrypt.compare(candidate, this.password)
-  }
 }

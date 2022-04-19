@@ -1,8 +1,6 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
+import { prop, Ref } from '@typegoose/typegoose'
 import { Field, InputType, ObjectType } from 'type-graphql'
-import { Locale } from './Locale'
 import { Comment } from './Comment'
-import { Person } from './Person'
 import { Category } from './Category'
 import { User } from './User'
 import { Entity } from './Entity'
@@ -61,14 +59,6 @@ export class Episode {
   @Field(type => [Comment], { nullable: true })
   @prop({ ref: 'Comment', default: [] })
   public comments: Comment[]
-
-  @Field(type => [Person], { nullable: true })
-  @prop({ ref: 'Person', default: [] })
-  public people: Ref<Person>[]
-
-  @Field(type => [Locale], { nullable: true })
-  @prop({ ref: 'Locale', default: [] })
-  public locations: Ref<Locale>[]
 
   @Field(type => Play, { nullable: true })
   @prop({ ref: () => 'Play', default: [] })
