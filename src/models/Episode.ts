@@ -1,5 +1,5 @@
 import { prop, Ref } from '@typegoose/typegoose'
-import { Field, InputType, ObjectType } from 'type-graphql'
+import { Field, ID, InputType, ObjectType } from 'type-graphql'
 import { Comment } from './Comment'
 import { Category } from './Category'
 import { User } from './User'
@@ -8,6 +8,10 @@ import { Play } from './Play'
 
 @ObjectType()
 export class Episode {
+    @Field((type) => ID)
+    @prop()
+    public _id: string
+
     @Field()
     @prop()
     public title: string
@@ -103,7 +107,4 @@ export class EpisodeInput {
 
     @Field({ nullable: true })
     public slug: string
-
-    // @Field({ nullable: true })
-    // "__typename": string
 }

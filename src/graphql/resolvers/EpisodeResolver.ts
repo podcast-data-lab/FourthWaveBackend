@@ -1,3 +1,4 @@
+import { PipelineStage } from 'mongoose'
 import { Arg, Query, Resolver } from 'type-graphql'
 import { EpisodeModel } from '../../models'
 import { Episode } from '../../models/Episode'
@@ -5,38 +6,33 @@ import { Episode } from '../../models/Episode'
 @Resolver((of) => Episode)
 export default class EpisodeResolver {
     @Query((returns) => [Episode], {
-        description: 'Find episodes based on a search string',
+        description: `Find episodes based on a search string. Searches can be restricted to title, description, or both.`,
     })
-    async findEpisodes(@Arg('searchString') searchString: string): Promise<Episode[]> {
+    async searchEpisodes(
+        @Arg('searchString') searchString: string,
+        @Arg('inTitle', { nullable: true }) inTitle: boolean = false,
+        @Arg('inDescription', { nullable: true }) inDescription: boolean = false,
+    ): Promise<Episode[]> {
+        let searchStage: PipelineStage = {
+            $search: {
+                index: 'EPISODE_TITLE_DESCRIPTION',
+                text: {
+                    query: searchString,
+                },
+            },
+        }
+        if (!inTitle && !inDescription) {
+            searchStage.$search.text.path = {
+                wildcard: '*',
+            }
+        } else {
+            searchStage.$search.text.path = []
+            if (inTitle) searchStage.$search.text.path.push('title')
+            if (inDescription) searchStage.$search.text.path.push('description')
+        }
         const searchResult = await EpisodeModel.aggregate([
             {
-                $search: {
-                    index: 'episodes',
-                    compound: {
-                        should: [
-                            {
-                                autocomplete: {
-                                    query: searchString,
-                                    path: 'title',
-                                    fuzzy: {
-                                        maxEdits: 2,
-                                        prefixLength: 3,
-                                    },
-                                },
-                            },
-                            {
-                                autocomplete: {
-                                    query: searchString,
-                                    path: 'description',
-                                    fuzzy: {
-                                        maxEdits: 2,
-                                        prefixLength: 3,
-                                    },
-                                },
-                            },
-                        ],
-                    },
-                },
+                ...searchStage,
             },
             {
                 $limit: 10,
@@ -50,17 +46,19 @@ export default class EpisodeResolver {
                     datePublished: 1,
                     duration: 1,
                     podcast: 1,
-                    topics: 1,
+                    entities: 1,
+                    epNo: 1,
+                    snNo: 1,
                     _id: 0,
                     score: { $meta: 'searchScore' },
                 },
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -76,10 +74,10 @@ export default class EpisodeResolver {
             { $sample: { size: 5 } },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])

@@ -1,11 +1,15 @@
 import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
-import { Field, ObjectType } from 'type-graphql'
+import { Field, ID, ObjectType } from 'type-graphql'
 import { Podcast } from './Podcast'
 import { Category } from './Category'
 import { User } from './User'
 
 @ObjectType()
 export class Comment {
+    @Field((type) => ID)
+    @prop()
+    public _id: string
+
     @Field()
     @prop({ type: String, required: true })
     content: string

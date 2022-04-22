@@ -8,7 +8,7 @@
         "dev": "concurrently \"tsc -w\" \"nodemon dist/server/server.js\"",
         "build": "tsc",
         "postinstall": "yarn build",
-        "build:pods": "yarn build && chmod +x .github/scripts/build_db && ./.github/scripts/build_db",
+        "build:pods": "yarn build && chmod +x .github/scripts/build_db && ./scripts/build_db",
         "commit": "cz",
         "release": "standard-version"
     },
@@ -17,6 +17,7 @@
     "dependencies": {
         "@babel/runtime": "^7.16.7",
         "@typegoose/typegoose": "^9.5.0",
+        "@types/ramda": "^0.28.11",
         "altair-fastify-plugin": "^4.3.1",
         "apollo-server-express": "^3.6.2",
         "apollo-server-fastify": "^3.6.2",
@@ -51,6 +52,7 @@
         "node-fetch": "^3.2.0",
         "passport": "^0.5.2",
         "passport-local": "^1.0.0",
+        "ramda": "^0.28.0",
         "reflect-metadata": "^0.1.13",
         "rgb-hex": "^4.0.0",
         "rss-parser": "^3.12.0",

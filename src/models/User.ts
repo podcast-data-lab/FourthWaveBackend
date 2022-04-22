@@ -1,14 +1,17 @@
 import { prop, getModelForClass, Ref, pre, DocumentType } from '@typegoose/typegoose'
-import { Field, ObjectType } from 'type-graphql'
-import { Episode } from './Episode'
+import { Field, ID, ObjectType } from 'type-graphql'
+import { UserPermission } from './enums/Permissions'
 import { Library } from './Library'
 import { Play } from './Play'
 import { PlayingQueue } from './PlayingQueue'
-import { Podcast } from './Podcast'
 import { UserPreference } from './Preference'
 
 @ObjectType()
 export class User {
+    @Field((type) => ID)
+    @prop()
+    public _id: string
+
     @Field()
     @prop()
     public name: string
@@ -34,6 +37,10 @@ export class User {
     @Field((type) => Boolean)
     @prop({ default: false })
     public active: boolean
+
+    @Field((type) => [UserPermission])
+    @prop({ default: [] })
+    permissions: UserPermission
 
     @Field((type) => [String])
     @prop({ type: () => [String], default: [] })

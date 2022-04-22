@@ -1,5 +1,5 @@
 import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
-import { Field, ObjectType } from 'type-graphql'
+import { Field, ID, ObjectType } from 'type-graphql'
 import { Comment } from './Comment'
 import { Episode } from './Episode'
 import { Podcast } from './Podcast'
@@ -7,6 +7,10 @@ import { User } from './User'
 
 @ObjectType()
 export class Category {
+    @Field((type) => ID)
+    @prop()
+    public _id: string
+
     @Field()
     @prop({
         type: String,

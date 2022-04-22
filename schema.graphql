@@ -4,6 +4,7 @@
 # -----------------------------------------------
 
 type Category {
+    _id: ID!
     comments: [Comment!]!
     contributor: User!
     episodes: [Episode!]!
@@ -12,10 +13,12 @@ type Category {
 }
 
 type Collection {
+    _id: ID!
     podcasts: [Podcast!]!
 }
 
 type Comment {
+    _id: ID!
     categories: Category!
     content: String!
     likes: [User!]!
@@ -30,12 +33,13 @@ scalar DateTime
 
 type Entity {
     episodes: [Episode!]!
-    name: [String!]!
+    name: String!
     podcasts: [Podcast!]!
     type: String!
 }
 
 type Episode {
+    _id: ID!
     categories: [Category!]
     comments: [Comment!]
     datePublished: DateTime!
@@ -54,6 +58,7 @@ type Episode {
 }
 
 type Library {
+    _id: ID!
     bookmarkedEpisodes: [Episode!]!
     collections: [Collection!]!
     followedCategories: [Category!]!
@@ -88,14 +93,8 @@ type Mutation {
     completes the currently playing item and loads the current queue
     """
     completeAndGoToNext(playId: String!): [Play!]!
-
-    """
-    Generates the palettes of a podcast based on the podcasts image
-    """
-    generatePalettes(slug: String!): String!
     likeEpisode(slug: String!): Episode!
     likePodcast(slug: String!): Podcast!
-    rerunPods: String!
 
     """
     Sets a user Volume
@@ -130,7 +129,7 @@ type Mutation {
 }
 
 type Play {
-    _id: String!
+    _id: ID!
     completed: Boolean
 
     """
@@ -142,10 +141,12 @@ type Play {
 }
 
 type PlayingQueue {
+    _id: ID!
     plays: [Play!]!
 }
 
 type Podcast {
+    _id: ID!
     base64image: String
     categories: [Category!]
     description: String!
@@ -165,16 +166,6 @@ type Podcast {
 }
 
 type Query {
-    """
-    Find episodes based on a search string
-    """
-    findEpisodes(searchString: String!): [Episode!]!
-
-    """
-    Searches for a podcast based on a search string
-    """
-    findPodcasts(searchString: String!): [Podcast!]!
-
     """
     Returns a list of all the genres
     """
@@ -199,12 +190,12 @@ type Query {
     getPodcast(slug: String!): Podcast!
 
     """
-    Returns a podcasts'episodes
+    Returns a podcasts'episodes. 20 podcast episodes at a time.
     """
     getPodcastEpisodes(page: Float!, slug: String!): [Episode!]!
 
     """
-    Get all podcasts
+    Get podcasts ~ 50 podcasts at a time.
     """
     getPodcasts(page: Float!): [Podcast!]!
 
@@ -225,6 +216,37 @@ type Query {
     print: String!
 
     """
+    Searches for entities based on a search string. Returns 10 entities at a time
+            As well as the first 5 podcasts and episodes that contain the entities.
+    """
+    searchEntities(entityType: String, searchString: String!): [Entity!]!
+
+    """
+    Searches for podcasts episodes based on a search string and entity.
+                For instance, Searching for podcasts that mention "Jollof" will return podcast episodes that mention that entityName
+                Returns 10 podcast episodes at a time.
+    """
+    searchEpisodeByEntity(entityName: String!, entityType: String): [Episode!]!
+
+    """
+    Find episodes based on a search string. Searches can be restricted to title, description, or both.
+    """
+    searchEpisodes(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Episode!]!
+
+    """
+    Searches for podcasts based on a search string and entity.
+                For instance, Searching for podcasts that mention "Obama" will return podcasts that mention that entityName
+                Returns 10 podcasts at a time.
+    """
+    searchPodcastByEntity(entityName: String!, entityType: String): [Podcast!]!
+
+    """
+    Searches for podcasts based on a search string. Returns 10 podcasts at a time.
+            Searches can be specified to be in the title or description or both.
+    """
+    searchPodcasts(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Podcast!]!
+
+    """
     Returns the Most Popular Podcast Episodes
     """
     topEpisodes: [Episode!]!
@@ -239,19 +261,31 @@ enum UiMode {
 }
 
 type User {
+    _id: ID!
     active: Boolean!
     admin: Boolean!
     contributions: [String!]!
     email: String!
     library: Library!
     name: String!
+    permissions: [UserPermission!]!
     plays: [Play!]!
     preferences: UserPreference!
     queue: [PlayingQueue!]!
     uid: String!
 }
 
+"""
+User Permissions
+"""
+enum UserPermission {
+    Admin
+    Editor
+    User
+}
+
 type UserPreference {
+    _id: ID!
     playbackSpeed: Float!
     skipAds: Boolean!
     uiMode: UiMode!

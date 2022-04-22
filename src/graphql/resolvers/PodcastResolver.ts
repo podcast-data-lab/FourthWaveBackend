@@ -1,12 +1,15 @@
+import { PipelineStage } from 'mongoose'
 import { Arg, Mutation, Query, Resolver } from 'type-graphql'
 import { EpisodeModel } from '../../models'
 import { Episode } from '../../models/Episode'
 
 import { Podcast, PodcastModel } from '../../models/Podcast'
 
+const EPISODE_LIMIT = 15
+
 @Resolver((of) => Podcast)
 export default class PodcastResolver {
-    @Query((returns) => [Podcast], { description: 'Get all podcasts' })
+    @Query((returns) => [Podcast], { description: 'Get podcasts ~ 50 podcasts at a time.' })
     async getPodcasts(@Arg('page') page: number): Promise<Podcast[]> {
         const podcasts: Podcast[] = await PodcastModel.find()
             .skip(50 * page)
@@ -14,24 +17,24 @@ export default class PodcastResolver {
         return podcasts
     }
 
-    @Query((returs) => [Episode], { description: "Returns a podcasts'episodes" })
+    @Query((returs) => [Episode], { description: "Returns a podcasts'episodes. 20 podcast episodes at a time." })
     async getPodcastEpisodes(@Arg('slug') slug: string, @Arg('page') page: number): Promise<Episode[]> {
         const episodes: Episode[] = await EpisodeModel.aggregate([
             { $match: { podcast: slug } },
             { $sort: { datePublished: -1 } },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
             {
-                $skip: 15 * page,
+                $skip: EPISODE_LIMIT * page,
             },
             {
-                $limit: 15,
+                $limit: EPISODE_LIMIT,
             },
         ])
         return episodes
@@ -53,22 +56,18 @@ export default class PodcastResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
             {
                 $lookup: {
                     from: 'episodes',
-                    foreignField: '_id',
-                    localField: 'episodes',
                     as: 'episodes',
+                    pipeline: [{ $limit: EPISODE_LIMIT }],
                 },
-            },
-            {
-                $limit: 10,
             },
         ])
 
@@ -76,38 +75,34 @@ export default class PodcastResolver {
     }
 
     @Query((returns) => [Podcast], {
-        description: 'Searches for a podcast based on a search string',
+        description: `Searches for podcasts based on a search string. Returns 10 podcasts at a time.
+        Searches can be specified to be in the title or description or both.`,
     })
-    async findPodcasts(@Arg('searchString') searchString: String): Promise<Podcast[]> {
+    async searchPodcasts(
+        @Arg('searchString') searchString: String,
+        @Arg('inTitle', { nullable: true }) inTitle: boolean,
+        @Arg('inDescription', { nullable: true }) inDescription: boolean,
+    ): Promise<Podcast[]> {
+        let searchStage: PipelineStage = {
+            $search: {
+                index: 'PODCAST_TITLE_DESCRIPTION',
+                text: {
+                    query: searchString,
+                },
+            },
+        }
+        if (!inTitle && !inDescription) {
+            searchStage.$search.text.path = {
+                wildcard: '*',
+            }
+        } else {
+            searchStage.$search.text.path = []
+            if (inTitle) searchStage.$search.text.path.push('title')
+            if (inDescription) searchStage.$search.text.path.push('description')
+        }
         const podcasts: Podcast[] = await PodcastModel.aggregate([
             {
-                $search: {
-                    index: 'podcasts',
-                    compound: {
-                        should: [
-                            {
-                                autocomplete: {
-                                    query: searchString,
-                                    path: 'title',
-                                    fuzzy: {
-                                        maxEdits: 2,
-                                        prefixLength: 3,
-                                    },
-                                },
-                            },
-                            {
-                                autocomplete: {
-                                    query: searchString,
-                                    path: 'description',
-                                    fuzzy: {
-                                        maxEdits: 2,
-                                        prefixLength: 3,
-                                    },
-                                },
-                            },
-                        ],
-                    },
-                },
+                ...searchStage,
             },
             {
                 $limit: 10,
@@ -124,7 +119,7 @@ export default class PodcastResolver {
                     palette: 1,
                     slug: 1,
                     categories: 1,
-                    topics: 1,
+                    entities: 1,
                     _id: 0,
                     score: { $meta: 'searchScore' },
                 },
@@ -137,22 +132,16 @@ export default class PodcastResolver {
                     as: 'categories',
                 },
             },
+            {
+                $lookup: {
+                    from: 'entities',
+                    foreignField: '_id',
+                    localField: 'entities',
+                    as: 'entities',
+                },
+            },
         ])
-
         return podcasts
-    }
-    @Mutation((returns) => String)
-    async rerunPods(): Promise<string> {
-        return 'working'
-    }
-
-    @Mutation((returns) => String, {
-        description: 'Generates the palettes of a podcast based on the podcasts image',
-    })
-    // FIXME: Update function since generating palettes is already done
-    async generatePalettes(@Arg('slug') slug: string): Promise<string> {
-        const podcast = await PodcastModel.findOne({ slug: slug })
-        return 'generating palettes'
     }
 
     @Query((returns) => [Podcast], { description: 'Returns the featured podcasts' })
@@ -169,10 +158,10 @@ export default class PodcastResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -193,10 +182,10 @@ export default class PodcastResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -219,10 +208,10 @@ export default class PodcastResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])

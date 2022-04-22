@@ -9,7 +9,7 @@ export class Entity {
     @prop()
     type!: string
 
-    @Field((type) => [String])
+    @Field()
     @prop()
     name!: string
 

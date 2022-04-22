@@ -4,8 +4,9 @@ import { Episode } from './Episode'
 
 @ObjectType()
 export class Play {
-    @Field()
-    public _id: string // change the type of _id to string
+    @Field((type) => ID)
+    @prop()
+    public _id: string
 
     @Field((type) => Episode, { description: 'The slug of the epiosde' })
     @prop({ type: () => Episode })

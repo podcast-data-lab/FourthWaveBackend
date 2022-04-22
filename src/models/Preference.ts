@@ -1,9 +1,13 @@
 import { prop } from '@typegoose/typegoose'
-import { Field, ObjectType } from 'type-graphql'
-import { UiMode } from './UiMode'
+import { Field, ID, ObjectType } from 'type-graphql'
+import { UiMode } from './enums/UiMode'
 
 @ObjectType()
 export class UserPreference {
+    @Field((type) => ID)
+    @prop()
+    public _id: string
+
     @Field((type) => UiMode)
     @prop({ default: UiMode.Light })
     uiMode: UiMode

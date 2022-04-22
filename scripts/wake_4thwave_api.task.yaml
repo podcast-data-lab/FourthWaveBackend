@@ -1,0 +1,6 @@
+name: Wake 4thWave API
+slug: wake_4thwave_api
+description: Keep 4th Wave API up and running
+shell:
+    entrypoint: wake_4thwave_api.sh
+timeout: 3600

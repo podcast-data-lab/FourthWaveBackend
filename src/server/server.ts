@@ -43,7 +43,6 @@ import { User } from '../models/User'
             CategoryResolver,
             EntityResolver,
         ],
-
         emitSchemaFile: {
             path: './schema.graphql',
             sortedSchema: true,

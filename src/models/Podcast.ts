@@ -1,11 +1,15 @@
 import { prop, getModelForClass, Ref, DocumentType, mongoose } from '@typegoose/typegoose'
-import { Field, ObjectType } from 'type-graphql'
+import { Field, ID, ObjectType } from 'type-graphql'
 import { Category } from './Category'
 import { Episode } from './Episode'
 import { Entity } from './Entity'
 
 @ObjectType()
 export class Podcast {
+    @Field((type) => ID)
+    @prop()
+    public _id: string
+
     @Field()
     @prop()
     public title: string
