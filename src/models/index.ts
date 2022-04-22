@@ -1,5 +1,6 @@
 import { getModelForClass } from '@typegoose/typegoose'
 import { Episode } from './Episode'
+import { Library } from './Library'
 import { Play } from './Play'
 import { User } from './User'
 

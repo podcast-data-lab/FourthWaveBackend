@@ -1,4 +1,4 @@
-import { prop, Ref } from '@typegoose/typegoose'
+import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
 import { Field, ID, ObjectType } from 'type-graphql'
 import { Category } from './Category'
 import { Collection } from './Collection'
@@ -7,10 +7,6 @@ import { Podcast } from './Podcast'
 
 @ObjectType()
 export class Library {
-    @Field((type) => ID)
-    @prop()
-    public _id: string
-
     @Field((type) => [Episode])
     @prop({ ref: 'Episode', default: [] })
     public bookmarkedEpisodes: Ref<Episode>[]
@@ -35,3 +31,4 @@ export class Library {
     @prop({ ref: 'Podcast', default: [] })
     public subscribedPodcasts: Ref<Podcast>[]
 }
+export const LibraryModel = getModelForClass(Library)

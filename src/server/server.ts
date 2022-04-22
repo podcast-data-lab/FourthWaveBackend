@@ -29,6 +29,8 @@ import {
 import { AuthCheckerFn } from '../graphql/AuthChecker'
 import { verifyTokenAndGetUser } from '../db/authentication'
 import { User } from '../models/User'
+import { Library } from '../models/Library'
+import { UserPermission } from '../models/enums/Permissions'
 ;(async () => {
     const schema = await buildSchema({
         resolvers: [
@@ -59,12 +61,12 @@ import { User } from '../models/User'
 
     const server = new ApolloServer({
         schema,
-        context: async ({ request, reply }): Promise<User> => {
+        context: async ({ request, reply }): Promise<{ user: User; library: Library; roles: UserPermission[] }> => {
             let token = request.headers.authorization
             if (!token) return null
-            let user = verifyTokenAndGetUser(token)
-            if (!user) return null
-            return user
+            let userAndLib = await verifyTokenAndGetUser(token)
+            if (!userAndLib) return null
+            return { ...userAndLib, roles: [] }
         },
     })
 

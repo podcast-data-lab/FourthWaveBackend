@@ -24,10 +24,10 @@ export default class LibraryResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
             // { $project: { _id: 1 } }
@@ -52,10 +52,10 @@ export default class LibraryResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -71,10 +71,10 @@ export default class LibraryResolver {
             { $match: { slug: slug } },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -91,10 +91,10 @@ export default class LibraryResolver {
             { $match: { slug: slug } },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -121,10 +121,10 @@ export default class LibraryResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
             // { $project: { _id: 1 } }
@@ -154,10 +154,10 @@ export default class LibraryResolver {
             },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -177,10 +177,10 @@ export default class LibraryResolver {
             { $match: { slug: slug } },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])
@@ -201,10 +201,10 @@ export default class LibraryResolver {
             { $match: { slug: slug } },
             {
                 $lookup: {
-                    from: 'topics',
+                    from: 'entities',
                     foreignField: '_id',
-                    localField: 'topics',
-                    as: 'topics',
+                    localField: 'entities',
+                    as: 'entities',
                 },
             },
         ])

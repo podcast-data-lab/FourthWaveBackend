@@ -1,7 +1,10 @@
 import { GraphQLError } from 'graphql'
 import jwt from 'jsonwebtoken'
+import { ObjectId } from 'mongodb'
 import { firebaseAuth } from '../lib/firebase'
 import { UserModel } from '../models'
+import { LibraryModel } from '../models/Library'
+import { Library } from '../models/Library'
 import { User } from '../models/User'
 // let conf = require("dotenv").config("../../").parsed;
 
@@ -84,18 +87,31 @@ export const signInOrCreateUser = async (uid: string, email: string): Promise<Us
  * Verifies if a token is valid, otherwise throws an error
  * @param token
  */
-export const verifyTokenAndGetUser = async (token: string): Promise<User> => {
+export const verifyTokenAndGetUser = async (token: string): Promise<{ user: User; library: Library }> => {
     try {
         const verifiedToken = await firebaseAuth.verifyIdToken(token)
         let user = await UserModel.findOne({ uid: verifiedToken.uid, email: verifiedToken.email })
+        let library
+
         if (!user) {
             user = new UserModel({
                 uid: verifiedToken.uid,
                 email: verifiedToken.email,
             })
+            library = new LibraryModel({})
+            user.library = library._id
+            await library.save()
             await user.save()
+        } else {
+            library = await LibraryModel.findById({ _id: new ObjectId(user.library as any) })
+            if (!library) {
+                library = new LibraryModel({})
+                user.library = library._id
+                await library.save()
+                await user.save()
+            }
         }
-        return user
+        return { user, library }
     } catch (e) {
         throw new Error(e)
     }

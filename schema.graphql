@@ -58,7 +58,6 @@ type Episode {
 }
 
 type Library {
-    _id: ID!
     bookmarkedEpisodes: [Episode!]!
     collections: [Collection!]!
     followedCategories: [Category!]!
@@ -261,7 +260,6 @@ enum UiMode {
 }
 
 type User {
-    _id: ID!
     active: Boolean!
     admin: Boolean!
     contributions: [String!]!

@@ -1,4 +1,5 @@
 import { AuthChecker } from 'type-graphql'
+import { UserPermission } from '../models/enums/Permissions'
 /**
  * Roots custom auth checker
  * @param { root, arguments, context, info }
@@ -13,14 +14,14 @@ export const AuthCheckerFn: AuthChecker = ({ root, args, context, info }, roles)
     if (!context.roles) {
         return false
     }
-    // For Super Users - they can access everything
+    // For Editors - they can access some things
     //@ts-ignore
-    if (context.roles.includes('SUPER')) {
+    if (context.roles.includes(UserPermission.Editor)) {
         return true
     }
-    // For Moderators \
+    // For Admins - they can access everything
     //@ts-ignore
-    if (roles.includes('ADMIN') && context.roles.includes('ADMIN')) {
+    if (roles.includes(UserPermission.Admin) && context.roles.includes(UserPermission.Admin)) {
         return true
     }
 

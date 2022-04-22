@@ -8,10 +8,6 @@ import { UserPreference } from './Preference'
 
 @ObjectType()
 export class User {
-    @Field((type) => ID)
-    @prop()
-    public _id: string
-
     @Field()
     @prop()
     public name: string
@@ -40,7 +36,7 @@ export class User {
 
     @Field((type) => [UserPermission])
     @prop({ default: [] })
-    permissions: UserPermission
+    permissions: UserPermission[]
 
     @Field((type) => [String])
     @prop({ type: () => [String], default: [] })
