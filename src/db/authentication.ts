@@ -130,7 +130,7 @@ export const getAuthenticatedUser = async (token: String) => {
         return user
     } catch (error) {
         console.log(error.message)
-        captureException(e)
+        captureException(error)
         return null
     }
 }
