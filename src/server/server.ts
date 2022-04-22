@@ -74,9 +74,11 @@ import { UserPermission } from '../models/enums/Permissions'
                     .code(200)
                     .send(params.query['hub.challenge'] || 'ok')
                 break
+            case 'subscribe':
+                reply.header('Content-Type', 'text/plain').code(200).send(params.query['hub.challenge'])
+                break
             case 'unsubscribe':
                 reply.header('Content-Type', 'text/plain').code(200).send(params.query['hub.challenge'])
-
                 break
             default:
                 // Not a valid mode
