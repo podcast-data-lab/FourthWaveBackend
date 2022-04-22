@@ -6,6 +6,7 @@ import { UserModel } from '../models'
 import { LibraryModel } from '../models/Library'
 import { Library } from '../models/Library'
 import { User } from '../models/User'
+import { captureException } from '@sentry/node'
 // let conf = require("dotenv").config("../../").parsed;
 
 /**
@@ -113,6 +114,7 @@ export const verifyTokenAndGetUser = async (token: string): Promise<{ user: User
         }
         return { user, library }
     } catch (e) {
+        captureException(e)
         throw new Error(e)
     }
 }
@@ -128,6 +130,7 @@ export const getAuthenticatedUser = async (token: String) => {
         return user
     } catch (error) {
         console.log(error.message)
+        captureException(e)
         return null
     }
 }

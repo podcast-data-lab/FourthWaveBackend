@@ -192,7 +192,6 @@ initializeSentry()
 
     app.listen(PORT, host, () => {
         const message = `api listening on port ${PORT}`
-        captureMessage(message)
         console.log(message)
     })
 })()
