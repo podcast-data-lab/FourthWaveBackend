@@ -24,3 +24,4 @@ jobs:
                   HD_FIREBASE_PRIVATE_KEY: ${{secrets.FIREBASE_PRIVATE_KEY}}
                   HD_FIREBASE_CLIENT_EMAIL: ${{secrets.FIREBASE_CLIENT_EMAIL}}
                   HD_HMAC_SECRET: ${{secrets.HMAC_SECRET}}
+                  HD_SENTRY_DSN: ${{secrets.SENTRY_DSN}}

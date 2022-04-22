@@ -3,7 +3,8 @@ import { ApolloServer } from 'apollo-server-fastify'
 const mongoose = require('mongoose')
 import urllib from 'url'
 import crypto from 'crypto'
-
+import { initializeSentry } from '../lib/sentry'
+import { captureMessage, captureException } from '@sentry/node'
 // Require the environment variables
 require('dotenv').config('../../')
 
@@ -33,6 +34,8 @@ import { verifyTokenAndGetUser } from '../db/authentication'
 import { User } from '../models/User'
 import { Library } from '../models/Library'
 import { UserPermission } from '../models/enums/Permissions'
+
+initializeSentry()
 ;(async () => {
     const schema = await buildSchema({
         resolvers: [
@@ -65,6 +68,7 @@ import { UserPermission } from '../models/enums/Permissions'
         let params = urllib.parse(request.url, true, true)
         // Does not seem to be a valid PubSubHubbub request
         if (!params.query['hub.topic'] || !params.query['hub.mode']) {
+            captureMessage
             return reply.code(400).send('Bad Request')
         }
         switch (params.query['hub.mode']) {
@@ -75,18 +79,22 @@ import { UserPermission } from '../models/enums/Permissions'
                     .send(params.query['hub.challenge'] || 'ok')
                 break
             case 'subscribe':
+                captureMessage('Subscribed to ' + params.query['hub.topic'])
                 reply.header('Content-Type', 'text/plain').code(200).send(params.query['hub.challenge'])
                 break
             case 'unsubscribe':
+                captureMessage('Unsubscribe request received')
                 reply.header('Content-Type', 'text/plain').code(200).send(params.query['hub.challenge'])
                 break
             default:
                 // Not a valid mode
+                captureMessage('Pub Sub Request has an invalid mode')
                 return reply.code(403).send('Forbidden')
         }
     })
 
     app.post('/pubsub', async (request, reply) => {
+        captureMessage('Pub Sub Message received: ' + JSON.stringify({ request }))
         let bodyChunks = []
         let params = urllib.parse(request.url, true, true)
         let topic = params && params.query && params.query.topic
@@ -121,10 +129,12 @@ import { UserPermission } from '../models/enums/Permissions'
         setTopicHub(...requestRels)
 
         if (!topic) {
+            captureException('No topic found in request')
             return reply.code(400).send('Bad Request')
         }
 
         if (!request.headers['x-hub-signature']) {
+            captureException(new Error('No X-Hub-Signature header found'))
             return reply.code(400).send('Forbidden')
         }
 
@@ -135,8 +145,10 @@ import { UserPermission } from '../models/enums/Permissions'
         try {
             hmac = crypto.createHmac(algo, process.env.HMAC_SECRET)
         } catch (E) {
+            captureMessage('Invalid HMAC algorithm')
             return reply.code(400).send('Forbidden')
         }
+        reply.send('OK')
     })
 
     const server = new ApolloServer({
@@ -176,10 +188,12 @@ import { UserPermission } from '../models/enums/Permissions'
     })
 
     const host = '0.0.0.0'
-    const port = process.env.PORT || 6500
+    const PORT = process.env.PORT || 6500
 
-    app.listen(port, host, () => {
-        console.log(`api listening on port some port if not 6500`)
+    app.listen(PORT, host, () => {
+        const message = `api listening on port ${PORT}`
+        captureMessage(message)
+        console.log(message)
     })
 })()
 
