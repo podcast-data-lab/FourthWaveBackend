@@ -1,6 +1,8 @@
 import fastify from 'fastify'
 import { ApolloServer } from 'apollo-server-fastify'
 const mongoose = require('mongoose')
+import urllib from 'url'
+import crypto from 'crypto'
 
 // Require the environment variables
 require('dotenv').config('../../')
@@ -57,6 +59,82 @@ import { UserPermission } from '../models/enums/Permissions'
 
     app.get('/health', async (request, reply) => {
         reply.send('OK')
+    })
+
+    app.get('/pubsub', async (request, reply) => {
+        let params = urllib.parse(request.url, true, true)
+        // Does not seem to be a valid PubSubHubbub request
+        if (!params.query['hub.topic'] || !params.query['hub.mode']) {
+            return reply.code(400).send('Bad Request')
+        }
+        switch (params.query['hub.mode']) {
+            case 'denied':
+                reply
+                    .header('Content-Type', 'text/plain')
+                    .code(200)
+                    .send(params.query['hub.challenge'] || 'ok')
+                break
+            case 'unsubscribe':
+                reply.header('Content-Type', 'text/plain').code(200).send(params.query['hub.challenge'])
+
+                break
+            default:
+                // Not a valid mode
+                return reply.code(403).send('Forbidden')
+        }
+    })
+
+    app.post('/pubsub', async (request, reply) => {
+        let bodyChunks = []
+        let params = urllib.parse(request.url, true, true)
+        let topic = params && params.query && params.query.topic
+        let hub = params && params.query && params.query.hub
+        let bodyLen = 0
+        let tooLarge = false
+        let signatureParts
+        let algo
+        let signature
+        let hmac
+
+        const setTopicHub = (o, url, rel) => {
+            rel = rel || ''
+
+            switch (rel.toLowerCase()) {
+                case 'self':
+                    topic = url
+                    break
+                case 'hub':
+                    hub = url
+                    break
+            }
+        }
+
+        // v0.4 hubs have a link header that includes both the topic url and hub url
+        let regex = /<([^>]+)>;\s*rel=(?:["'](?=.*["']))?([A-z]+)/gi
+        let requestLink = (request.headers && request.headers.link) || ''
+        //@ts-ignore
+        let requestRels = regex.exec(requestLink)
+
+        //@ts-ignore
+        setTopicHub(...requestRels)
+
+        if (!topic) {
+            return reply.code(400).send('Bad Request')
+        }
+
+        if (!request.headers['x-hub-signature']) {
+            return reply.code(400).send('Forbidden')
+        }
+
+        signatureParts = (request.headers['x-hub-signature'] as string).split('=')
+        algo = (signatureParts.shift() || '').toLowerCase()
+        signature = (signatureParts.pop() || '').toLowerCase()
+
+        try {
+            hmac = crypto.createHmac(algo, process.env.HMAC_SECRET)
+        } catch (E) {
+            return reply.code(400).send('Forbidden')
+        }
     })
 
     const server = new ApolloServer({
