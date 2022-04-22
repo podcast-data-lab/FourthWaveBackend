@@ -6,7 +6,7 @@ import fs from 'fs'
 import path from 'path'
 import { CategoryModel } from '../models/Category'
 import chalk from 'chalk'
-import unique from 'just-unique'
+import { uniq } from 'ramda'
 
 const mongoose = require('mongoose')
 const { MONGO_DB } = require('dotenv').config('../../').parsed
@@ -52,7 +52,7 @@ export async function registerPodcast(_podcast, totalNo, currentNo) {
             list = []
             return
         }
-        list = unique(list)
+        list = uniq(list)
         for (let name of list as []) {
             let entity = await EntityModel.findOne({ type, name })
             if (entity) {
@@ -106,7 +106,7 @@ export async function registerPodcast(_podcast, totalNo, currentNo) {
                 list = []
                 return
             }
-            list = unique(list)
+            list = uniq(list)
             for (let name of list as []) {
                 let entity = await EntityModel.findOne({ type, name })
                 if (entity) {

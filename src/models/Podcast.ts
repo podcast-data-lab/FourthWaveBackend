@@ -1,4 +1,4 @@
-import { prop, getModelForClass, Ref, DocumentType, mongoose } from '@typegoose/typegoose'
+import { prop, getModelForClass, Ref, DocumentType } from '@typegoose/typegoose'
 import { Field, ID, ObjectType } from 'type-graphql'
 import { Category } from './Category'
 import { Episode } from './Episode'

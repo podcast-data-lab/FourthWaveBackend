@@ -1,7 +1,6 @@
 import { Arg, Query, Resolver } from 'type-graphql'
-import { shuffle } from '../../lib/functions'
 import { Entity, EntityModel } from '../../models/Entity'
-import { PodcastModel, Podcast } from '../../models/Podcast'
+import { Podcast } from '../../models/Podcast'
 import { uniqBy } from 'ramda'
 import { Episode } from '../../models/Episode'
 @Resolver((of) => Entity)
