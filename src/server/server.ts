@@ -107,14 +107,14 @@ initializeSentry()
     })
 
     app.post('/pubsub', async (request, reply) => {
-        // console.log((request))
+        console.log(JSON.stringify(request.body))
+        console.log(JSON.stringify(request.headers))
         // captureMessage('Pub Sub Message received: ' + ({ request }))
         let bodyChunks = []
         let params = urllib.parse(request.url, true, true)
         let topic = params && params.query && params.query.topic
         let hub = params && params.query && params.query.hub
 
-        console.log(JSON.stringify(request.headers))
 
         if (!topic) {
             captureException('No topic found in request')
