@@ -109,13 +109,11 @@ initializeSentry()
     app.post('/pubsub', async (request, reply) => {
         console.log(JSON.stringify(request.body))
         console.log(JSON.stringify(request.headers))
-        // captureMessage('Pub Sub Message received: ' + ({ request }))
-        let bodyChunks = []
-        let params = urllib.parse(request.url, true, true)
-        let topic = params && params.query && params.query.topic
-        let hub = params && params.query && params.query.hub
-
-        if (!topic) {
+        let links = /<(.*?)>/.exec(request.headers['link'] as string)
+        let topicUrl = links && links[1]
+        const content = request.body['rss']['channel']
+        if (content) console.log(content)
+        if (!topicUrl) {
             captureException('No topic found in request')
             return reply.code(400).send('Bad Request')
         }
