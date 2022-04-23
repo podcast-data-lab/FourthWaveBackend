@@ -94,6 +94,7 @@ initializeSentry()
     })
 
     app.post('/pubsub', async (request, reply) => {
+        console.log(JSON.stringify(request))
         captureMessage('Pub Sub Message received: ' + JSON.stringify({ request }))
         let bodyChunks = []
         let params = urllib.parse(request.url, true, true)
@@ -106,7 +107,7 @@ initializeSentry()
         let signature
         let hmac
 
-        const setTopicHub = (o, url, rel) => {
+        const setTopicHub = (o, url, rel, ...args) => {
             rel = rel || ''
 
             switch (rel.toLowerCase()) {
@@ -124,7 +125,6 @@ initializeSentry()
         let requestLink = (request.headers && request.headers.link) || ''
         //@ts-ignore
         let requestRels = regex.exec(requestLink)
-
         //@ts-ignore
         setTopicHub(...requestRels)
 
@@ -148,7 +148,7 @@ initializeSentry()
             captureMessage('Invalid HMAC algorithm')
             return reply.code(400).send('Forbidden')
         }
-        reply.send('OK')
+        return reply.send('OK')
     })
 
     const server = new ApolloServer({
