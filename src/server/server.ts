@@ -63,6 +63,15 @@ initializeSentry()
     app.get('/health', async (request, reply) => {
         reply.send('OK')
     })
+    app.addContentTypeParser('*', function (request, payload, done) {
+        var data = ''
+        payload.on('data', (chunk) => {
+            data += chunk
+        })
+        payload.on('end', () => {
+            done(null, data)
+        })
+    })
 
     app.get('/pubsub', async (request, reply) => {
         let params = urllib.parse(request.url, true, true)
