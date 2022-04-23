@@ -60,19 +60,19 @@ initializeSentry()
 
     const app = fastify()
 
-    // app.register(require('fastify-xml-body-parser'))
-    // Can use default JSON/Text parser for different content Types
-    // app.addContentTypeParser('text/json', { parseAs: 'string' }, app.getDefaultJsonParser('ignore', 'ignore'))
-    // app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
-    //     try {
-    //         // @ts-ignore
-    //         var json = JSON.parse(body)
-    //         done(null, json)
-    //     } catch (err) {
-    //         err.statusCode = 400
-    //         done(err, undefined)
-    //     }
-    // })
+    app.register(require('fastify-xml-body-parser'))
+    //Can use default JSON/Text parser for different content Types
+    app.addContentTypeParser('text/json', { parseAs: 'string' }, app.getDefaultJsonParser('ignore', 'ignore'))
+    app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+        try {
+            // @ts-ignore
+            var json = JSON.parse(body)
+            done(null, json)
+        } catch (err) {
+            err.statusCode = 400
+            done(err, undefined)
+        }
+    })
     app.get('/health', async (request, reply) => {
         reply.send('OK')
     })
@@ -114,7 +114,6 @@ initializeSentry()
         let params = urllib.parse(request.url, true, true)
         let topic = params && params.query && params.query.topic
         let hub = params && params.query && params.query.hub
-
 
         if (!topic) {
             captureException('No topic found in request')
