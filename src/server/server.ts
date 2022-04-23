@@ -60,17 +60,21 @@ initializeSentry()
 
     const app = fastify()
 
+    // app.register(require('fastify-xml-body-parser'))
+    // Can use default JSON/Text parser for different content Types
+    // app.addContentTypeParser('text/json', { parseAs: 'string' }, app.getDefaultJsonParser('ignore', 'ignore'))
+    // app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+    //     try {
+    //         // @ts-ignore
+    //         var json = JSON.parse(body)
+    //         done(null, json)
+    //     } catch (err) {
+    //         err.statusCode = 400
+    //         done(err, undefined)
+    //     }
+    // })
     app.get('/health', async (request, reply) => {
         reply.send('OK')
-    })
-    app.addContentTypeParser('*', function (request, payload, done) {
-        var data = ''
-        payload.on('data', (chunk) => {
-            data += chunk
-        })
-        payload.on('end', () => {
-            done(null, data)
-        })
     })
 
     app.get('/pubsub', async (request, reply) => {
@@ -103,39 +107,14 @@ initializeSentry()
     })
 
     app.post('/pubsub', async (request, reply) => {
-        console.log(JSON.stringify(request))
-        captureMessage('Pub Sub Message received: ' + JSON.stringify({ request }))
+        // console.log((request))
+        // captureMessage('Pub Sub Message received: ' + ({ request }))
         let bodyChunks = []
         let params = urllib.parse(request.url, true, true)
         let topic = params && params.query && params.query.topic
         let hub = params && params.query && params.query.hub
-        let bodyLen = 0
-        let tooLarge = false
-        let signatureParts
-        let algo
-        let signature
-        let hmac
 
-        const setTopicHub = (o, url, rel, ...args) => {
-            rel = rel || ''
-
-            switch (rel.toLowerCase()) {
-                case 'self':
-                    topic = url
-                    break
-                case 'hub':
-                    hub = url
-                    break
-            }
-        }
-
-        // v0.4 hubs have a link header that includes both the topic url and hub url
-        let regex = /<([^>]+)>;\s*rel=(?:["'](?=.*["']))?([A-z]+)/gi
-        let requestLink = (request.headers && request.headers.link) || ''
-        //@ts-ignore
-        let requestRels = regex.exec(requestLink)
-        //@ts-ignore
-        setTopicHub(...requestRels)
+        console.log(JSON.stringify(request.headers))
 
         if (!topic) {
             captureException('No topic found in request')
@@ -144,17 +123,6 @@ initializeSentry()
 
         if (!request.headers['x-hub-signature']) {
             captureException(new Error('No X-Hub-Signature header found'))
-            return reply.code(400).send('Forbidden')
-        }
-
-        signatureParts = (request.headers['x-hub-signature'] as string).split('=')
-        algo = (signatureParts.shift() || '').toLowerCase()
-        signature = (signatureParts.pop() || '').toLowerCase()
-
-        try {
-            hmac = crypto.createHmac(algo, process.env.HMAC_SECRET)
-        } catch (E) {
-            captureMessage('Invalid HMAC algorithm')
             return reply.code(400).send('Forbidden')
         }
         return reply.send('OK')

@@ -29,6 +29,7 @@
         "fastify-cors": "^6.0.2",
         "fastify-gql": "^5.8.2",
         "fastify-swagger": "^4.13.1",
+        "fastify-xml-body-parser": "^2.1.0",
         "firebase-admin": "^10.0.2",
         "graphql": "^15.3.0",
         "mongodb": "^4.3.1",
