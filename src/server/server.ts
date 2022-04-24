@@ -81,7 +81,7 @@ initializeSentry()
         let params = urllib.parse(request.url, true, true)
         // Does not seem to be a valid PubSubHubbub request
         if (!params.query['hub.topic'] || !params.query['hub.mode']) {
-            captureMessage
+            captureMessage('Invalid PubSubHubbub request')
             return reply.code(400).send('Bad Request')
         }
         switch (params.query['hub.mode']) {
@@ -108,6 +108,7 @@ initializeSentry()
 
     app.post('/pubsub', async (request, reply) => {
         let links = /<(.*?)>/.exec(request.headers['link'] as string)
+        captureMessage('pubsub request headers: ' + JSON.stringify(request.headers))
         let topicUrl = links && links[1]
         /* Only register podcasts that have an X-hub signature */
         if (topicUrl && request.headers['x-hub-signature']) {
