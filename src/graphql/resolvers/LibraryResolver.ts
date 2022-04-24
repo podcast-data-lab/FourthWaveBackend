@@ -6,12 +6,13 @@ import { User } from '../../models/User'
 import { GraphQLError } from 'graphql'
 import { Play } from '../../models/Play'
 import { Podcast, PodcastModel } from '../../models/Podcast'
-import { Library } from '../../models/Library'
+import { Library, LibraryModel } from '../../models/Library'
+import { UserContext } from '../../models/Context'
 
 @Resolver((of) => Library)
 export default class LibraryResolver {
     @Mutation((returns) => Podcast)
-    async subscribeToPodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+    async subscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Podcast> {
         const podcasts = await PodcastModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -32,14 +33,13 @@ export default class LibraryResolver {
             },
             // { $project: { _id: 1 } }
         ])
-        const user = context
-        user.subscribedPodcasts ? user.subscribedPodcasts.push(podcasts[0]._id) : (user.subscribedPodcasts = [podcasts[0]._id])
-        await user.save()
+        library.subscribedPodcasts.push(podcasts[0]._id)
+        await library.save()
         return podcasts[0]
     }
 
     @Mutation((returns) => Podcast)
-    async likePodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+    async likePodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Podcast> {
         const podcast = await PodcastModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -59,14 +59,13 @@ export default class LibraryResolver {
                 },
             },
         ])
-        const user = context
-        user.likedPodcasts.push(podcast[0]._id)
-        await user.save()
+        library.likedPodcasts.push(podcast[0]._id)
+        await library.save()
         return podcast[0]
     }
 
     @Mutation((returns) => Episode)
-    async likeEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+    async likeEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Episode> {
         const episode = await EpisodeModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -79,14 +78,13 @@ export default class LibraryResolver {
             },
         ])
 
-        const user = context
-        user.likedEpisodes.push(episode[0]._id)
-        await user.save()
+        library.likedEpisodes.push(episode[0]._id)
+        await library.save()
         return episode[0]
     }
 
     @Mutation((returns) => Episode)
-    async bookmarkEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+    async bookmarkEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Episode> {
         const episode = await EpisodeModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -99,16 +97,15 @@ export default class LibraryResolver {
             },
         ])
 
-        const user = context
-        user.bookmarkedEpisodes.push(episode[0]._id)
-        await user.save()
+        library.bookmarkedEpisodes.push(episode[0]._id)
+        await library.save()
         return episode[0]
     }
 
     // UNDO AN ACTION
 
     @Mutation((returns) => Podcast)
-    async unsubscribeToPodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+    async unsubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Podcast> {
         const podcasts = await PodcastModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -130,18 +127,16 @@ export default class LibraryResolver {
             // { $project: { _id: 1 } }
         ])
 
-        const user = context
+        const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts[0]._id)
 
-        const indx = user.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts[0]._id)
+        library.subscribedPodcasts.splice(indx, 1)
 
-        user.subscribedPodcasts.splice(indx, 1)
-
-        await user.save()
+        await library.save()
         return podcasts[0]
     }
 
     @Mutation((returns) => Podcast)
-    async unlikePodcast(@Arg('slug') slug: string, @Ctx() context): Promise<Podcast> {
+    async unlikePodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Podcast> {
         const podcasts = await PodcastModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -161,18 +156,17 @@ export default class LibraryResolver {
                 },
             },
         ])
-        const user = context
 
-        const indx = user.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts[0]._id)
+        const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts[0]._id)
 
-        user.subscribedPodcasts.splice(indx, 1)
+        library.subscribedPodcasts.splice(indx, 1)
 
-        await user.save()
+        await library.save()
         return podcasts[0]
     }
 
     @Mutation((returns) => Episode)
-    async unlikeEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+    async unlikeEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Episode> {
         const episodes = await EpisodeModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -185,18 +179,16 @@ export default class LibraryResolver {
             },
         ])
 
-        const user = context
+        const indx = library.likedEpisodes.findIndex((episode_id) => episode_id == episodes[0]._id)
 
-        const indx = user.likedEpisodes.findIndex((episode_id) => episode_id == episodes[0]._id)
+        library.likedEpisodes.splice(indx, 1)
 
-        user.likedEpisodes.splice(indx, 1)
-
-        await user.save()
+        await library.save()
         return episodes[0]
     }
 
     @Mutation((returns) => Episode)
-    async unbookmarkEpisode(@Arg('slug') slug: string, @Ctx() context): Promise<Episode> {
+    async unbookmarkEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Episode> {
         const episodes = await EpisodeModel.aggregate([
             { $match: { slug: slug } },
             {
@@ -209,13 +201,27 @@ export default class LibraryResolver {
             },
         ])
 
-        const user = context
+        const indx = library.bookmarkedEpisodes.findIndex((episode_id) => episode_id == episodes[0]._id)
 
-        const indx = user.bookmarkedEpisodes.findIndex((episode_id) => episode_id == episodes[0]._id)
+        library.bookmarkedEpisodes.splice(indx, 1)
 
-        user.bookmarkedEpisodes.splice(indx, 1)
-
-        await user.save()
+        await library.save()
         return episodes[0]
     }
+}
+
+export async function getLibraryWithPlayingQueue(_id: string): Promise<Library> {
+    return (
+        await LibraryModel.aggregate([
+            { $match: { _id } },
+            {
+                $lookup: {
+                    from: 'plays',
+                    foreignField: '_id',
+                    localField: 'queue',
+                    as: 'queue',
+                },
+            },
+        ])
+    )[0]
 }

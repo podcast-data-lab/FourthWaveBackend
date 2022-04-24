@@ -1,4 +1,4 @@
-import { prop, Ref } from '@typegoose/typegoose'
+import { prop, Ref, types } from '@typegoose/typegoose'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 import { Comment } from './Comment'
 import { Category } from './Category'

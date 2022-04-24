@@ -34,6 +34,7 @@ import { User } from '../models/User'
 import { Library } from '../models/Library'
 import { UserPermission } from '../models/enums/Permissions'
 import { handleFeedContent } from '../lib/handleFeedInput'
+import { UserContext } from '../models/Context'
 
 initializeSentry()
 ;(async () => {
@@ -120,7 +121,7 @@ initializeSentry()
 
     const server = new ApolloServer({
         schema,
-        context: async ({ request, reply }): Promise<{ user: User; library: Library; roles: UserPermission[] }> => {
+        context: async ({ request, reply }): Promise<UserContext> => {
             let token = request.headers.authorization
             if (!token) return null
             let userAndLib = await verifyTokenAndGetUser(token)

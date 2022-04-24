@@ -45,11 +45,6 @@ export class EntityResolver {
         return tpcs
     }
 
-    // TODO: Implement this
-    @Query((returns) => String)
-    async getEntityCoverPhoto(@Arg('title') title: string) {
-        return 'pic'
-    }
     /**
      * Search for podcasts based on entites - Podcasts that contain the entities
      * Search for episodes based on entities - Episodes that contain the entities

@@ -4,9 +4,9 @@ import { ObjectId } from 'mongodb'
 import { firebaseAuth } from '../lib/firebase'
 import { UserModel } from '../models'
 import { LibraryModel } from '../models/Library'
-import { Library } from '../models/Library'
 import { User } from '../models/User'
 import { captureException } from '@sentry/node'
+import { UserContext } from '../models/Context'
 // let conf = require("dotenv").config("../../").parsed;
 
 /**
@@ -88,7 +88,7 @@ export const signInOrCreateUser = async (uid: string, email: string): Promise<Us
  * Verifies if a token is valid, otherwise throws an error
  * @param token
  */
-export const verifyTokenAndGetUser = async (token: string): Promise<{ user: User; library: Library }> => {
+export const verifyTokenAndGetUser = async (token: string): Promise<Omit<UserContext, 'roles'>> => {
     try {
         const verifiedToken = await firebaseAuth.verifyIdToken(token)
         let user = await UserModel.findOne({ uid: verifiedToken.uid, email: verifiedToken.email })
