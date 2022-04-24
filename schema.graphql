@@ -4,26 +4,26 @@
 # -----------------------------------------------
 
 type Category {
-    _id: ID!
-    comments: [Comment!]!
-    contributor: User!
-    episodes: [Episode!]!
-    podcasts: [Podcast!]!
-    title: String!
+  _id: ID!
+  comments: [Comment!]!
+  contributor: User!
+  episodes: [Episode!]!
+  podcasts: [Podcast!]!
+  title: String!
 }
 
 type Collection {
-    _id: ID!
-    podcasts: [Podcast!]!
+  _id: ID!
+  podcasts: [Podcast!]!
 }
 
 type Comment {
-    _id: ID!
-    categories: Category!
-    content: String!
-    likes: [User!]!
-    podcast: Podcast!
-    userId: User!
+  _id: ID!
+  categories: Category!
+  content: String!
+  likes: [User!]!
+  podcast: Podcast!
+  userId: User!
 }
 
 """
@@ -32,263 +32,219 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Entity {
-    _id: ID!
-    episodes: [Episode!]!
-    name: String!
-    podcasts: [Podcast!]!
-    type: String!
+  _id: ID!
+  episodes: [Episode!]!
+  name: String!
+  podcasts: [Podcast!]!
+  type: String!
 }
 
 type Episode {
-    _id: ID!
-    categories: [Category!]
-    comments: [Comment!]
-    datePublished: DateTime!
-    description: String
-    duration: Float
-    entities: [Entity!]!
-    epNo: String
-    explicit: Boolean
-    image: String
-    likes: [User!]
-    link: String
-    plays: Play
-    podcast: Podcast
-    slug: String
-    snNo: String
-    sourceUrl: String
-    subtitle: String
-    title: String
+  _id: ID!
+  categories: [Category!]
+  comments: [Comment!]
+  datePublished: DateTime!
+  description: String
+  duration: Float
+  entities: [Entity!]!
+  epNo: String
+  explicit: Boolean
+  image: String
+  likes: [User!]
+  link: String
+  plays: Play
+  podcast: Podcast
+  slug: String
+  snNo: String
+  sourceUrl: String
+  subtitle: String
+  title: String
 }
 
 type Library {
-    bookmarkedEpisodes: [Episode!]!
-    collections: [Collection!]!
-    followedCategories: [Category!]!
-    likedEpisodes: [Episode!]!
-    likedPodcasts: [Podcast!]!
-    subscribedPodcasts: [Podcast!]!
+  bookmarkedEpisodes: [Episode!]!
+  collections: [Collection!]!
+  followedCategories: [Category!]!
+  likedEpisodes: [Episode!]!
+  likedPodcasts: [Podcast!]!
+  subscribedPodcasts: [Podcast!]!
 }
 
 type Mutation {
-    """
-    Adds an episode to a player's queue
-    """
-    addToBeginningOfQueue(slug: String!): Play!
+  """Adds an episode to a player's queue"""
+  addToBeginningOfQueue(slug: String!): Play!
 
-    """
-    Adds an episode to a player's queue
-    """
-    addToPlayerQueue(slug: String!): [Play!]!
-    bookmarkEpisode(slug: String!): Episode!
+  """Adds an episode to a player's queue"""
+  addToPlayerQueue(slug: String!): [Play!]!
+  bookmarkEpisode(slug: String!): Episode!
 
-    """
-    Changes a user's playing speed
-    """
-    changePlayingSpeed(speed: Float!): Float!
+  """Changes a user's playing speed"""
+  changePlayingSpeed(speed: Float!): Float!
 
-    """
-    Deletes/Clears a user's playing queue
-    """
-    clearQueue: [Play!]!
+  """Deletes/Clears a user's playing queue"""
+  clearQueue: [Play!]!
 
-    """
-    completes the currently playing item and loads the current queue
-    """
-    completeAndGoToNext(playId: String!): [Play!]!
-    likeEpisode(slug: String!): Episode!
-    likePodcast(slug: String!): Podcast!
+  """completes the currently playing item and loads the current queue"""
+  completeAndGoToNext(playId: String!): [Play!]!
+  likeEpisode(slug: String!): Episode!
+  likePodcast(slug: String!): Podcast!
 
-    """
-    Sets a user Volume
-    """
-    setUserVolume(volume: Float!): Float!
-    signUp: User!
+  """Sets a user Volume"""
+  setUserVolume(volume: Float!): Float!
+  signUp: User!
 
-    """
-    Starts the playing of a Play object
-    """
-    startPlay(slug: String!): Play!
-    subscribeToPodcast(slug: String!): Podcast!
-    unbookmarkEpisode(slug: String!): Episode!
-    unlikeEpisode(slug: String!): Episode!
-    unlikePodcast(slug: String!): Podcast!
-    unsubscribeToPodcast(slug: String!): Podcast!
+  """Starts the playing of a Play object"""
+  startPlay(slug: String!): Play!
+  subscribeToPodcast(slug: String!): Podcast!
+  unbookmarkEpisode(slug: String!): Episode!
+  unlikeEpisode(slug: String!): Episode!
+  unlikePodcast(slug: String!): Podcast!
+  unsubscribeToPodcast(slug: String!): Podcast!
 
-    """
-    Updates the play position of a Play object
-    """
-    updatePlayPosition(playId: Float!, position: Float!): Play!
+  """Updates the play position of a Play object"""
+  updatePlayPosition(playId: Float!, position: Float!): Play!
 
-    """
-    Updates a user's player queue
-    """
-    updatePlayerQueue(queue: String!): Play!
+  """Updates a user's player queue"""
+  updatePlayerQueue(queue: String!): Play!
 
-    """
-    Updates the position of a user's Play object
-    """
-    updatePosition(playId: String!, position: Float!): Play!
+  """Updates the position of a user's Play object"""
+  updatePosition(playId: String!, position: Float!): Play!
 }
 
 type Play {
-    completed: Boolean
+  completed: Boolean
 
-    """
-    The slug of the epiosde
-    """
-    episode: Episode!
-    position: Float!
-    started: Boolean!
+  """The slug of the epiosde"""
+  episode: Episode!
+  position: Float!
+  started: Boolean!
 }
 
 type PlayingQueue {
-    _id: ID!
-    plays: [Play!]!
+  _id: ID!
+  plays: [Play!]!
 }
 
 type Podcast {
-    _id: ID!
-    base64image: String
-    categories: [Category!]
-    description: String
-    entities: [Entity!]
-    episodes: [Episode!]
-    frequency: Float
-    hmac: String
-    image: String
-    lastEpisodeDate: DateTime
-    lastRssBuildDate: DateTime
-    link: String
-    palette: [String!]!
-    publisher: String
-    releaseDay: Float
-    rssFeed: String
-    slug: String!
-    title: String!
+  _id: ID!
+  base64image: String
+  categories: [Category!]
+  description: String
+  entities: [Entity!]
+  episodes: [Episode!]
+  frequency: Float
+  hmac: String
+  image: String
+  lastEpisodeDate: DateTime
+  lastRssBuildDate: DateTime
+  link: String
+  palette: [String!]!
+  publisher: String
+  releaseDay: Float
+  rssFeed: String
+  slug: String!
+  title: String!
 }
 
 type Query {
-    """
-    Returns a list of all the genres
-    """
-    getCategories: [Category!]!
-    getCategorySearchRecommendations: [Category!]!
-    getComment: Comment
+  """Returns a list of all the genres"""
+  getCategories: [Category!]!
+  getCategorySearchRecommendations: [Category!]!
+  getComment: Comment
 
-    """
-    Returns a list of recommended topics
-    """
-    getEntitySearchRecommendations: [Entity!]!
+  """Returns a list of recommended topics"""
+  getEntitySearchRecommendations: [Entity!]!
 
-    """
-    Returns the featured podcasts
-    """
-    getFeatured: [Podcast!]!
+  """Returns the featured podcasts"""
+  getFeatured: [Podcast!]!
 
-    """
-    Find a podcast based on it's slug
-    """
-    getPodcast(slug: String!): Podcast!
+  """Find a podcast based on it's slug"""
+  getPodcast(slug: String!): Podcast!
 
-    """
-    Returns a podcasts'episodes. 20 podcast episodes at a time.
-    """
-    getPodcastEpisodes(page: Float!, slug: String!): [Episode!]!
+  """Returns a podcasts'episodes. 20 podcast episodes at a time."""
+  getPodcastEpisodes(page: Float!, slug: String!): [Episode!]!
 
-    """
-    Get podcasts ~ 50 podcasts at a time.
-    """
-    getPodcasts(page: Float!): [Podcast!]!
+  """Get podcasts ~ 50 podcasts at a time."""
+  getPodcasts(page: Float!): [Podcast!]!
 
-    """
-    Returns the Most Played Podcasts
-    """
-    getTopPlayed: [Podcast!]!
+  """Returns the Most Played Podcasts"""
+  getTopPlayed: [Podcast!]!
 
-    """
-    Returns the Trending Podcasts
-    """
-    getTrending: [Podcast!]!
+  """Returns the Trending Podcasts"""
+  getTrending: [Podcast!]!
 
-    """
-    Returns a user's player queue
-    """
-    getUserQueue: [Play!]!
-    print: String!
+  """Returns a user's player queue"""
+  getUserQueue: [Play!]!
+  print: String!
 
-    """
-    Searches for entities based on a search string. Returns 10 entities at a time
-            As well as the first 5 podcasts and episodes that contain the entities.
-    """
-    searchEntities(entityType: String, searchString: String!): [Entity!]!
+  """
+  Searches for entities based on a search string. Returns 10 entities at a time
+          As well as the first 5 podcasts and episodes that contain the entities.
+  """
+  searchEntities(entityType: String, searchString: String!): [Entity!]!
 
-    """
-    Searches for podcasts episodes based on a search string and entity.
-                For instance, Searching for podcasts that mention "Jollof" will return podcast episodes that mention that entityName
-                Returns 10 podcast episodes at a time.
-    """
-    searchEpisodeByEntity(entityName: String!, entityType: String): [Episode!]!
+  """
+  Searches for podcasts episodes based on a search string and entity. 
+              For instance, Searching for podcasts that mention "Jollof" will return podcast episodes that mention that entityName
+              Returns 10 podcast episodes at a time.
+  """
+  searchEpisodeByEntity(entityName: String!, entityType: String): [Episode!]!
 
-    """
-    Find episodes based on a search string. Searches can be restricted to title, description, or both.
-    """
-    searchEpisodes(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Episode!]!
+  """
+  Find episodes based on a search string. Searches can be restricted to title, description, or both.
+  """
+  searchEpisodes(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Episode!]!
 
-    """
-    Searches for podcasts based on a search string and entity.
-                For instance, Searching for podcasts that mention "Obama" will return podcasts that mention that entityName
-                Returns 10 podcasts at a time.
-    """
-    searchPodcastByEntity(entityName: String!, entityType: String): [Podcast!]!
+  """
+  Searches for podcasts based on a search string and entity. 
+              For instance, Searching for podcasts that mention "Obama" will return podcasts that mention that entityName
+              Returns 10 podcasts at a time.
+  """
+  searchPodcastByEntity(entityName: String!, entityType: String): [Podcast!]!
 
-    """
-    Searches for podcasts based on a search string. Returns 10 podcasts at a time.
-            Searches can be specified to be in the title or description or both.
-    """
-    searchPodcasts(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Podcast!]!
+  """
+  Searches for podcasts based on a search string. Returns 10 podcasts at a time.
+          Searches can be specified to be in the title or description or both.
+  """
+  searchPodcasts(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Podcast!]!
 
-    """
-    Returns the Most Popular Podcast Episodes
-    """
-    topEpisodes: [Episode!]!
+  """Returns the Most Popular Podcast Episodes"""
+  topEpisodes: [Episode!]!
 }
 
 """
 UI Mode - Either '"Light" or "Dark"
 """
 enum UiMode {
-    Dark
-    Light
+  Dark
+  Light
 }
 
 type User {
-    active: Boolean!
-    admin: Boolean!
-    contributions: [String!]!
-    email: String!
-    library: Library!
-    name: String!
-    permissions: [UserPermission!]!
-    plays: [Play!]!
-    preferences: UserPreference!
-    queue: [PlayingQueue!]!
-    uid: String!
+  active: Boolean!
+  admin: Boolean!
+  contributions: [String!]!
+  email: String!
+  library: Library!
+  name: String!
+  permissions: [UserPermission!]!
+  plays: [Play!]!
+  preferences: UserPreference!
+  queue: [PlayingQueue!]!
+  uid: String!
 }
 
-"""
-User Permissions
-"""
+"""User Permissions"""
 enum UserPermission {
-    Admin
-    Editor
-    User
+  Admin
+  Editor
+  User
 }
 
 type UserPreference {
-    _id: ID!
-    playbackSpeed: Float!
-    skipAds: Boolean!
-    uiMode: UiMode!
-    volume: Float!
+  _id: ID!
+  playbackSpeed: Float!
+  skipAds: Boolean!
+  uiMode: UiMode!
+  volume: Float!
 }
