@@ -1,20 +1,45 @@
-import fetch, { Headers } from 'node-fetch'
 import striptags from 'striptags'
-import { EpisodeModel } from '../models'
-
+import { PodcastModel } from '../models/Podcast'
+import { parseEpisodeData, registerEntities, registerEpisode, EntitiesInput } from './registerModels'
 const NEX_ENDPOINT = process.env.NEX_ENDPOINT
 const NEX_API_KEY = process.env.API_KEY
+import { captureException } from '@sentry/node'
+import request from 'request'
 
 export async function handleFeedContent(requestBody: { [index: string]: any }, feedUrl: string) {
     let content = requestBody.rss.channel
 
-    let items = content.items
-    items.forEach((item) => {
-        let description = striptags(item.description)
-    })
+    let episodeData = content.items
+    return Promise.all(
+        episodeData.map(async (item) => {
+            try {
+                // remove escape characters
+                let descriptionText = item.description ?? item['content:encoded'] ?? ''
+                let description = striptags(descriptionText.replace(/\\“/g, '"').replace(/\\”/, '"').replace(/\\’/, "'"))
+                let namedEntities = await getNamedEntities(description)
+                let podcastInQuesion = await PodcastModel.findOne({ rssFeed: feedUrl })
+                if (!podcastInQuesion) {
+                    return
+                }
+
+                let { episodeObject } = parseEpisodeData(item, podcastInQuesion.slug)
+                let episode = await registerEpisode(episodeObject)
+                let entities = await registerEntities(namedEntities, episode)
+
+                entities.map(({ _id }) => episode.entities.push(_id))
+                await episode.save()
+                return episode
+            } catch (error) {
+                captureException(error)
+                return
+            }
+        }),
+    )
 }
 
-async function getNamedEntities(text: string) {
+let emptyBody = { payload: '', entities: {} }
+
+async function getNamedEntities(text: string): Promise<EntitiesInput> {
     let headers = new Headers({
         'x-api-key': NEX_API_KEY,
         'Content-Type': 'text/plain',
@@ -23,5 +48,10 @@ async function getNamedEntities(text: string) {
         headers,
         method: 'POST',
     }
-    return await fetch(NEX_ENDPOINT, requestOptions)
+    return await request(NEX_ENDPOINT, requestOptions)
+        .then((res) => res.json())
+        .then((body: { [index: string]: any }) => {
+            return body?.entities ?? emptyBody.entities
+        })
+        .catch((err) => emptyBody.entities)
 }

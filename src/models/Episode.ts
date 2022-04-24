@@ -50,7 +50,7 @@ export class Episode {
     @prop()
     public image: string
 
-    @Field((type) => [Podcast], { nullable: true })
+    @Field((type) => Podcast, { nullable: true })
     @prop({ ref: 'Podcast' })
     public podcast: Ref<Podcast>
 

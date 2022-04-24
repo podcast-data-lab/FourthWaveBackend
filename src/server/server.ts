@@ -2,7 +2,6 @@ import fastify from 'fastify'
 import { ApolloServer } from 'apollo-server-fastify'
 const mongoose = require('mongoose')
 import urllib from 'url'
-import crypto from 'crypto'
 import { initializeSentry } from '../lib/sentry'
 import { captureMessage, captureException } from '@sentry/node'
 // Require the environment variables

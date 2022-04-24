@@ -8,15 +8,15 @@ import { CategoryModel } from '../models/Category'
 import { ObjectId } from 'mongodb'
 
 type PodcastObject = { [Property in keyof Omit<Podcast, '_id'>]: Podcast[Property] }
-type PodcastModelInput = { podcastObject: PodcastObject; entitiesInput: Entities; categoriesInput: Categories }
+export type PodcastModelInput = { podcastObject: PodcastObject; entitiesInput: EntitiesInput; categoriesInput: Categories }
 
 type EpisodeObject = { [Property in keyof Omit<Episode, '_id'>]: Episode[Property] }
-type EpisodeModelInput = { episodeObject: EpisodeObject; entitiesInput: Entities }
+export type EpisodeModelInput = { episodeObject: EpisodeObject; entitiesInput: EntitiesInput }
 
-type Entities = { [index: string]: string[] }
+export type EntitiesInput = { [index: string]: string[] }
 type Categories = [string]
 
-async function registerEpisode(episodeData: EpisodeObject) {
+export async function registerEpisode(episodeData: EpisodeObject) {
     let episode = await EpisodeModel.findOne({ slug: episodeData.slug })
     if (!episode) {
         episode = new EpisodeModel({
@@ -67,7 +67,7 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
     return podcast
 }
 
-async function registerEntities(entities: Entities, currentObject: Podcast | Episode) {
+export async function registerEntities(entities: EntitiesInput, currentObject: Podcast | Episode) {
     return Promise.all(
         Object.entries(entities).map(async ([entityType, entitiesInList]) => {
             if (!Array.isArray(entitiesInList)) {
@@ -123,7 +123,7 @@ function registerCategories(categoryArray: string[], currentObject: Podcast | Ep
 function parsePodcastData(podcastData: { [index: string]: any }): PodcastModelInput {
     let podcastObject: PodcastObject = {
         title: podcastData.title,
-        slug: slugify(podcastData.title),
+        slug: `${slugify(podcastData.title)}-${slugify(podcastData?.itunes?.owner?.name)}`,
         rssFeed: podcastData.feedUrl,
         categories: [],
         episodes: [],
