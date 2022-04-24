@@ -112,9 +112,8 @@ initializeSentry()
         let topicUrl = links && links[1]
         /* Only register podcasts that have an X-hub signature */
         if (topicUrl && request.headers['x-hub-signature']) {
-            captureException('No topic found in request')
             handleFeedContent(request.body as { [index: string]: string }, topicUrl)
-        }
+        } else captureException('No topic found in request')
         return reply.code(200).send('OK. But not topic found')
     })
 

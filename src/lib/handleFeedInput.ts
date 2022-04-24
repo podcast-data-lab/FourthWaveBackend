@@ -47,11 +47,16 @@ async function getNamedEntities(text: string): Promise<EntitiesInput> {
     let requestOptions = {
         headers,
         method: 'POST',
+        url: NEX_ENDPOINT,
     }
-    return await request(NEX_ENDPOINT, requestOptions)
-        .then((res) => res.json())
-        .then((body: { [index: string]: any }) => {
-            return body?.entities ?? emptyBody.entities
+    return await new Promise((resolve, reject) => {
+        request(requestOptions, (error, response, body) => {
+            if (error) {
+                return resolve(emptyBody.entities)
+            } else {
+                let parsedBody = JSON.parse(body)
+                return resolve(parsedBody.entities ?? emptyBody.entities)
+            }
         })
-        .catch((err) => emptyBody.entities)
+    })
 }

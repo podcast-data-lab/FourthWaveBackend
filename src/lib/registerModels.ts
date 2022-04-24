@@ -131,9 +131,9 @@ function parsePodcastData(podcastData: { [index: string]: any }): PodcastModelIn
         lastRssBuildDate: new Date(podcastData?.lastRssBuildDate ?? new Date()),
         link: podcastData?.link ?? '',
         publisher: podcastData?.itunes?.owner?.name ?? '',
-
+        hmac: '',
         palette: podcastData?.palette ?? [],
-        description: podcastData?.description ?? '',
+        description: podcastData?.description.trim() ?? '',
     }
 
     let entitiesInput = podcastData.entities ?? {}
@@ -148,7 +148,7 @@ export function parseEpisodeData(episodeData: { [index: string]: any }, podcastS
         sourceUrl: episodeData?.enclosure?.url ?? '',
         link: episodeData?.link ?? '',
         subtitle: '',
-        description: episodeData?.content ?? '',
+        description: episodeData?.content.trim() ?? '',
         duration: (episodeData?.duration && parseTimeToMilliseconds(episodeData.duration)) ?? 0,
         datePublished: episodeData.pubDate,
         image: episodeData?.itunes?.image ?? '',

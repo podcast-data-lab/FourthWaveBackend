@@ -19,6 +19,9 @@ export class Podcast {
     rssFeed: string
 
     @Field({ nullable: true })
+    hmac: string
+
+    @Field({ nullable: true })
     @prop()
     base64image?: string
 
