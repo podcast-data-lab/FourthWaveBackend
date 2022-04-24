@@ -155,6 +155,7 @@ type Podcast {
     entities: [Entity!]
     episodes: [Episode!]
     frequency: Float
+    hmac: String
     image: String
     lastEpisodeDate: DateTime
     lastRssBuildDate: DateTime
@@ -174,7 +175,6 @@ type Query {
     getCategories: [Category!]!
     getCategorySearchRecommendations: [Category!]!
     getComment: Comment
-    getEntityCoverPhoto(title: String!): String!
 
     """
     Returns a list of recommended topics
