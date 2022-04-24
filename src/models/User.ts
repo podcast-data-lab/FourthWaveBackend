@@ -1,4 +1,4 @@
-import { prop, getModelForClass, Ref, pre, DocumentType } from '@typegoose/typegoose'
+import { prop, Ref } from '@typegoose/typegoose'
 import { Field, ID, ObjectType } from 'type-graphql'
 import { UserPermission } from './enums/Permissions'
 import { Library } from './Library'

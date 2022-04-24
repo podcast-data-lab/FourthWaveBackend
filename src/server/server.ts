@@ -109,6 +109,7 @@ initializeSentry()
     app.post('/pubsub', async (request, reply) => {
         let links = /<(.*?)>/.exec(request.headers['link'] as string)
         captureMessage('pubsub request headers: ' + JSON.stringify(request.headers))
+        console.log('pubsub request headers: ' + JSON.stringify(request.headers))
         let topicUrl = links && links[1]
         /* Only register podcasts that have an X-hub signature */
         if (topicUrl && request.headers['x-hub-signature']) {

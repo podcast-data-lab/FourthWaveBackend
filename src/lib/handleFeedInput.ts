@@ -8,8 +8,9 @@ import request from 'request'
 
 export async function handleFeedContent(requestBody: { [index: string]: any }, feedUrl: string) {
     let content = requestBody.rss.channel
-
-    let episodeData = content.items
+    console.log(JSON.stringify(content))
+    /* This is in the item of the object */
+    let episodeData = content.item
     return Promise.all(
         episodeData.map(async (item) => {
             try {
