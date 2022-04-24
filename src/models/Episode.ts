@@ -5,16 +5,22 @@ import { Category } from './Category'
 import { User } from './User'
 import { Entity } from './Entity'
 import { Play } from './Play'
+import { Podcast } from './Podcast'
+import { ObjectId } from 'mongoose'
 
 @ObjectType()
 export class Episode {
     @Field((type) => ID)
-    @prop()
-    public _id: string
+    @prop({ type: () => String })
+    public _id: ObjectId
 
-    @Field()
+    @Field({ nullable: true })
     @prop()
     public title: string
+
+    @Field({ nullable: true })
+    @prop()
+    public subtitle?: string
 
     @Field((type) => Date)
     @prop({ type: () => Date })
@@ -26,19 +32,27 @@ export class Episode {
 
     @Field({ nullable: true })
     @prop()
-    public duration: string
+    public duration: number
 
-    @Field()
+    @Field({ nullable: true })
     @prop()
     public sourceUrl: string
 
     @Field({ nullable: true })
     @prop()
-    public image: string
+    public link?: string
 
     @Field({ nullable: true })
     @prop()
-    public podcast: string
+    public explicit?: boolean
+
+    @Field({ nullable: true })
+    @prop()
+    public image: string
+
+    @Field((type) => [Podcast], { nullable: true })
+    @prop({ ref: 'Podcast' })
+    public podcast: Ref<Podcast>
 
     @Field({ nullable: true })
     @prop({ default: 0 })

@@ -1,12 +1,12 @@
 import { prop } from '@typegoose/typegoose'
 import { Field, ID, ObjectType } from 'type-graphql'
 import { UiMode } from './enums/UiMode'
-
+import { ObjectId } from 'mongoose'
 @ObjectType()
 export class UserPreference {
     @Field((type) => ID)
-    @prop()
-    public _id: string
+    @prop({ type: () => String })
+    public _id: ObjectId
 
     @Field((type) => UiMode)
     @prop({ default: UiMode.Light })

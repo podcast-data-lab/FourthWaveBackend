@@ -3,12 +3,12 @@ import { Field, ID, ObjectType } from 'type-graphql'
 import { Category } from './Category'
 import { Episode } from './Episode'
 import { Entity } from './Entity'
-
+import { ObjectId } from 'mongoose'
 @ObjectType()
 export class Podcast {
     @Field((type) => ID)
-    @prop()
-    public _id: string
+    @prop({ type: () => String })
+    public _id: ObjectId
 
     @Field()
     @prop()
@@ -16,51 +16,48 @@ export class Podcast {
 
     @Field({ nullable: true })
     @prop()
-    publisher: string
-
-    @Field({ nullable: true })
-    @prop()
     rssFeed: string
 
     @Field({ nullable: true })
     @prop()
-    base64image: string
+    base64image?: string
 
     @Field({ nullable: true })
     @prop()
     link: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop()
     image: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop()
     description: string
+
+    @Field({ nullable: true })
+    @prop()
+    publisher?: string
 
     @Field((type) => [String])
     @prop({ type: () => [String] })
     palette: [string]
 
-    public async setPalette(this: DocumentType<Podcast>, palette: [string]) {
-        this.palette = palette
-        await this.save()
-    }
-    @Field((type) => Date, { nullable: true })
-    @prop({ type: () => Date })
-    lastRssBuildDate: Date
+    @Field((type) => Number, { nullable: true })
+    @prop({ type: () => Number })
+    frequency?: number
 
     @Field((type) => Number, { nullable: true })
     @prop({ type: () => Number })
-    frequency: number
-
-    @Field((type) => Number, { nullable: true })
-    @prop({ type: () => Number })
-    releaseDay: number
+    releaseDay?: number
 
     @Field((type) => Date, { nullable: true })
     @prop({ type: () => Date })
-    lastEpisodeDate: Date
+    lastEpisodeDate?: Date
+
+    @Field((type) => Date, { nullable: true })
+    @prop({ type: () => Date })
+    lastRssBuildDate?: Date
+
     @Field()
     @prop({
         type: String,
@@ -71,7 +68,7 @@ export class Podcast {
 
     @Field((type) => [Category], { nullable: true })
     @prop({ ref: 'Category' })
-    categories: Ref<Category>[]
+    categories?: Ref<Category>[]
 
     @Field((type) => [Entity], {
         nullable: true,

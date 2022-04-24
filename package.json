@@ -8,7 +8,7 @@
         "dev": "concurrently \"tsc -w\" \"nodemon dist/server/server.js\"",
         "build": "tsc",
         "postinstall": "yarn build",
-        "build:pods": "yarn build && chmod +x .github/scripts/build_db && ./scripts/build_db",
+        "build:pods": "yarn build && chmod +x ./scripts/build_db && ./scripts/build_db",
         "commit": "cz",
         "release": "standard-version"
     },
@@ -34,13 +34,16 @@
         "graphql": "^15.3.0",
         "mongodb": "^4.3.1",
         "mongoose": "^6.3.0",
+        "node-fetch": "^3.2.3",
         "ramda": "^0.28.0",
         "reflect-metadata": "^0.1.13",
         "rss-parser": "^3.12.0",
         "slugify": "^1.6.5",
+        "striptags": "^3.2.0",
         "type-graphql": "^1.1.1",
         "typescript": "^4.5.5",
-        "unsplash-js": "^7.0.15"
+        "unsplash-js": "^7.0.15",
+        "uuid4": "^2.0.2"
     },
     "devDependencies": {
         "@babel/core": "^7.16.12",
@@ -50,6 +53,7 @@
         "@commitlint/config-conventional": "^16.2.1",
         "@types/mongoose": "^5.11.96",
         "@types/ramda": "^0.28.11",
+        "@types/uuid4": "^2.0.0",
         "@typescript-eslint/eslint-plugin": "^5.20.0",
         "@typescript-eslint/parser": "^5.20.0",
         "commitizen": "^4.2.4",

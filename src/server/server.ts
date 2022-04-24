@@ -34,6 +34,7 @@ import { verifyTokenAndGetUser } from '../db/authentication'
 import { User } from '../models/User'
 import { Library } from '../models/Library'
 import { UserPermission } from '../models/enums/Permissions'
+import { handleFeedContent } from '../lib/handleFeedInput'
 
 initializeSentry()
 ;(async () => {
@@ -107,22 +108,14 @@ initializeSentry()
     })
 
     app.post('/pubsub', async (request, reply) => {
-        console.log(JSON.stringify(request.body))
-        console.log(JSON.stringify(request.headers))
         let links = /<(.*?)>/.exec(request.headers['link'] as string)
         let topicUrl = links && links[1]
-        const content = request.body['rss']['channel']
-        if (content) console.log(content)
-        if (!topicUrl) {
+        /* Only register podcasts that have an X-hub signature */
+        if (topicUrl && request.headers['x-hub-signature']) {
             captureException('No topic found in request')
-            return reply.code(400).send('Bad Request')
+            handleFeedContent(request.body as { [index: string]: string }, topicUrl)
         }
-
-        if (!request.headers['x-hub-signature']) {
-            captureException(new Error('No X-Hub-Signature header found'))
-            return reply.code(400).send('Forbidden')
-        }
-        return reply.send('OK')
+        return reply.code(200).send('OK. But not topic found')
     })
 
     const server = new ApolloServer({

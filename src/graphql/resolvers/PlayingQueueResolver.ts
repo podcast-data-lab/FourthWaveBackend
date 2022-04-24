@@ -12,7 +12,7 @@ export class PlayingQueueResolver {
 
         const episode = await EpisodeModel.findOne({ slug: slug })
         const play = new PlayModel({
-            episode: Episode,
+            episode,
             position: 0,
             started: true,
             completed: false,
