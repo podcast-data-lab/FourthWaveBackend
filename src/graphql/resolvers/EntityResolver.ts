@@ -3,6 +3,7 @@ import { Entity, EntityModel } from '../../models/Entity'
 import { Podcast } from '../../models/Podcast'
 import { uniqBy } from 'ramda'
 import { Episode } from '../../models/Episode'
+import { DocumentType } from '@typegoose/typegoose'
 @Resolver((of) => Entity)
 export class EntityResolver {
     @Query((returns) => [Entity], {
@@ -144,7 +145,7 @@ export class EntityResolver {
                     score: { boost: { value: 2 } },
                 },
             })
-        const podcasts: Podcast[] = await EntityModel.aggregate([
+        const podcasts: DocumentType<Podcast>[] = await EntityModel.aggregate([
             {
                 $search: {
                     index: 'ENTITY_NAME_TYPE',
@@ -198,7 +199,7 @@ export class EntityResolver {
                     score: { boost: { value: 2 } },
                 },
             })
-        const episodes: Episode[] = await EntityModel.aggregate([
+        const episodes: DocumentType<Episode>[] = await EntityModel.aggregate([
             {
                 $search: {
                     index: 'ENTITY_NAME_TYPE',

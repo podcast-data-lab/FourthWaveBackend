@@ -7,10 +7,6 @@ import { ObjectId } from 'mongoose'
 import { PodcastAuthor } from './PodcastAuthor'
 @ObjectType()
 export class Podcast {
-    @Field((type) => ID)
-    @prop({ type: () => String })
-    public _id: ObjectId
-
     @Field()
     @prop()
     public title: string

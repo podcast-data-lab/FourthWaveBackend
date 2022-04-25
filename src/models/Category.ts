@@ -7,10 +7,6 @@ import { User } from './User'
 
 @ObjectType()
 export class Category {
-    @Field((type) => ID)
-    @prop()
-    public _id: string
-
     @Field()
     @prop({
         type: String,

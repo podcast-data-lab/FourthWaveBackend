@@ -11,9 +11,6 @@ import { PodcastAuthor } from './PodcastAuthor'
 
 @ObjectType()
 export class Episode {
-    @Field((type) => ID)
-    @prop({ type: () => String })
-    public _id: ObjectId
 
     @Field({ nullable: true })
     @prop()

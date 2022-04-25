@@ -5,10 +5,6 @@ import { Podcast } from './Podcast'
 
 @ObjectType()
 export class Entity {
-    @Field((type) => ID)
-    @prop()
-    _id!: string
-
     @Field()
     @prop()
     type!: string

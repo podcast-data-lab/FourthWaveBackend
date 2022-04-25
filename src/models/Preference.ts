@@ -4,10 +4,6 @@ import { UiMode } from './enums/UiMode'
 import { ObjectId } from 'mongoose'
 @ObjectType()
 export class UserPreference {
-    @Field((type) => ID)
-    @prop({ type: () => String })
-    public _id: ObjectId
-
     @Field((type) => UiMode)
     @prop({ default: UiMode.Light })
     uiMode: UiMode

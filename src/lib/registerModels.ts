@@ -2,11 +2,12 @@ import { EpisodeModel, PodcastAuthorModel } from '../models'
 import { Episode } from '../models/Episode'
 import { Podcast, PodcastModel } from '../models/Podcast'
 import slugify from 'slugify'
-import { EntityModel } from '../models/Entity'
+import { Entity, EntityModel } from '../models/Entity'
 import { flatten, uniq } from 'ramda'
 import { CategoryModel } from '../models/Category'
 import { ObjectId } from 'mongodb'
 import chalk from 'chalk'
+import { DocumentType } from '@typegoose/typegoose'
 
 type PodcastObject = { [Property in keyof Omit<Podcast, '_id'>]: Podcast[Property] }
 export type PodcastModelInput = { podcastObject: PodcastObject; entitiesInput: EntitiesInput; categoriesInput: Categories, authorInput: PodcastAuthorInput }
@@ -43,7 +44,8 @@ export async function registerPodcastAuthor(author: PodcastAuthorInput) {
 }
 
 async function registerPodcast(podcastData: PodcastObject) {
-    let podcast = await PodcastModel.findOne({ slug: podcastData.slug })
+    let podcast = await PodcastModel.findOne({ rssFeed: podcastData.rssFeed })
+    if(!podcast) podcast = await PodcastModel.findOne({slug: podcastData.slug})
     if (!podcast) {
         podcast = new PodcastModel({
             ...podcastData,
@@ -61,6 +63,7 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
     let entities = await registerEntities(entitiesInput, podcast)
     let categories = await registerCategories(categoriesInput, podcast)
     let author = await registerPodcastAuthor(authorInput)
+
     podcast.author = author
     categories.map(({ _id }) => podcast.categories.push(_id))
     entities.map(({ _id }) => podcast.entities.push(_id))
@@ -90,64 +93,64 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
     return podcast
 }
 
-export async function registerEntities(entities: EntitiesInput, currentObject: Podcast | Episode) {
-    return Promise.all(
-        Object.entries(entities).map(async ([entityType, entitiesInList]) => {
-            if (!Array.isArray(entitiesInList)) {
-                entitiesInList = []
-                return
-            }
-            entitiesInList = uniq(entitiesInList)
-            return Promise.all(
-                entitiesInList.map(async (entityName) => {
-                    let entity = await EntityModel.findOne({ type: entityType, name: entityName })
-                    if (!entity) {
-                        entity = new EntityModel({
-                            type: entityType,
-                            name: entityName,
-                            _id: new ObjectId(),
-                        })
-                        if (currentObject instanceof Episode) {
-                            entity.episodes = [currentObject]
-                        } else {
-                            entity.podcasts = [currentObject]
-                        }
-                        await entity.save()
-                    }
-                    return entity
-                }),
-            )
-        }),
-    ).then((entities) => flatten(entities))
-}
-
-function registerCategories(categoryArray: string[], currentObject: Podcast | Episode) {
-    return Promise.all(
-        categoryArray.map(async (title) => {
-            let category = await CategoryModel.findOne({ title })
-            if (!category) {
-                category = new CategoryModel({
-                    title,
-                    slug: slugify(title),
+export async function registerEntities(entities: EntitiesInput, currentObject: Podcast | Episode): Promise<DocumentType<Entity>[]> {
+    let registeredEntities = []
+    let listOfEntities = Object.entries(entities)
+    for (let [entityType, entitiesInList] of listOfEntities) {
+        if (!Array.isArray(entitiesInList)) {
+            entitiesInList = []
+            continue
+        }
+        entitiesInList = uniq(entitiesInList)
+        for (let entityName in entitiesInList) {
+            let entity = await EntityModel.findOne({ type: entityType, name: entityName })
+            if (!entity) {
+                entity = new EntityModel({
+                    type: entityType,
+                    name: entityName,
                     _id: new ObjectId(),
                 })
+                if (currentObject instanceof Episode) {
+                    entity.episodes = [currentObject]
+                } else {
+                    entity.podcasts = [currentObject]
+                }
+                await entity.save()
             }
-            if (currentObject instanceof Episode) {
-                category.episodes = [currentObject]
-            } else {
-                category.podcasts = [currentObject]
-            }
-            await category.save()
-            return category
-        }),
-    )
+            registeredEntities.push(entity)
+        }
+    }
+    return registeredEntities
+
+}
+
+async function registerCategories(categoryArray: string[], currentObject: Podcast | Episode) {
+    let categories = []
+    for (const title of  categoryArray){
+        let category = await CategoryModel.findOne({ title })
+        if (!category) {
+            category = new CategoryModel({
+                title,
+                slug: slugify(title),
+                _id: new ObjectId(),
+            })
+        }
+        if (currentObject instanceof Episode) {
+            category.episodes = [currentObject]
+        } else {
+            category.podcasts = [currentObject]
+        }
+        await category.save()
+        categories.push(category)
+    }
+    return categories
 }
 
 function parsePodcastData(podcastData: { [index: string]: any }): PodcastModelInput {
     let podcastObject: PodcastObject = {
         title: podcastData?.feed.title,
-        slug: `${slugify(podcastData?.feed.title)+ (podcastData?.feed?.author? '-': '') + slugify(podcastData?.feed?.author ?? '')}`,
-        rssFeed: podcastData?.feed.feedUrl,
+        slug: `${slugify(podcastData?.feed?.title) + (podcastData?.feed?.author? '-': '') + slugify(podcastData?.feed?.author ?? '')}`,
+        rssFeed: podcastData.feed_url,
         categories: [],
         episodes: [],
         image: podcastData?.feed?.image?.url ?? '',
