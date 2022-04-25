@@ -26,4 +26,4 @@ jobs:
                   HD_HMAC_SECRET: ${{secrets.HMAC_SECRET}}
                   HD_SENTRY_DSN: ${{secrets.SENTRY_DSN}}
                   HD_LAMBDA_API_KEY: ${{secrets.LAMBDA_API_KEY}}
-                  HD_LAMBDA_NEX_ENDPOINT: ${{secrets.LAMBDA_NEX_ENDPOINT}}
+                  HD_LAMBDA_ENDPOINT: ${{secrets.LAMBDA_ENDPOINT}}

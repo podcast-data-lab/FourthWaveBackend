@@ -1,4 +1,4 @@
-import { EpisodeModel } from '../models'
+import { EpisodeModel, PodcastAuthorModel } from '../models'
 import { Episode } from '../models/Episode'
 import { Podcast, PodcastModel } from '../models/Podcast'
 import slugify from 'slugify'
@@ -8,13 +8,13 @@ import { CategoryModel } from '../models/Category'
 import { ObjectId } from 'mongodb'
 
 type PodcastObject = { [Property in keyof Omit<Podcast, '_id'>]: Podcast[Property] }
-export type PodcastModelInput = { podcastObject: PodcastObject; entitiesInput: EntitiesInput; categoriesInput: Categories }
-
+export type PodcastModelInput = { podcastObject: PodcastObject; entitiesInput: EntitiesInput; categoriesInput: Categories, authorInput: PodcastAuthorInput }
+type PodcastAuthorInput = {name?: string, email?: string}
 type EpisodeObject = { [Property in keyof Omit<Episode, '_id'>]: Episode[Property] }
-export type EpisodeModelInput = { episodeObject: EpisodeObject; entitiesInput: EntitiesInput }
+export type EpisodeModelInput = { episodeObject: EpisodeObject; entitiesInput: EntitiesInput, authorInput: PodcastAuthorInput }
 
 export type EntitiesInput = { [index: string]: string[] }
-type Categories = [string]
+type Categories = string[]
 
 export async function registerEpisode(episodeData: EpisodeObject) {
     let episode = await EpisodeModel.findOne({ slug: episodeData.slug })
@@ -28,8 +28,20 @@ export async function registerEpisode(episodeData: EpisodeObject) {
     return episode
 }
 
+export async function registerPodcastAuthor(author: PodcastAuthorInput) {
+    let podcastAuthor = await PodcastAuthorModel.findOne({ email: author.email })
+    if (!podcastAuthor) {
+        podcastAuthor = new PodcastAuthorModel({
+            ...author,
+            _id: new ObjectId(),
+        })
+        await podcastAuthor.save()
+    }
+    return podcastAuthor
+}
+
 async function registerPodcast(podcastData: PodcastObject) {
-    let podcast = await PodcastModel.findOne({ slug: slugify(podcastData.title) })
+    let podcast = await PodcastModel.findOne({ slug: podcastData.slug })
     if (!podcast) {
         podcast = new PodcastModel({
             ...podcastData,
@@ -41,22 +53,25 @@ async function registerPodcast(podcastData: PodcastObject) {
 }
 
 export async function parseFeedAndRegister(feedObject: { [index: string]: any }) {
-    let { podcastObject, categoriesInput, entitiesInput } = await parsePodcastData(feedObject)
+    let { podcastObject, categoriesInput, entitiesInput, authorInput } = await parsePodcastData(feedObject)
 
     let podcast = await registerPodcast(podcastObject)
     let entities = await registerEntities(entitiesInput, podcast)
     let categories = await registerCategories(categoriesInput, podcast)
-
+    let author = await registerPodcastAuthor(authorInput)
+    podcast.author = author
     categories.map(({ _id }) => podcast.categories.push(_id))
     entities.map(({ _id }) => podcast.entities.push(_id))
 
     /*** Register Podcast episode */
     let episodes = await Promise.all(
-        feedObject.items.map(async (episodeItem) => {
-            let { episodeObject, entitiesInput } = await parseEpisodeData(episodeItem, podcast.slug)
+        feedObject.entries.map(async (episodeItem) => {
+            let { episodeObject, entitiesInput, authorInput} = await parseEpisodeData(episodeItem, podcast)
             let episode = await registerEpisode(episodeObject)
             let entities = await registerEntities(entitiesInput, episode)
+            let author = await registerPodcastAuthor(authorInput)
             entities.map(({ _id }) => episode.entities.push(_id))
+            episode.author = author
             await episode.save()
             return episode
         }),
@@ -122,53 +137,72 @@ function registerCategories(categoryArray: string[], currentObject: Podcast | Ep
 
 function parsePodcastData(podcastData: { [index: string]: any }): PodcastModelInput {
     let podcastObject: PodcastObject = {
-        title: podcastData.title,
-        slug: `${slugify(podcastData.title)}-${slugify(podcastData?.itunes?.owner?.name)}`,
-        rssFeed: podcastData.feedUrl,
+        title: podcastData?.feed.title,
+        slug: `${slugify(podcastData?.feed.title)+ (podcastData?.feed?.author? '-': '') + slugify(podcastData?.feed?.author ?? '')}`,
+        rssFeed: podcastData?.feed.feedUrl,
         categories: [],
         episodes: [],
-        image: podcastData?.image?.url ?? '',
-        lastRssBuildDate: new Date(podcastData?.lastRssBuildDate ?? new Date()),
-        link: podcastData?.link ?? '',
-        publisher: podcastData?.itunes?.owner?.name ?? '',
+        image: podcastData?.feed?.image?.url ?? '',
+        lastUpdated: new Date(podcastData?.published ?? new Date()),
+        link: podcastData?.feed?.link ?? '',
+        publisher: podcastData?.feed?.author ?? '',
         hmac: '',
         palette: podcastData?.palette ?? [],
-        description: podcastData?.description.trim() ?? '',
+        description: podcastData?.feed?.summary.trim() ?? '',
     }
 
     let entitiesInput = podcastData.entities ?? {}
-    let categoriesInput = podcastData?.itunes?.categories ?? []
-    return { podcastObject, entitiesInput, categoriesInput }
+    let categoriesInput = getCategories(podcastData?.feed?.tags)
+    let authorInput = (podcastData?.author_detail && {...podcastData?.feed?.author_detail}) 
+        ?? {...(podcastData?.feed.authors && podcastData?.feed?.authors[0])}
+        ?? null
+    return { podcastObject, entitiesInput, categoriesInput, authorInput }
 }
 
-export function parseEpisodeData(episodeData: { [index: string]: any }, podcastSlug: string): EpisodeModelInput {
+type Tag = {label: string, scheme: string, term: string}
+function getCategories(categories: Tag[]): string[] {
+    return categories.map((category) => category.term)
+}
+export function parseEpisodeData(episodeData: { [index: string]: any }, podcast: Podcast): EpisodeModelInput {
     let episodeObject: EpisodeObject = {
         title: episodeData.title,
-        slug: `${podcastSlug}/${slugify(episodeData.title)}`,
+        slug: `${podcast.slug}/${slugify(episodeData.title)}`,
         sourceUrl: episodeData?.enclosure?.url ?? '',
-        link: episodeData?.link ?? '',
-        subtitle: '',
-        description: episodeData?.content.trim() ?? '',
-        duration: (episodeData?.duration && parseTimeToMilliseconds(episodeData.duration)) ?? 0,
-        datePublished: episodeData.pubDate,
-        image: episodeData?.itunes?.image ?? '',
-        podcast: episodeData.podcast,
-        epNo: episodeData?.itunes?.episode ?? -1,
-        snNo: episodeData?.itunes?.season ?? -1,
-        explicit: parseExplicit(episodeData?.itunes?.explicit ?? 'no'),
+        link: getAudioLink(episodeData?.links).href,
+        subtitle: episodeData?.subtitle,
+        mime: getAudioLink(episodeData?.links).type,
+        description: getContentType(episodeData?.summary?.trim(), 'text/plain') ?? episodeData?.subtitle.trim()?? '',
+        htmlDescription: getContentType(episodeData?.summary?.trim(), 'text/html'),
+        duration:  parseTimeToMilliseconds(episodeData.itunes_duration),
+        published: episodeData.published,
+        image: episodeData?.image?.href,
+        podcast: podcast,
+        epNo: episodeData?.itunes_episode ?? -1,
+        snNo: episodeData?.itunes_season ?? -1,
+        explicit: episodeData?.itunes_explicit ?? false,
         likes: [],
         comments: [],
         plays: [],
         entities: [],
     }
     let entitiesInput = episodeData.entities ?? {}
-    return { episodeObject, entitiesInput }
+    let authorInput = episodeData?.authors[0] ?? null
+    return { episodeObject, entitiesInput, authorInput }
 }
-
-function parseExplicit(explicit: string): boolean {
-    return explicit === 'yes' || explicit === 'true'
+let AUDIO_MIME_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/ogg', 'audio/wav', ' application/ogg']
+type Link = {href: string, rel: string, type: string}
+function getAudioLink(links: Link[]): Link {
+    // Return the link with the type audio/mp4, 'audio/mpeg', '	audio/x-wav', application/ogg, 	audio/x-wav, or audio/x-aiff
+    return links?.find((link) => AUDIO_MIME_TYPES.includes(link.type)) ?? {href: '', rel: '', type: ''}
+}
+type Content = {base: string, language: string, type: string, value: string}
+function getContentType(contents: Content[], mime: 'text/html' | 'text/plain'): string {
+    if(!Array.isArray(contents)) return ''
+    return contents?.find((content) => content.type === mime)?.value ?? ''
 }
 function parseTimeToMilliseconds(time: string): number {
+    if(!time) return -1
+    if(/^[0-9]+$/.test(time)) return parseInt(time)
     let [hours, minutes, seconds] = time.split(':')
     return parseInt(hours) * 60 * 60 * 1000 + parseInt(minutes) * 60 * 1000 + parseInt(seconds) * 1000
 }

@@ -7,3 +7,5 @@ dist
 dist/*
 temp
 fourth-wave-firebase-adminsdk-ovf4n-d972397150.json
+hub_data
+**/.DS_Store

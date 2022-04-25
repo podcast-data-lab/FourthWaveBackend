@@ -33,7 +33,7 @@ import { verifyTokenAndGetUser } from '../db/authentication'
 import { User } from '../models/User'
 import { Library } from '../models/Library'
 import { UserPermission } from '../models/enums/Permissions'
-import { handleFeedContent } from '../lib/handleFeedInput'
+import { handleFeedContentUpdate } from '../lib/handleFeedInput'
 import { UserContext } from '../models/Context'
 
 initializeSentry()
@@ -114,7 +114,7 @@ initializeSentry()
         let topicUrl = links && links[1]
         /* Only register podcasts that have an X-hub signature */
         if (topicUrl && request.headers['x-hub-signature']) {
-            handleFeedContent(request.body as { [index: string]: string }, topicUrl)
+            handleFeedContentUpdate(topicUrl)
         } else captureException('No topic found in request')
         return reply.code(200).send('OK. But not topic found')
     })

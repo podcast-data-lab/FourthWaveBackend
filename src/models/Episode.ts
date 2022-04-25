@@ -7,6 +7,7 @@ import { Entity } from './Entity'
 import { Play } from './Play'
 import { Podcast } from './Podcast'
 import { ObjectId } from 'mongoose'
+import { PodcastAuthor } from './PodcastAuthor'
 
 @ObjectType()
 export class Episode {
@@ -24,11 +25,24 @@ export class Episode {
 
     @Field((type) => Date)
     @prop({ type: () => Date })
-    public datePublished: Date
+    public published: Date
+
+    @Field({ nullable: true })
+    @prop()
+    public mime?: string
+
+    @Field((type) => PodcastAuthor, { nullable: true })
+    @prop({ ref: 'PodcastAuthor'})
+    author?: Ref<PodcastAuthor>
 
     @Field({ nullable: true })
     @prop()
     public description: string
+
+
+    @Field({ nullable: true })
+    @prop()
+    public htmlDescription: string
 
     @Field({ nullable: true })
     @prop()

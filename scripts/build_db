@@ -2,13 +2,13 @@
 
 # Get the latest files from podcast data generator
 
-mkdir temp
+# mkdir temp
 
-ORG_NAME=podcast-data-lab
-REPO_NAME=entity-extraction
-LATEST_VERSION=$(curl -s https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/releases/latest | grep "tag_name" | cut -d'v' -f2 | cut -d'"' -f1)
+# ORG_NAME="podcast-data-lab"
+# REPO_NAME="podcast-lambdas"
+# LATEST_VERSION=$(curl -s https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/releases/latest | grep "tag_name" | cut -d'v' -f2 | cut -d'"' -f1)
 
-wget -P temp "https://github.com/${ORG_NAME}/${REPO_NAME}/archive/refs/tags/v${LATEST_VERSION}.zip"
-unzip "temp/v${LATEST_VERSION}.zip" -d temp
-
+# wget -P temp "https://github.com/${ORG_NAME}/${REPO_NAME}/archive/refs/tags/v${LATEST_VERSION}.zip"
+# unzip "temp/v${LATEST_VERSION}.zip" -d temp
+LATEST_VERSION="0.1.0"
 node dist/lib/buildPodcasts.js "${LATEST_VERSION}"

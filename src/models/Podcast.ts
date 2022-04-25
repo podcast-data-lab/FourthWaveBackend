@@ -4,6 +4,7 @@ import { Category } from './Category'
 import { Episode } from './Episode'
 import { Entity } from './Entity'
 import { ObjectId } from 'mongoose'
+import { PodcastAuthor } from './PodcastAuthor'
 @ObjectType()
 export class Podcast {
     @Field((type) => ID)
@@ -24,6 +25,10 @@ export class Podcast {
     @Field({ nullable: true })
     @prop()
     base64image?: string
+
+    @Field((type) => PodcastAuthor, { nullable: true })
+    @prop({ ref: 'PodcastAuthor'})
+    author?: Ref<PodcastAuthor>
 
     @Field({ nullable: true })
     @prop()
@@ -59,7 +64,7 @@ export class Podcast {
 
     @Field((type) => Date, { nullable: true })
     @prop({ type: () => Date })
-    lastRssBuildDate?: Date
+    lastUpdated?: Date
 
     @Field()
     @prop({
