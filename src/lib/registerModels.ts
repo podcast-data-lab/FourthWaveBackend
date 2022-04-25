@@ -102,7 +102,7 @@ export async function registerEntities(entities: EntitiesInput, currentObject: P
             continue
         }
         entitiesInList = uniq(entitiesInList)
-        for (let entityName in entitiesInList) {
+        for (let entityName of entitiesInList) {
             let entity = await EntityModel.findOne({ type: entityType, name: entityName })
             if (!entity) {
                 entity = new EntityModel({
