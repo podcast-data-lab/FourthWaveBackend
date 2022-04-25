@@ -41,19 +41,22 @@ type Entity {
 
 type Episode {
   _id: ID!
+  author: PodcastAuthor
   categories: [Category!]
   comments: [Comment!]
-  datePublished: DateTime!
   description: String
-  duration: Float
+  duration: String
   entities: [Entity!]!
   epNo: String
   explicit: Boolean
+  htmlDescription: String
   image: String
   likes: [User!]
   link: String
+  mime: String
   plays: Play
   podcast: Podcast
+  published: DateTime!
   slug: String
   snNo: String
   sourceUrl: String
@@ -127,6 +130,7 @@ type PlayingQueue {
 
 type Podcast {
   _id: ID!
+  author: PodcastAuthor
   base64image: String
   categories: [Category!]
   description: String
@@ -136,7 +140,7 @@ type Podcast {
   hmac: String
   image: String
   lastEpisodeDate: DateTime
-  lastRssBuildDate: DateTime
+  lastUpdated: DateTime
   link: String
   palette: [String!]!
   publisher: String
@@ -144,6 +148,11 @@ type Podcast {
   rssFeed: String
   slug: String!
   title: String!
+}
+
+type PodcastAuthor {
+  email: String!
+  name: String!
 }
 
 type Query {
