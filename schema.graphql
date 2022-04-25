@@ -45,7 +45,7 @@ type Episode {
   categories: [Category!]
   comments: [Comment!]
   description: String
-  duration: Float
+  duration: String
   entities: [Entity!]!
   epNo: String
   explicit: Boolean
