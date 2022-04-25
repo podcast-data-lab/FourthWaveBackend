@@ -6,6 +6,7 @@ import { EntityModel } from '../models/Entity'
 import { flatten, uniq } from 'ramda'
 import { CategoryModel } from '../models/Category'
 import { ObjectId } from 'mongodb'
+import chalk from 'chalk'
 
 type PodcastObject = { [Property in keyof Omit<Podcast, '_id'>]: Podcast[Property] }
 export type PodcastModelInput = { podcastObject: PodcastObject; entitiesInput: EntitiesInput; categoriesInput: Categories, authorInput: PodcastAuthorInput }
@@ -29,7 +30,8 @@ export async function registerEpisode(episodeData: EpisodeObject) {
 }
 
 export async function registerPodcastAuthor(author: PodcastAuthorInput) {
-    let podcastAuthor = await PodcastAuthorModel.findOne({ email: author.email })
+    let podcastAuthor
+    if(author?.email) podcastAuthor = await PodcastAuthorModel.findOne({ email: author?.email })
     if (!podcastAuthor) {
         podcastAuthor = new PodcastAuthorModel({
             ...author,
@@ -66,17 +68,23 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
     /*** Register Podcast episode */
     let episodes = await Promise.all(
         feedObject.entries.map(async (episodeItem) => {
-            let { episodeObject, entitiesInput, authorInput} = await parseEpisodeData(episodeItem, podcast)
-            let episode = await registerEpisode(episodeObject)
-            let entities = await registerEntities(entitiesInput, episode)
-            let author = await registerPodcastAuthor(authorInput)
-            entities.map(({ _id }) => episode.entities.push(_id))
-            episode.author = author
-            await episode.save()
-            return episode
+            try {
+                let { episodeObject, entitiesInput, authorInput} = await parseEpisodeData(episodeItem, podcast)
+                let episode = await registerEpisode(episodeObject)
+                let entities = await registerEntities(entitiesInput, episode)
+                let author = await registerPodcastAuthor(authorInput)
+                entities.map(({ _id }) => episode.entities.push(_id))
+                episode.author = author
+                await episode.save()
+                return episode
+            } catch (error) {
+                console.log(`${chalk.red.bold('✗')} Error in registering episode: ${chalk.yellow(error.message)}`)
+                return
+            }
+            
         }),
     )
-    episodes.map(({ _id }) => podcast.episodes.push(_id))
+    episodes.filter(_=> !!_).map(({ _id }) => podcast.episodes.push(_id))
 
     await podcast.save()
     return podcast
@@ -92,7 +100,7 @@ export async function registerEntities(entities: EntitiesInput, currentObject: P
             entitiesInList = uniq(entitiesInList)
             return Promise.all(
                 entitiesInList.map(async (entityName) => {
-                    let entity = await EntityModel.findOne({ entityType, entityName })
+                    let entity = await EntityModel.findOne({ type: entityType, name: entityName })
                     if (!entity) {
                         entity = new EntityModel({
                             type: entityType,
@@ -154,7 +162,7 @@ function parsePodcastData(podcastData: { [index: string]: any }): PodcastModelIn
     let entitiesInput = podcastData.entities ?? {}
     let categoriesInput = getCategories(podcastData?.feed?.tags)
     let authorInput = (podcastData?.author_detail && {...podcastData?.feed?.author_detail}) 
-        ?? {...(podcastData?.feed.authors && podcastData?.feed?.authors[0])}
+        ?? {...(podcastData?.feed?.authors && podcastData?.feed?.authors?.length && podcastData?.feed?.authors[0])}
         ?? null
     return { podcastObject, entitiesInput, categoriesInput, authorInput }
 }
@@ -186,7 +194,7 @@ export function parseEpisodeData(episodeData: { [index: string]: any }, podcast:
         entities: [],
     }
     let entitiesInput = episodeData.entities ?? {}
-    let authorInput = episodeData?.authors[0] ?? null
+    let authorInput = (episodeData?.authors && episodeData?.authors?.length && episodeData?.authors[0] )?? null
     return { episodeObject, entitiesInput, authorInput }
 }
 let AUDIO_MIME_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/ogg', 'audio/wav', ' application/ogg']
@@ -200,9 +208,10 @@ function getContentType(contents: Content[], mime: 'text/html' | 'text/plain'): 
     if(!Array.isArray(contents)) return ''
     return contents?.find((content) => content.type === mime)?.value ?? ''
 }
-function parseTimeToMilliseconds(time: string): number {
-    if(!time) return -1
-    if(/^[0-9]+$/.test(time)) return parseInt(time)
+function parseTimeToMilliseconds(time: string): string {
+    if (!time) return ""
+    if(!(/^[0-9:]*$/gm.test(time))) return time
+    if(/^[0-9]+$/.test(time)) return parseInt(time).toString()
     let [hours, minutes, seconds] = time.split(':')
-    return parseInt(hours) * 60 * 60 * 1000 + parseInt(minutes) * 60 * 1000 + parseInt(seconds) * 1000
+    return (parseInt(hours) * 60 * 60 * 1000 + parseInt(minutes) * 60 * 1000 + parseInt(seconds) * 1000).toString()
 }

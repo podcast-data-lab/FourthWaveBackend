@@ -12,12 +12,17 @@ mongoose.connect(MONGO_DB, {
 })
 
 export async function registerPodcast(podcastFeedData, totalNo, currentNo) {
-    let podcast = await parseFeedAndRegister(podcastFeedData)
-    console.log(
-        `${chalk.yellow.bold(podcast.title)} registered ${chalk.green('✔')}\n${chalk.hex('#DCC9B6')(
-            ((currentNo / totalNo) * 100).toFixed(2) + `%`,
-        )}\n`,
-    )
+    return parseFeedAndRegister(podcastFeedData).catch((e) => {
+        console.log(`${chalk.red.bold('✗')} Error in registering podcast: ${(e.message)}`)
+        return e
+    }).then((podcast) => {
+        console.log(
+            `${chalk.yellow.bold(podcast.title)} registered ${chalk.green('✔')}\n${chalk.hex('#DCC9B6')(
+                ((currentNo / totalNo) * 100).toFixed(2) + `%`,
+            )}\n`,
+        )
+    })
+    
 }
 
 ;(async () => {

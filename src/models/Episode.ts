@@ -46,7 +46,7 @@ export class Episode {
 
     @Field({ nullable: true })
     @prop()
-    public duration: number
+    public duration: string
 
     @Field({ nullable: true })
     @prop()

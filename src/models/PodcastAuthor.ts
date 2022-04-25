@@ -5,14 +5,11 @@ import { Field, ObjectType } from 'type-graphql'
 export class PodcastAuthor {
     @Field()
     @prop()
-    public name: string
+    public name?: string
 
     @Field()
     @prop({
         type: String,
-        required: true,
-        lowercase: true,
-        unique: true,
     })
-    public email: string
+    public email?: string
 }
