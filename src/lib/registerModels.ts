@@ -8,6 +8,7 @@ import { CategoryModel } from '../models/Category'
 import { ObjectId } from 'mongodb'
 import chalk from 'chalk'
 import { DocumentType } from '@typegoose/typegoose'
+import { Author } from '../models/Author'
 
 type PodcastObject = { [Property in keyof Omit<Podcast, '_id'>]: Podcast[Property] }
 export type PodcastModelInput = { podcastObject: PodcastObject; entitiesInput: EntitiesInput; categoriesInput: Categories, authorInput: PodcastAuthorInput }
@@ -30,18 +31,29 @@ export async function registerEpisode(episodeData: EpisodeObject) {
 }
 
 export async function registerPodcastAuthor(author: PodcastAuthorInput) {
-    let podcastAuthor
+    let podcastAuthor: DocumentType<Author>
+    let slug = (author?.name && slugify(author.name)) ?? (author?.email && slugify(author.email)) 
     
     if(author?.name) podcastAuthor = await AuthorModel.findOne({ name: author?.name })
     if(!podcastAuthor && author?.email) podcastAuthor = await AuthorModel.findOne({ email: author?.email })
     if (!podcastAuthor) {
-        let slug = (podcastAuthor?.name && slugify(podcastAuthor.name))??(podcastAuthor?.email && slugify(podcastAuthor.email))
         podcastAuthor = new AuthorModel({
             ...author,
-            slug
+            slug: slug
         })
         await podcastAuthor.save()
     }
+    else {
+        if (author?.email && !podcastAuthor?.email) {
+            podcastAuthor.email = author.email
+        }
+        if (author?.name && !podcastAuthor?.name) {
+            podcastAuthor.name = author.name
+        }
+        if(!podcastAuthor.slug) podcastAuthor.slug = slug
+        await podcastAuthor.save()
+    }
+
     return podcastAuthor
 }
 
