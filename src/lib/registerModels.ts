@@ -37,11 +37,13 @@ export async function registerPodcastAuthor(author: PodcastAuthorInput) {
     if(author?.name) podcastAuthor = await AuthorModel.findOne({ name: author?.name })
     if(!podcastAuthor && author?.email) podcastAuthor = await AuthorModel.findOne({ email: author?.email })
     if (!podcastAuthor) {
-        podcastAuthor = new AuthorModel({
-            ...author,
-            slug: slug
-        })
-        await podcastAuthor.save()
+        if(!!author.email || !!author.email){
+            podcastAuthor = new AuthorModel({
+                ...author,
+                slug: slug
+            })
+            await podcastAuthor.save()
+        }
     }
     else {
         if (author?.email && !podcastAuthor?.email) {
