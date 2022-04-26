@@ -31,13 +31,14 @@ export async function registerEpisode(episodeData: EpisodeObject) {
 }
 
 export async function registerPodcastAuthor(author: PodcastAuthorInput) {
+    if(!author) return null
     let podcastAuthor: DocumentType<Author>
     let slug = (author?.name && slugify(author.name)) ?? (author?.email && slugify(author.email)) 
     
     if(author?.name) podcastAuthor = await AuthorModel.findOne({ name: author?.name })
     if(!podcastAuthor && author?.email) podcastAuthor = await AuthorModel.findOne({ email: author?.email })
     if (!podcastAuthor) {
-        if(!!author.email || !!author.email){
+        if(!!author.name || !!author.email){
             podcastAuthor = new AuthorModel({
                 ...author,
                 slug: slug
@@ -79,7 +80,7 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
     let categories = await registerCategories(categoriesInput, podcast)
     let author = await registerPodcastAuthor(authorInput)
 
-    podcast.author = author
+    if(author) podcast.author = author
     categories.map(({ _id }) => podcast.categories.push(_id))
     entities.map(({ _id }) => podcast.entities.push(_id))
 
@@ -92,7 +93,7 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
                 let entities = await registerEntities(entitiesInput, episode)
                 let author = await registerPodcastAuthor(authorInput)
                 entities.map(({ _id }) => episode.entities.push(_id))
-                episode.author = author
+                if (author) episode.author = author
                 await episode.save()
                 return episode
             } catch (error) {
