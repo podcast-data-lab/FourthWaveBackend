@@ -1,1 +1,0 @@
-curl https://fourthwave-api.herokuapp.com/health
