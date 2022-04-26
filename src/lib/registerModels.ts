@@ -167,7 +167,7 @@ function parsePodcastData(podcastData: { [index: string]: any }): PodcastModelIn
 
 type Tag = {label: string, scheme: string, term: string}
 function getCategories(categories: Tag[]): string[] {
-    return categories.map((category) => category.term)
+    return categories?.map((category) => category.term) ?? []
 }
 export function parseEpisodeData(episodeData: { [index: string]: any }, podcast: Podcast): EpisodeModelInput {
     let episodeObject: EpisodeObject = {
