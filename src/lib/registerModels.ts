@@ -1,4 +1,4 @@
-import { EpisodeModel, PodcastAuthorModel } from '../models'
+import { EpisodeModel, AuthorModel } from '../models'
 import { Episode } from '../models/Episode'
 import { Podcast, PodcastModel } from '../models/Podcast'
 import slugify from 'slugify'
@@ -31,10 +31,14 @@ export async function registerEpisode(episodeData: EpisodeObject) {
 
 export async function registerPodcastAuthor(author: PodcastAuthorInput) {
     let podcastAuthor
-    if(author?.email) podcastAuthor = await PodcastAuthorModel.findOne({ email: author?.email })
+    
+    if(author?.name) podcastAuthor = await AuthorModel.findOne({ name: author?.name })
+    if(!podcastAuthor && author?.email) podcastAuthor = await AuthorModel.findOne({ email: author?.email })
     if (!podcastAuthor) {
-        podcastAuthor = new PodcastAuthorModel({
+        let slug = (podcastAuthor?.name && slugify(podcastAuthor.name))??(podcastAuthor?.email && slugify(podcastAuthor.email))
+        podcastAuthor = new AuthorModel({
             ...author,
+            slug
         })
         await podcastAuthor.save()
     }
