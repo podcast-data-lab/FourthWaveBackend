@@ -23,7 +23,6 @@ export async function registerEpisode(episodeData: EpisodeObject) {
     if (!episode) {
         episode = new EpisodeModel({
             ...episodeData,
-            _id: new ObjectId(),
         })
         await episode.save()
     }
@@ -36,7 +35,6 @@ export async function registerPodcastAuthor(author: PodcastAuthorInput) {
     if (!podcastAuthor) {
         podcastAuthor = new PodcastAuthorModel({
             ...author,
-            _id: new ObjectId(),
         })
         await podcastAuthor.save()
     }
@@ -49,7 +47,6 @@ async function registerPodcast(podcastData: PodcastObject) {
     if (!podcast) {
         podcast = new PodcastModel({
             ...podcastData,
-            _id: new ObjectId(),
         })
         await podcast.save()
     }
@@ -108,7 +105,6 @@ export async function registerEntities(entities: EntitiesInput, currentObject: P
                 entity = new EntityModel({
                     type: entityType,
                     name: entityName,
-                    _id: new ObjectId(),
                 })
                 if (currentObject instanceof Episode) {
                     entity.episodes = [currentObject]
@@ -126,13 +122,12 @@ export async function registerEntities(entities: EntitiesInput, currentObject: P
 
 async function registerCategories(categoryArray: string[], currentObject: Podcast | Episode) {
     let categories = []
-    for (const title of  categoryArray){
-        let category = await CategoryModel.findOne({ title })
+    for (const title of categoryArray){
+        let category = await CategoryModel.findOne({ slug: slugify(title) })
         if (!category) {
             category = new CategoryModel({
                 title,
                 slug: slugify(title),
-                _id: new ObjectId(),
             })
         }
         if (currentObject instanceof Episode) {
