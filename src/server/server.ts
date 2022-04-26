@@ -30,9 +30,6 @@ import {
 } from '../graphql/resolvers'
 import { AuthCheckerFn } from '../graphql/AuthChecker'
 import { verifyTokenAndGetUser } from '../db/authentication'
-import { User } from '../models/User'
-import { Library } from '../models/Library'
-import { UserPermission } from '../models/enums/Permissions'
 import { handleFeedContentUpdate } from '../lib/handleFeedInput'
 import { UserContext } from '../models/Context'
 
