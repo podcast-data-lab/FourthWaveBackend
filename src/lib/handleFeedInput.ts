@@ -9,7 +9,7 @@ import {
 } from './registerModels'
 const LAMBDA_ENDPOINT = process.env.LAMBDA_ENDPOINT
 const LAMBDA_API_KEY = process.env.API_KEY
-import { captureException } from '@sentry/node'
+import { captureException, captureMessage } from '@sentry/node'
 import request from 'request'
 
 export async function handleFeedContentUpdate(rssFeed: string) {
@@ -18,14 +18,14 @@ export async function handleFeedContentUpdate(rssFeed: string) {
     if (!podcast) return Promise.resolve()
     let last_fetched = podcast.lastUpdated
     let updatedItems = await getUpdatedItems(rssFeed, last_fetched, podcast)
-
+    captureMessage(`${updatedItems.length} items updated for ${rssFeed}`)
     return Promise.all(
         updatedItems.map(async (item) => {
             let { episodeObject, entitiesInput, authorInput } = await parseEpisodeData(item, podcast)
             let episode = await registerEpisode(episodeObject)
             let entities = await registerEntities(entitiesInput, episode)
             let author = await registerPodcastAuthor(authorInput)
-            entities.map(({ _id }) => episode.entities.push(_id))
+            episode.entities.push(...entities)
             episode.author = author
             episode.podcast = podcast
             await episode.save()
