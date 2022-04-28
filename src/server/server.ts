@@ -104,17 +104,18 @@ initializeSentry()
         }
     })
 
-    app.post('/pubsub', async (request, reply) => {
+    const opts = {}
+    app.post('/pubsub', opts, async (request, reply) => {
         let links = /<(.*?)>/.exec(request.headers['link'] as string)
         captureMessage('pubsub request headers: ' + JSON.stringify(request.headers))
-        console.log('pubsub request headers: ' + JSON.stringify(request.headers))
+        console.log('link: ' + JSON.stringify(request.headers))
         let topicUrl = links && links[1]
         /* Only register podcasts that have an X-hub signature */
         if (topicUrl && request.headers['x-hub-signature']) {
-            captureMessage('Updating feed :: ' + topicUrl)
-            await handleFeedContentUpdate(topicUrl)
+            console.log('Updating feed :: ' + topicUrl)
+            handleFeedContentUpdate(topicUrl)
         } else captureException('No topic found in request')
-        return reply.code(200).send('OK. But not topic found')
+        return reply.code(200).send({ message: 'ok' })
     })
 
     const server = new ApolloServer({
@@ -147,11 +148,11 @@ initializeSentry()
         },
     })
 
-    app.register(AltairFastify, {
-        path: '/altair',
-        baseURL: '/altair/',
-        endpointURL: '/graphql',
-    })
+    // app.register(AltairFastify, {
+    //     path: '/altair',
+    //     baseURL: '/altair/',
+    //     endpointURL: '/graphql',
+    // })
 
     const host = '0.0.0.0'
     const PORT = process.env.PORT || 6500

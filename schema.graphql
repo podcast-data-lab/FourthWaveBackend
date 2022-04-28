@@ -3,8 +3,13 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Author {
+  email: String!
+  name: String!
+  slug: String!
+}
+
 type Category {
-  _id: ID!
   comments: [Comment!]!
   contributor: User!
   episodes: [Episode!]!
@@ -13,12 +18,10 @@ type Category {
 }
 
 type Collection {
-  _id: ID!
   podcasts: [Podcast!]!
 }
 
 type Comment {
-  _id: ID!
   categories: Category!
   content: String!
   likes: [User!]!
@@ -32,7 +35,6 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Entity {
-  _id: ID!
   episodes: [Episode!]!
   name: String!
   podcasts: [Podcast!]!
@@ -40,8 +42,7 @@ type Entity {
 }
 
 type Episode {
-  _id: ID!
-  author: PodcastAuthor
+  author: Author
   categories: [Category!]
   comments: [Comment!]
   description: String
@@ -124,13 +125,11 @@ type Play {
 }
 
 type PlayingQueue {
-  _id: ID!
   plays: [Play!]!
 }
 
 type Podcast {
-  _id: ID!
-  author: PodcastAuthor
+  author: Author
   base64image: String
   categories: [Category!]
   description: String
@@ -148,11 +147,6 @@ type Podcast {
   rssFeed: String
   slug: String!
   title: String!
-}
-
-type PodcastAuthor {
-  email: String!
-  name: String!
 }
 
 type Query {
@@ -251,7 +245,6 @@ enum UserPermission {
 }
 
 type UserPreference {
-  _id: ID!
   playbackSpeed: Float!
   skipAds: Boolean!
   uiMode: UiMode!
