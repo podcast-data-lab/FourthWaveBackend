@@ -26,7 +26,7 @@ export async function registerPodcast(podcastFeedData, totalNo, currentNo) {
 }
 
 ;(async () => {
-    const podcastFolderPath = path.join(process.cwd(), `temp/podcast-lambdas-${process.argv[2]}/podcasts`)
+    const podcastFolderPath = path.join(process.cwd(), `temp/lambdas-${process.argv[2]}/podcasts`)
     const podcasts: string[] = fs.readdirSync(podcastFolderPath)
 
     const totalNo = podcasts.length
