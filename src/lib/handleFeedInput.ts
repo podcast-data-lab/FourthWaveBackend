@@ -10,9 +10,9 @@ import {
 const LAMBDA_ENDPOINT = process.env.LAMBDA_ENDPOINT
 const LAMBDA_API_KEY = process.env.API_KEY
 import { captureException, captureMessage } from '@sentry/node'
-import request from 'request'
 import chalk from 'chalk'
 import fetch, { Headers } from 'node-fetch'
+
 export async function handleFeedContentUpdate(rssFeed: string) {
     if (!rssFeed) return Promise.resolve()
     let podcast = await PodcastModel.findOne({ rssFeed })
