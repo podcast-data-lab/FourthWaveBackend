@@ -136,7 +136,6 @@ type Podcast {
   entities: [Entity!]
   episodes: [Episode!]
   frequency: Float
-  hmac: String
   image: String
   lastEpisodeDate: DateTime
   lastUpdated: DateTime
@@ -160,6 +159,9 @@ type Query {
 
   """Returns the featured podcasts"""
   getFeatured: [Podcast!]!
+
+  """Gets the subscription status of podcasts. Returns 30 at a time."""
+  getHubSubscriptionStatus(page: Float!): [SubscriptionStatus!]!
 
   """Find a podcast based on it's slug"""
   getPodcast(slug: String!): Podcast!
@@ -213,6 +215,19 @@ type Query {
 
   """Returns the Most Popular Podcast Episodes"""
   topEpisodes: [Episode!]!
+}
+
+type SubscriptionStatus {
+  aggregateStatistics: String!
+  callbackUrl: String!
+  expirationTime: String!
+  lastDeliveryError: String!
+  lastSubscribeRequest: String!
+  lastSuccessfulVerification: String!
+  lastUnsubscribeRequest: String!
+  lastVerificationError: String!
+  rssFeed: String!
+  state: String!
 }
 
 """

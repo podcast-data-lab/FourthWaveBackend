@@ -1,9 +1,11 @@
 import { PipelineStage } from 'mongoose'
-import { Arg, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, Query, Resolver } from 'type-graphql'
+import { getSubscriptionStatus } from '../../lib/getSubscribtionDiagnostics'
 import { EpisodeModel } from '../../models'
 import { Episode } from '../../models/Episode'
 
 import { Podcast, PodcastModel } from '../../models/Podcast'
+import { SubscriptionStatus } from '../../models/SubscriptionStatus'
 
 const EPISODE_LIMIT = 15
 
@@ -216,5 +218,27 @@ export default class PodcastResolver {
             },
         ])
         return pods
+    }
+
+    @Query((returns) => [SubscriptionStatus], {
+        description: 'Gets the subscription status of podcasts. Returns 30 at a time.',
+    })
+    async getHubSubscriptionStatus(@Arg('page') page: number): Promise<SubscriptionStatus[]> {
+        const PODCAST_LIMIT = 20
+        const pods = await PodcastModel.aggregate<Podcast>([
+            {
+                $skip: PODCAST_LIMIT * page,
+            },
+            {
+                $limit: PODCAST_LIMIT,
+            },
+        ])
+        let subscriptions = []
+        for (let { hmac, rssFeed } of pods) {
+            if (!hmac) continue
+            let status = getSubscriptionStatus(rssFeed, hmac)
+            subscriptions.push(status)
+        }
+        return Promise.all(subscriptions)
     }
 }

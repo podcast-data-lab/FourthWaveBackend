@@ -1,4 +1,4 @@
-import fastify from 'fastify'
+import fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import { ApolloServer } from 'apollo-server-fastify'
 const mongoose = require('mongoose')
 import urllib from 'url'
@@ -36,7 +36,6 @@ import { UserContext } from '../models/Context'
 import { getSubscriptionStatus } from '../lib/getSubscribtionDiagnostics'
 
 initializeSentry()
-
 ;(async () => {
     const schema = await buildSchema({
         resolvers: [
@@ -119,11 +118,6 @@ initializeSentry()
             handleFeedContentUpdate(topicUrl)
         } else captureException('No topic found in request')
         return reply.code(200).send({ message: 'ok' })
-    })
-
-    app.get('/diagnostics', async (request, reply) => {
-        // const diagnostics = await getSubscriptionStatus('https://www.marketplace.org/feed/podcast/marketplace')
-        return reply.send('ok')
     })
 
     const server = new ApolloServer({
