@@ -29,11 +29,12 @@ export async function getSubscriptionStatus(rssUrl: string, hmac: string) {
 
 async function extractPodcastData(html) {
     let parsed = parse(html)
-    let labels = parsed.querySelectorAll('dl')[0].querySelectorAll('dt').length
-    let values = parsed.querySelectorAll('dl')[0].querySelectorAll('dd').length
-
+    let labels = parsed.querySelectorAll('dl')[0].querySelectorAll('dt')
+    let values = parsed.querySelectorAll('dl')[0].querySelectorAll('dd')
+    parsed.querySelectorAll('dl')[0]
     let data = {}
-    for (let i = 0; i < labels; i++) {
+
+    for (let i = 0; i < labels.length; i++) {
         let label = labels[i].innerHTML
         let value = values[i].innerHTML
         data[label.trim()] = [value.trim()]

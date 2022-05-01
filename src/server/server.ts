@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 import urllib from 'url'
 import { initializeSentry } from '../lib/sentry'
 import { captureMessage, captureException } from '@sentry/node'
+
 // Require the environment variables
 require('dotenv').config('../../')
 
@@ -14,7 +15,7 @@ mongoose.connect(process.env.MONGO_DB, {
 
 import 'reflect-metadata'
 import { buildSchema } from 'type-graphql'
-const AltairFastify = require('altair-fastify-plugin')
+import AltairFastify from 'altair-fastify-plugin'
 
 import {
     EpisodeResolver,
@@ -32,8 +33,10 @@ import { AuthCheckerFn } from '../graphql/AuthChecker'
 import { verifyTokenAndGetUser } from '../db/authentication'
 import { handleFeedContentUpdate } from '../lib/handleFeedInput'
 import { UserContext } from '../models/Context'
+import { getSubscriptionStatus } from '../lib/getSubscribtionDiagnostics'
 
 initializeSentry()
+
 ;(async () => {
     const schema = await buildSchema({
         resolvers: [
@@ -118,6 +121,10 @@ initializeSentry()
         return reply.code(200).send({ message: 'ok' })
     })
 
+    app.get('/diagnostics', async () => {
+        const diagnostics = await getSubscriptionStatus('https://www.marketplace.org/feed/podcast/marketplace')
+    })
+
     const server = new ApolloServer({
         schema,
         context: async ({ request, reply }): Promise<UserContext> => {
@@ -148,11 +155,11 @@ initializeSentry()
         },
     })
 
-    // app.register(AltairFastify, {
-    //     path: '/altair',
-    //     baseURL: '/altair/',
-    //     endpointURL: '/graphql',
-    // })
+    app.register(AltairFastify, {
+        path: '/altair',
+        baseURL: '/altair/',
+        endpointURL: '/graphql',
+    })
 
     const host = '0.0.0.0'
     const PORT = process.env.PORT || 6500

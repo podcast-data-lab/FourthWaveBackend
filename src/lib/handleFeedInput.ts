@@ -7,9 +7,7 @@ import {
     EpisodeModelInput,
     registerPodcastAuthor,
 } from './registerModels'
-const LAMBDA_ENDPOINT = process.env.LAMBDA_ENDPOINT
-const LAMBDA_API_KEY = process.env.API_KEY
-import { captureException, captureMessage } from '@sentry/node'
+import { captureException } from '@sentry/node'
 import chalk from 'chalk'
 import fetch, { Headers } from 'node-fetch'
 
@@ -17,7 +15,7 @@ export async function handleFeedContentUpdate(rssFeed: string) {
     if (!rssFeed) return Promise.resolve()
     let podcast = await PodcastModel.findOne({ rssFeed })
     if (!podcast) return Promise.resolve()
-    console.log(`updating podcast: ${podcast.title}`)
+
     let last_fetched = podcast.lastUpdated
     let updatedItems = await getUpdatedItems(rssFeed, last_fetched, podcast)
     return Promise.all(
@@ -45,10 +43,10 @@ let emptyBody = { payload: '', entities: {} }
 
 export async function getNamedEntities(payload: string): Promise<EntitiesInput> {
     let headers = new Headers({
-        'x-api-key': LAMBDA_API_KEY,
+        'x-api-key': process.env.LAMBDA_API_KEY,
         'Content-Type': 'application/json',
     })
-    return fetch(`${LAMBDA_ENDPOINT}/nex`, {
+    return fetch(`${process.env.LAMBDA_ENDPOINT}/nex`, {
         headers,
         method: 'POST',
         body: JSON.stringify({ payload }),
@@ -67,25 +65,31 @@ export async function getNamedEntities(payload: string): Promise<EntitiesInput> 
 async function getUpdatedItems(rss_url: string, _last_fetched: Date, podcast: Podcast): Promise<EpisodeModelInput[]> {
     let last_fetched = new Date(_last_fetched).toUTCString().replace(/GMT/, '+0000')
     let headers = new Headers({
-        'x-api-key': LAMBDA_API_KEY,
+        'x-api-key': process.env.LAMBDA_API_KEY,
         'Content-Type': 'application/json',
     })
-    return fetch(`${LAMBDA_ENDPOINT}/updated-items`, {
+    return fetch(`${process.env.LAMBDA_ENDPOINT}/updated-items`, {
         headers,
-        method: 'POST',
-        body: JSON.stringify({ last_fetched, rss_url }),
+        method: 'post',
+        body: JSON.stringify({ last_fetched: last_fetched, rss_url: rss_url }),
     })
-        .then((response) => {
-            console.log(`${chalk.hex('73D2DE')('Response message: ')}: ${JSON.stringify(response)}`)
-            return response.json()
-        })
+        .then(checkStatus)
         .then((body) => {
-            console.log(`${chalk.hex('F18701')('Updated items message: ')}: ${JSON.stringify(body)}`)
+            console.log(`${chalk.hex('F18701')('Updated items message')}: ${JSON.stringify(body)}`)
             return body.entries.map((entry) => parseEpisodeData(entry, podcast))
         })
         .catch((error) => {
-            console.log(error.message)
+            console.log(`err: ${error.message}`)
             captureException(error)
             return []
         })
+}
+
+async function checkStatus(response) {
+    if (response.status >= 200 && response.status < 300) {
+        return response.json()
+    } else {
+        let parsedResponse = await response.json()
+        throw new Error(parsedResponse?.message)
+    }
 }
