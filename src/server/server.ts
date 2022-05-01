@@ -121,8 +121,9 @@ initializeSentry()
         return reply.code(200).send({ message: 'ok' })
     })
 
-    app.get('/diagnostics', async () => {
-        const diagnostics = await getSubscriptionStatus('https://www.marketplace.org/feed/podcast/marketplace')
+    app.get('/diagnostics', async (request, reply) => {
+        // const diagnostics = await getSubscriptionStatus('https://www.marketplace.org/feed/podcast/marketplace')
+        return reply.send('ok')
     })
 
     const server = new ApolloServer({
