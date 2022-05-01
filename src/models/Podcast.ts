@@ -3,8 +3,8 @@ import { Field, ID, ObjectType } from 'type-graphql'
 import { Category } from './Category'
 import { Episode } from './Episode'
 import { Entity } from './Entity'
-import { ObjectId } from 'mongoose'
 import { Author } from './Author'
+
 @ObjectType()
 export class Podcast {
     @Field()
@@ -15,7 +15,7 @@ export class Podcast {
     @prop()
     rssFeed: string
 
-    @Field({ nullable: true })
+    @prop()
     hmac: string
 
     @Field({ nullable: true })
@@ -23,7 +23,7 @@ export class Podcast {
     base64image?: string
 
     @Field((type) => Author, { nullable: true })
-    @prop({ ref: 'Author'})
+    @prop({ ref: 'Author' })
     author?: Ref<Author>
 
     @Field({ nullable: true })

@@ -10,5 +10,5 @@
 
 # wget -P temp "https://github.com/${ORG_NAME}/${REPO_NAME}/archive/refs/tags/v${LATEST_VERSION}.zip"
 # unzip "temp/v${LATEST_VERSION}.zip" -d temp
-LATEST_VERSION="0.5.0"
+LATEST_VERSION="0.6.0"
 node dist/lib/buildPodcasts.js "${LATEST_VERSION}"
