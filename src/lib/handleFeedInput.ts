@@ -19,8 +19,7 @@ export async function handleFeedContentUpdate(rssFeed: string) {
     let last_fetched = podcast.lastUpdated
     let updatedItems = await getUpdatedItems(rssFeed, last_fetched, podcast)
     return Promise.all(
-        updatedItems.map(async (item) => {
-            let { episodeObject, entitiesInput, authorInput } = await parseEpisodeData(item, podcast)
+        updatedItems.map(async ({ entitiesInput, episodeObject, authorInput }) => {
             let episode = await registerEpisode(episodeObject)
             let entities = await registerEntities(entitiesInput, episode)
             let author = await registerPodcastAuthor(authorInput)
@@ -31,6 +30,8 @@ export async function handleFeedContentUpdate(rssFeed: string) {
             podcast.episodes.push(episode)
             podcast.lastUpdated = new Date(podcast.lastUpdated) > new Date() ? podcast.lastUpdated : new Date()
             await podcast.save()
+
+            console.log(`${chalk.hex('F18701')('Registered Episode ')}: ${JSON.stringify(episode.title)}`)
             return episode
         }),
     ).catch((error) => {
@@ -74,7 +75,6 @@ async function getUpdatedItems(rss_url: string, last_fetched: Date, podcast: Pod
     })
         .then(checkStatus)
         .then((body) => {
-            console.log(`${chalk.hex('F18701')('Updated items message')}: ${JSON.stringify(body)}`)
             return body.entries.map((entry) => parseEpisodeData(entry, podcast))
         })
         .catch((error) => {
