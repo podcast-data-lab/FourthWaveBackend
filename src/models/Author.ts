@@ -3,11 +3,11 @@ import { Field, ObjectType } from 'type-graphql'
 
 @ObjectType()
 export class Author {
-    @Field()
+    @Field({ nullable: true })
     @prop()
     public name?: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop({
         type: String,
     })

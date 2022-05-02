@@ -31,6 +31,7 @@ export class Category {
     @prop({ ref: 'Comment' })
     comments: Ref<Comment>[]
 
+    @Field()
     @prop({
         type: String,
         required: true,

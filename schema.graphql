@@ -4,8 +4,8 @@
 # -----------------------------------------------
 
 type Author {
-  email: String!
-  name: String!
+  email: String
+  name: String
   slug: String!
 }
 
@@ -14,6 +14,7 @@ type Category {
   contributor: User!
   episodes: [Episode!]!
   podcasts: [Podcast!]!
+  slug: String!
   title: String!
 }
 

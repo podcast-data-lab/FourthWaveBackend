@@ -13,9 +13,36 @@ const EPISODE_LIMIT = 15
 export default class PodcastResolver {
     @Query((returns) => [Podcast], { description: 'Get podcasts ~ 50 podcasts at a time.' })
     async getPodcasts(@Arg('page') page: number): Promise<Podcast[]> {
-        const podcasts: Podcast[] = await PodcastModel.find()
-            .skip(50 * page)
-            .limit(50)
+        const podcasts: Podcast[] = await PodcastModel.aggregate([
+            {
+                $skip: 30 * page,
+            },
+            {
+                $limit: 30,
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'authors',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author',
+                },
+            },
+            {
+                $addFields: {
+                    author: { $first: '$author' },
+                },
+            },
+        ])
+        console.log(podcasts[0])
         return podcasts
     }
 
@@ -152,6 +179,14 @@ export default class PodcastResolver {
             { $sample: { size: 7 } },
             {
                 $lookup: {
+                    from: 'entities',
+                    foreignField: '_id',
+                    localField: 'entities',
+                    as: 'entities',
+                },
+            },
+            {
+                $lookup: {
                     from: 'categories',
                     foreignField: '_id',
                     localField: 'categories',
@@ -160,10 +195,15 @@ export default class PodcastResolver {
             },
             {
                 $lookup: {
-                    from: 'entities',
+                    from: 'authors',
+                    localField: 'author',
                     foreignField: '_id',
-                    localField: 'entities',
-                    as: 'entities',
+                    as: 'author',
+                },
+            },
+            {
+                $addFields: {
+                    author: { $first: '$author' },
                 },
             },
         ])
@@ -190,6 +230,19 @@ export default class PodcastResolver {
                     as: 'entities',
                 },
             },
+            {
+                $lookup: {
+                    from: 'authors',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author',
+                },
+            },
+            {
+                $addFields: {
+                    author: { $first: '$author' },
+                },
+            },
         ])
         return pods
     }
@@ -214,6 +267,19 @@ export default class PodcastResolver {
                     foreignField: '_id',
                     localField: 'entities',
                     as: 'entities',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'authors',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author',
+                },
+            },
+            {
+                $addFields: {
+                    author: { $first: '$author' },
                 },
             },
         ])
