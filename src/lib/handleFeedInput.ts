@@ -62,8 +62,7 @@ export async function getNamedEntities(payload: string): Promise<EntitiesInput> 
         })
 }
 
-async function getUpdatedItems(rss_url: string, _last_fetched: Date, podcast: Podcast): Promise<EpisodeModelInput[]> {
-    let last_fetched = new Date(_last_fetched).toUTCString().replace(/GMT/, '+0000')
+async function getUpdatedItems(rss_url: string, last_fetched: Date, podcast: Podcast): Promise<EpisodeModelInput[]> {
     let headers = new Headers({
         'x-api-key': process.env.LAMBDA_API_KEY,
         'Content-Type': 'application/json',
@@ -71,7 +70,7 @@ async function getUpdatedItems(rss_url: string, _last_fetched: Date, podcast: Po
     return fetch(`${process.env.LAMBDA_ENDPOINT}/updated-items`, {
         headers,
         method: 'post',
-        body: JSON.stringify({ last_fetched: last_fetched, rss_url: rss_url }),
+        body: JSON.stringify({ last_fetched, rss_url }),
     })
         .then(checkStatus)
         .then((body) => {
