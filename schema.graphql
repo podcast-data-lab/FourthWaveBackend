@@ -6,7 +6,7 @@
 type Author {
   email: String
   name: String
-  slug: String!
+  slug: String
 }
 
 type Category {

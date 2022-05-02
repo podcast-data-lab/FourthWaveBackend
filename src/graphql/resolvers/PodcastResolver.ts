@@ -48,9 +48,16 @@ export default class PodcastResolver {
 
     @Query((returs) => [Episode], { description: "Returns a podcasts'episodes. 20 podcast episodes at a time." })
     async getPodcastEpisodes(@Arg('slug') slug: string, @Arg('page') page: number): Promise<Episode[]> {
+        let podcast = await PodcastModel.findOne({ slug })
         const episodes: Episode[] = await EpisodeModel.aggregate([
-            { $match: { podcast: slug } },
+            { $match: { podcast: podcast._id } },
             { $sort: { datePublished: -1 } },
+            {
+                $skip: EPISODE_LIMIT * page,
+            },
+            {
+                $limit: EPISODE_LIMIT,
+            },
             {
                 $lookup: {
                     from: 'entities',
@@ -58,12 +65,6 @@ export default class PodcastResolver {
                     localField: 'entities',
                     as: 'entities',
                 },
-            },
-            {
-                $skip: EPISODE_LIMIT * page,
-            },
-            {
-                $limit: EPISODE_LIMIT,
             },
         ])
         return episodes

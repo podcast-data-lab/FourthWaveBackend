@@ -13,7 +13,7 @@ export class Author {
     })
     public email?: string
 
-    @Field()
+    @Field({nullable: true})
     @prop({
         type: String,
     })

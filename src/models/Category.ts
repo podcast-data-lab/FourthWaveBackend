@@ -17,19 +17,19 @@ export class Category {
 
     @Field((type) => User)
     @prop({ ref: () => User })
-    contributor: Ref<User>
+    contributor?: Ref<User>
 
     @Field((type) => [Episode])
     @prop({ ref: 'Episode' })
-    episodes: Ref<Episode>[]
+    episodes?: Ref<Episode>[]
 
     @Field((type) => [Podcast])
     @prop({ ref: 'Podcast' })
-    podcasts: Ref<Podcast>[]
+    podcasts?: Ref<Podcast>[]
 
     @Field((type) => [Comment])
     @prop({ ref: 'Comment' })
-    comments: Ref<Comment>[]
+    comments?: Ref<Comment>[]
 
     @Field()
     @prop({
