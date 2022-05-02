@@ -213,7 +213,7 @@ export default class PodcastResolver {
     @Query((returns) => [Podcast], { description: 'Returns the Trending Podcasts' })
     async getTrending(): Promise<Podcast[]> {
         const pods = await PodcastModel.aggregate([
-            { $sample: { size: 5 } },
+            { $sample: { size: 6 } },
             {
                 $lookup: {
                     from: 'categories',

@@ -80,6 +80,28 @@ export default class EpisodeResolver {
                     as: 'entities',
                 },
             },
+            {
+                $lookup: {
+                    from: 'authors',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    localField: 'podcast',
+                    foreignField: '_id',
+                    as: 'podcast',
+                },
+            },
+            {
+                $addFields: {
+                    author: { $first: '$author' },
+                    podcast: { $first: '$podcast' },
+                },
+            },
         ])
         return eps
     }
