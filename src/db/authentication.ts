@@ -9,9 +9,8 @@ import { UserContext } from '../models/Context'
 
 /**
  * A function to authenticate a user
- * @param email
- * @param password
- * @returns null if a user can't be authenticated, the email and token if otherwise
+ * @param uid
+ * @returns {User} - if no user was initially found, creates a new user
  */
 
 export const signInOrCreateUser = async (uid: string, email: string): Promise<User | GraphQLError> => {
