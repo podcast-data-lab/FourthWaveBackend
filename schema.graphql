@@ -141,7 +141,7 @@ type Podcast {
   lastEpisodeDate: DateTime
   lastUpdated: DateTime
   link: String
-  palette: [String!]!
+  palette: [String!]
   publisher: String
   releaseDay: Float
   rssFeed: String

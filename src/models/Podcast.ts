@@ -42,7 +42,7 @@ export class Podcast {
     @prop()
     publisher?: string
 
-    @Field((type) => [String])
+    @Field((type) => [String], { nullable: true })
     @prop({ type: () => [String] })
     palette: [string]
 

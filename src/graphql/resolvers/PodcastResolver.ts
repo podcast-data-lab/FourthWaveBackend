@@ -48,23 +48,41 @@ export default class PodcastResolver {
 
     @Query((returs) => [Episode], { description: "Returns a podcasts'episodes. 20 podcast episodes at a time." })
     async getPodcastEpisodes(@Arg('slug') slug: string, @Arg('page') page: number): Promise<Episode[]> {
-        let podcast = await PodcastModel.findOne({ slug })
-        const episodes: Episode[] = await EpisodeModel.aggregate([
-            { $match: { podcast: podcast._id } },
-            { $sort: { datePublished: -1 } },
+        const episodes: Episode[] = await PodcastModel.aggregate<Episode>([
+            { $match: { slug } },
+            {
+                $lookup: {
+                    from: 'episodes',
+                    foreignField: '_id',
+                    localField: 'episodes',
+                    as: 'episodes',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'authors',
+                    foreignField: '_id',
+                    localField: 'author',
+                    as: 'author',
+                },
+            },
+            {
+                $addFields: {
+                    'episodes.podcast.title': '$title',
+                    'episodes.podcast.palette': '$palette',
+                    'episodes.podcast.slug': '$slug',
+                },
+            },
+            { $unwind: '$episodes' },
+            {
+                $replaceWith: { $mergeObjects: [{ image: '$image', author: '$author' }, '$episodes'] },
+            },
+            { $sort: { published: -1 } },
             {
                 $skip: EPISODE_LIMIT * page,
             },
             {
                 $limit: EPISODE_LIMIT,
-            },
-            {
-                $lookup: {
-                    from: 'entities',
-                    foreignField: '_id',
-                    localField: 'entities',
-                    as: 'entities',
-                },
             },
         ])
         return episodes

@@ -61,6 +61,28 @@ export default class EpisodeResolver {
                     as: 'entities',
                 },
             },
+            {
+                $lookup: {
+                    from: 'authors',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'podcast',
+                    as: 'podcast',
+                },
+            },
+            {
+                $addFields: {
+                    podcast: { $first: '$podcast' },
+                    author: { $first: '$author' },
+                },
+            },
         ])
 
         return searchResult
