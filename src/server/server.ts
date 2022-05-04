@@ -33,7 +33,6 @@ import { AuthCheckerFn } from '../graphql/AuthChecker'
 import { verifyTokenAndGetUser } from '../db/authentication'
 import { handleFeedContentUpdate } from '../lib/handleFeedInput'
 import { UserContext } from '../models/Context'
-import { getSubscriptionStatus } from '../lib/getSubscribtionDiagnostics'
 
 initializeSentry()
 ;(async () => {
