@@ -1,4 +1,4 @@
-import { registerEnumType, EnumResolver } from 'type-graphql'
+import { registerEnumType } from 'type-graphql'
 
 export enum UserPermission {
     Admin = 'ADMIN',

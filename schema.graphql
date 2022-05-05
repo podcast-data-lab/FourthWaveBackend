@@ -3,6 +3,13 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type AuthOutput {
+  library: Library!
+  playingQueue: PlayingQueue!
+  preferences: UserPreference!
+  user: User!
+}
+
 type Author {
   email: String
   name: String
@@ -111,7 +118,7 @@ type Mutation {
 
   """Sets a user Volume"""
   setUserVolume(volume: Float!): Float!
-  signUpOrIn: User!
+  signUpOrIn: AuthOutput!
 
   """Starts the playing of a Play object"""
   startPlay(slug: String!): PlayingQueue!
