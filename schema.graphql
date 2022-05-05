@@ -98,7 +98,7 @@ type Mutation {
   bookmarkEpisode(slug: String!): Library!
 
   """Changes a user's playing speed"""
-  changePlayingSpeed(speed: Float!): Float!
+  changePlayingSpeed(speed: Float!): UserPreference!
 
   """Deletes/Clears a user's playing queue"""
   clearQueue: [PlayingQueue!]!
@@ -117,7 +117,7 @@ type Mutation {
   removePodcastFromCollection(collectionId: String!, slug: String!): Library!
 
   """Sets a user Volume"""
-  setUserVolume(volume: Float!): Float!
+  setUserVolume(volume: Float!): UserPreference!
   signUpOrIn: AuthOutput!
 
   """Starts the playing of a Play object"""
@@ -292,6 +292,7 @@ enum UserPermission {
 type UserPreference {
   playbackSpeed: Float!
   skipAds: Boolean!
+  speed: Float!
   uiMode: UiMode!
   volume: Float!
 }
