@@ -8,7 +8,7 @@ import { UserPreference } from './Preference'
 
 @ObjectType()
 export class User {
-    @Field()
+    @Field({ nullable: true })
     @prop()
     public name: string
 
@@ -31,7 +31,7 @@ export class User {
     public uid: string
 
     @Field((type) => Boolean)
-    @prop({ default: false })
+    @prop({ default: true })
     public active: boolean
 
     @Field((type) => [UserPermission])
@@ -50,9 +50,9 @@ export class User {
     @prop({ ref: 'Play', default: [] })
     public plays: Ref<Play>[]
 
-    @Field((type) => [PlayingQueue])
-    @prop({ ref: 'PlayingQueue', default: [] })
-    public queue: Ref<PlayingQueue>[]
+    @Field((type) => PlayingQueue)
+    @prop({ ref: 'PlayingQueue' })
+    public playingQueue: Ref<PlayingQueue>
 
     @Field((type) => Library)
     @prop({ ref: 'Library' })

@@ -1,18 +1,23 @@
-import { Resolver, Mutation, Arg, Ctx, Query } from 'type-graphql'
+import { Resolver, Mutation, Arg, Ctx, Query, InputType, Field, Authorized } from 'type-graphql'
 import { EpisodeModel, PlayModel, UserModel } from '../../models'
 import { UserContext } from '../../models/Context'
-import { LibraryModel } from '../../models/Library'
 import { Play } from '../../models/Play'
-import { getUserWithPlayingQueue } from './helpers'
+import { PlayingQueue, PlayingQueueModel } from '../../models/PlayingQueue'
+import { DocumentType, Ref } from '@typegoose/typegoose'
 
-@Resolver((of) => Play)
+@InputType()
+class QueueInput {
+    @Field(() => [String])
+    public plays: string[]
+}
+
+@Resolver((of) => PlayingQueue)
 export class PlayingQueueResolver {
-    @Mutation((returns) => Play, {
+    @Authorized()
+    @Mutation((returns) => PlayingQueue, {
         description: 'Starts the playing of a Play object',
     })
-    async startPlay(@Arg('slug') slug: string, @Ctx() context): Promise<Play> {
-        const user = context
-
+    async startPlay(@Arg('slug') slug: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
         const episode = await EpisodeModel.findOne({ slug: slug })
         const play = new PlayModel({
             episode,
@@ -21,23 +26,17 @@ export class PlayingQueueResolver {
             completed: false,
         })
 
-        if (!episode.plays) episode.plays = []
-        if (!user.plays) user.plays = []
-        episode.plays.push(play)
-        user.plays.push(play)
-
-        await episode.save()
-        await play.save()
-        await user.save()
-
-        return play
+        playingQueue.plays.unshift(play._id)
+        await playingQueue.save()
+        return playingQueue
     }
 
+    @Authorized()
     @Mutation((returns) => Play, {
         description: 'Updates the play position of a Play object',
     })
     async updatePlayPosition(@Arg('position') position: number, @Arg('playId') playId: number) {
-        const play = await PlayModel.findById(playId)
+        const play = await PlayModel.findById<DocumentType<Play>>(playId)
         if (play.position > 0 && play.started == false) play.started = true
         play.position = position
 
@@ -45,30 +44,17 @@ export class PlayingQueueResolver {
         return play
     }
 
-    @Query((returns) => [Play], { description: "Returns a user's player queue" })
-    async getUserQueue(@Ctx() { library }: UserContext): Promise<Play[]> {
-        const queue = await LibraryModel.aggregate([
-            { $match: { _id: library._id } },
-            {
-                $lookup: {
-                    from: 'plays',
-                    foreignField: '_id',
-                    localField: 'queue',
-                    as: 'queue',
-                },
-            },
-            { $unwind: '$queue' },
-            {
-                $replaceWith: '$queue',
-            },
-        ])
-        return queue
+    @Authorized()
+    @Query((returns) => [PlayingQueue], { description: "Returns a user's player queue" })
+    async getUserQueue(@Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+        return getCompleteQueue(playingQueue._id)
     }
 
-    @Mutation((returns) => [Play], {
+    @Authorized()
+    @Mutation((returns) => [PlayingQueue], {
         description: "Adds an episode to a player's queue",
     })
-    async addToPlayerQueue(@Arg('slug') slug: string, @Ctx() { user: { _id } }: UserContext): Promise<Play[]> {
+    async addToPlayerQueue(@Arg('slug') slug: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
         const episode = await EpisodeModel.findOne({ slug: slug })
         const play = new PlayModel({
             episode: episode,
@@ -76,110 +62,108 @@ export class PlayingQueueResolver {
             started: false,
             completed: false,
         })
-        let user = await getUserWithPlayingQueue(_id)
-
-        episode.plays.push(play._id)
-        user.plays.push(play._id)
-        user.queue.push(play)
-
-        await user.save()
-        await episode.save()
-        await play.save()
-
-        return user.queue
+        playingQueue.plays.push(play._id)
+        await playingQueue.save()
+        return playingQueue
     }
 
-    @Mutation((returns) => Play, {
+    @Authorized()
+    @Mutation((returns) => PlayingQueue, {
         description: "Adds an episode to a player's queue",
     })
-    async addToBeginningOfQueue(@Arg('slug') slug: string, @Ctx() { user: { _id } }: UserContext): Promise<Play> {
-        TODO: 'Check if the episode is already in the users queue!!!'
+    async addToBeginningOfQueue(@Arg('slug') slug: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
         const episode = await EpisodeModel.findOne({ slug: slug })
-        const play = new PlayModel({
-            episode: episode,
-            position: 0,
-            started: false,
-            completed: false,
-        })
-        let user = await getUserWithPlayingQueue(_id)
-        episode.plays.push(play._id)
-        user.plays.push(play._id)
-        user.queue.unshift(play._id)
-
-        await user.save()
-        await episode.save()
-        await play.save()
-
-        return play
-    }
-
-    @Mutation((returns) => Play, { description: "Updates a user's player queue" })
-    async updatePlayerQueue(@Arg('queue') queue: string, @Ctx() context): Promise<Play[]> {
-        const user = context
-
-        const userDeets = await UserModel.aggregate([
-            { $match: { username: context.username } },
-            {
-                $lookup: {
-                    from: 'plays',
-                    foreignField: '_id',
-                    localField: 'queue',
-                    as: 'queue',
-                },
-            },
-        ])
-
-        return userDeets[0].queue
+        const completeQueue = await getCompleteQueue(playingQueue._id)
+        //@ts-ignore
+        let play = completeQueue.plays.find<DocumentType<Play>>((play) => play.episode === slug)
+        if (!play) {
+            play = new PlayModel({
+                episode: episode,
+                position: 0,
+                started: false,
+                completed: false,
+            })
+            playingQueue.plays.unshift(play._id)
+        } else {
+            let playIndx = completeQueue.plays.indexOf(play)
+            completeQueue.plays.splice(playIndx, 1)
+            playingQueue.plays.unshift(play._id)
+        }
+        await playingQueue.save()
+        return playingQueue
     }
 
     @Mutation((returns) => Play, {
         description: "Updates the position of a user's Play object",
     })
-    async updatePosition(@Arg('playId') playId: string, @Arg('position') position: number, @Ctx() context): Promise<Play> {
+    async updatePosition(@Arg('playId') playId: string, @Arg('position') position: number): Promise<Play> {
         const play = await PlayModel.findById(playId)
         play.position = position
-
         await play.save()
-
-        const userDeets = await UserModel.aggregate([
-            { $match: { username: context.username } },
-            {
-                $lookup: {
-                    from: 'plays',
-                    foreignField: '_id',
-                    localField: 'queue',
-                    as: 'queue',
-                },
-            },
-        ])
-
-        return userDeets[0].queue[0]
+        return play
     }
 
-    @Mutation((returns) => [Play], {
+    @Authorized()
+    @Mutation((returns) => [PlayingQueue], {
         description: 'completes the currently playing item and loads the current queue',
     })
-    async completeAndGoToNext(@Arg('playId') playId: string, @Ctx() { user: { _id } }: UserContext): Promise<Play[]> {
+    async completeAndGoToNext(@Arg('playId') playId: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
         const play = await PlayModel.findById(playId)
         play.completed = true
-
         await play.save()
-        const user = await getUserWithPlayingQueue(_id)
 
-        if (user.queue.length == 1) user.queue = []
-        else user.queue.shift()
-
-        // await user.save()
-        return user.queue as Play[]
+        playingQueue.plays.shift()
+        await playingQueue.save()
+        return getCompleteQueue(playingQueue._id)
     }
-    @Mutation((returns) => [Play], {
+
+    @Authorized()
+    @Mutation((returns) => [PlayingQueue], {
+        description: "Rearrange items in the player's queue",
+    })
+    async rearrangeQueue(@Arg('queue') queue: QueueInput, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+        let tempQueue = []
+        for (let playId of queue.plays) {
+            const play = await PlayModel.findById(playId)
+            tempQueue.push(play)
+        }
+        playingQueue.plays = tempQueue
+
+        return getCompleteQueue(playingQueue._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => [PlayingQueue], {
         description: "Deletes/Clears a user's playing queue",
     })
-    async clearQueue(@Ctx() context): Promise<Play[]> {
-        const user = context
-        user.queue = []
-        await user.save()
-
-        return []
+    async clearQueue(@Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+        playingQueue.plays = []
+        await playingQueue.save()
+        return playingQueue
     }
+}
+
+export async function getCompleteQueue(_id: string): Promise<DocumentType<PlayingQueue>> {
+    let queues = await PlayingQueueModel.aggregate<DocumentType<PlayingQueue>>([
+        { $match: { _id } },
+        {
+            $lookup: {
+                from: 'plays',
+                foreignField: '_id',
+                localField: 'plays',
+                as: 'plays',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'episodes',
+                            foreignField: '_id',
+                            localField: 'episode',
+                            as: 'episode',
+                        },
+                    },
+                ],
+            },
+        },
+    ])
+    return queues[0]
 }

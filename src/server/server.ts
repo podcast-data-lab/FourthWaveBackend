@@ -124,9 +124,9 @@ initializeSentry()
         context: async ({ request, reply }): Promise<UserContext> => {
             let token = request.headers.authorization
             if (!token) return null
-            let userAndLib = await verifyTokenAndGetUser(token)
-            if (!userAndLib) return null
-            return { ...userAndLib, roles: [] }
+            let userContext = await verifyTokenAndGetUser(token)
+            if (!userContext) return null
+            return { ...userContext, roles: [] }
         },
     })
 

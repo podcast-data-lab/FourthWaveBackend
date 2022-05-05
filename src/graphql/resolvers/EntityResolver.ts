@@ -4,12 +4,12 @@ import { Podcast } from '../../models/Podcast'
 import { uniqBy } from 'ramda'
 import { Episode } from '../../models/Episode'
 import { DocumentType } from '@typegoose/typegoose'
+
 @Resolver((of) => Entity)
 export class EntityResolver {
     @Query((returns) => [Entity], {
         description: 'Returns a list of recommended topics',
     })
-    @Query((returns) => [Entity])
     async getEntitySearchRecommendations(): Promise<Entity[]> {
         const tpcs = await EntityModel.aggregate([
             {

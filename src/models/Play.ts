@@ -1,4 +1,4 @@
-import { prop } from '@typegoose/typegoose'
+import { prop, Ref } from '@typegoose/typegoose'
 import { ObjectType, Field, ID } from 'type-graphql'
 import { Episode } from './Episode'
 
@@ -6,7 +6,7 @@ import { Episode } from './Episode'
 export class Play {
     @Field((type) => Episode, { description: 'The slug of the epiosde' })
     @prop({ type: () => Episode })
-    episode: Episode
+    episode: Ref<Episode>
 
     @Field((type) => Number)
     @prop({ type: () => Number })

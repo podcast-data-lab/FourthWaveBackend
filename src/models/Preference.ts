@@ -1,7 +1,7 @@
-import { prop } from '@typegoose/typegoose'
+import { getModelForClass, prop } from '@typegoose/typegoose'
 import { Field, ID, ObjectType } from 'type-graphql'
 import { UiMode } from './enums/UiMode'
-import { ObjectId } from 'mongoose'
+
 @ObjectType()
 export class UserPreference {
     @Field((type) => UiMode)
@@ -20,3 +20,5 @@ export class UserPreference {
     @prop({ default: 0.5 })
     volume: number
 }
+
+export const UserPreferenceModel = getModelForClass(UserPreference)

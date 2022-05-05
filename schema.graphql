@@ -18,7 +18,9 @@ type Category {
   title: String!
 }
 
+"""A collection contains a list of podcasts grouped by a user"""
 type Collection {
+  name: String!
   podcasts: [Podcast!]!
 }
 
@@ -67,50 +69,60 @@ type Episode {
 }
 
 type Library {
+  archivedEpisodes: [Episode!]!
   bookmarkedEpisodes: [Episode!]!
   collections: [Collection!]!
   followedCategories: [Category!]!
   likedEpisodes: [Episode!]!
-  likedPodcasts: [Podcast!]!
+  playlists: [Playlist!]!
   subscribedPodcasts: [Podcast!]!
 }
 
 type Mutation {
-  """Adds an episode to a player's queue"""
-  addToBeginningOfQueue(slug: String!): Play!
+  addEpisodeToPlaylist(collectionId: String!, episodeSlug: String!): Library!
+  addPodcastToCollection(collectionId: String!, slug: String!): Library!
 
   """Adds an episode to a player's queue"""
-  addToPlayerQueue(slug: String!): [Play!]!
-  bookmarkEpisode(slug: String!): Episode!
+  addToBeginningOfQueue(slug: String!): PlayingQueue!
+
+  """Adds an episode to a player's queue"""
+  addToPlayerQueue(slug: String!): [PlayingQueue!]!
+  archiveEpisode(slug: String!): Library!
+  bookmarkEpisode(slug: String!): Library!
 
   """Changes a user's playing speed"""
   changePlayingSpeed(speed: Float!): Float!
 
   """Deletes/Clears a user's playing queue"""
-  clearQueue: [Play!]!
+  clearQueue: [PlayingQueue!]!
 
   """completes the currently playing item and loads the current queue"""
-  completeAndGoToNext(playId: String!): [Play!]!
-  likeEpisode(slug: String!): Episode!
-  likePodcast(slug: String!): Podcast!
+  completeAndGoToNext(playId: String!): [PlayingQueue!]!
+  createCollection(collectionName: String!): Library!
+  createPlaylist(playlistName: String!): Library!
+  deleteCollection(collectionId: String!): Library!
+  deletePlaylist(playlistId: String!): Library!
+  likeEpisode(slug: String!): Library!
+
+  """Rearrange items in the player's queue"""
+  rearrangeQueue(queue: QueueInput!): [PlayingQueue!]!
+  removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Library!
+  removePodcastFromCollection(collectionId: String!, slug: String!): Library!
 
   """Sets a user Volume"""
   setUserVolume(volume: Float!): Float!
-  signUp: User!
+  signUpOrIn: User!
 
   """Starts the playing of a Play object"""
-  startPlay(slug: String!): Play!
-  subscribeToPodcast(slug: String!): Podcast!
-  unbookmarkEpisode(slug: String!): Episode!
-  unlikeEpisode(slug: String!): Episode!
-  unlikePodcast(slug: String!): Podcast!
-  unsubscribeToPodcast(slug: String!): Podcast!
+  startPlay(slug: String!): PlayingQueue!
+  subscribeToPodcast(slug: String!): Library!
+  unArchiveEpisode(slug: String!): Library!
+  unbookmarkEpisode(slug: String!): Library!
+  unlikeEpisode(slug: String!): Library!
+  unsubscribeToPodcast(slug: String!): Library!
 
   """Updates the play position of a Play object"""
   updatePlayPosition(playId: Float!, position: Float!): Play!
-
-  """Updates a user's player queue"""
-  updatePlayerQueue(queue: String!): Play!
 
   """Updates the position of a user's Play object"""
   updatePosition(playId: String!, position: Float!): Play!
@@ -127,6 +139,12 @@ type Play {
 
 type PlayingQueue {
   plays: [Play!]!
+}
+
+"""A playlist contains a list of episodes added by a user."""
+type Playlist {
+  episodes: [Episode!]!
+  name: String!
 }
 
 type Podcast {
@@ -180,7 +198,7 @@ type Query {
   getTrending: [Podcast!]!
 
   """Returns a user's player queue"""
-  getUserQueue: [Play!]!
+  getUserQueue: [PlayingQueue!]!
   print: String!
 
   """
@@ -218,6 +236,10 @@ type Query {
   topEpisodes: [Episode!]!
 }
 
+input QueueInput {
+  plays: [String!]!
+}
+
 type SubscriptionStatus {
   aggregateStatistics: String!
   callbackUrl: String!
@@ -245,11 +267,11 @@ type User {
   contributions: [String!]!
   email: String!
   library: Library!
-  name: String!
+  name: String
   permissions: [UserPermission!]!
+  playingQueue: PlayingQueue!
   plays: [Play!]!
   preferences: UserPreference!
-  queue: [PlayingQueue!]!
   uid: String!
 }
 

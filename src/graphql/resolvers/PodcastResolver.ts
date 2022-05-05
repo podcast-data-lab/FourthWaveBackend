@@ -1,7 +1,6 @@
 import { PipelineStage } from 'mongoose'
 import { Arg, Query, Resolver } from 'type-graphql'
 import { getSubscriptionStatus } from '../../lib/getSubscribtionDiagnostics'
-import { EpisodeModel } from '../../models'
 import { Episode } from '../../models/Episode'
 
 import { Podcast, PodcastModel } from '../../models/Podcast'
@@ -232,7 +231,7 @@ export default class PodcastResolver {
     @Query((returns) => [Podcast], { description: 'Returns the Trending Podcasts' })
     async getTrending(): Promise<Podcast[]> {
         const pods = await PodcastModel.aggregate([
-            { $sample: { size: 6 } },
+            { $sample: { size: 8 } },
             {
                 $lookup: {
                     from: 'categories',

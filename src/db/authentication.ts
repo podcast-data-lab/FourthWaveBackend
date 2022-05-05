@@ -6,6 +6,9 @@ import { LibraryModel } from '../models/Library'
 import { User } from '../models/User'
 import { captureException } from '@sentry/node'
 import { UserContext } from '../models/Context'
+import { PlayingQueueModel } from '../models/PlayingQueue'
+import { UserPermission } from '../models/enums/Permissions'
+import { UserPreferenceModel } from '../models/Preference'
 
 /**
  * A function to authenticate a user
@@ -34,27 +37,45 @@ export const verifyTokenAndGetUser = async (token: string): Promise<Omit<UserCon
         const verifiedToken = await firebaseAuth.verifyIdToken(token)
         let user = await UserModel.findOne({ uid: verifiedToken.uid, email: verifiedToken.email })
         let library
-
+        let playingQueue
         if (!user) {
             user = new UserModel({
                 uid: verifiedToken.uid,
                 email: verifiedToken.email,
+                permissions: [UserPermission.User],
+                name: verifiedToken.name,
             })
-            library = new LibraryModel({})
-            user.library = library._id
+            library = new LibraryModel()
             await library.save()
+
+            playingQueue = new PlayingQueueModel()
+            await playingQueue.save()
+
+            let preferences = new UserPreferenceModel()
+            await preferences.save()
+
+            user.library = library._id
+            user.playingQueue = playingQueue._id
+            user.preferences = preferences._id
             await user.save()
         } else {
             library = await LibraryModel.findById({ _id: new ObjectId(user.library as any) })
             if (!library) {
-                library = new LibraryModel({})
+                library = new LibraryModel()
                 user.library = library._id
                 await library.save()
                 await user.save()
             }
+            playingQueue = await PlayingQueueModel.findById({ _id: new ObjectId(user.playingQueue as any) })
+            if (!playingQueue) {
+                playingQueue = new PlayingQueueModel()
+                user.playingQueue = playingQueue._id
+                await playingQueue.save()
+                await user.save()
+            }
         }
-        return { user, library }
-    } catch (e) {
+        return { user, library, playingQueue }
+    } catch (e: any) {
         captureException(e)
         throw new Error(e)
     }
