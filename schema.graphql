@@ -124,9 +124,9 @@ type Mutation {
   startPlay(slug: String!): PlayingQueue!
   subscribeToPodcast(slug: String!): Library!
   unArchiveEpisode(slug: String!): Library!
+  unSubscribeToPodcast(slug: String!): Library!
   unbookmarkEpisode(slug: String!): Library!
   unlikeEpisode(slug: String!): Library!
-  unsubscribeToPodcast(slug: String!): Library!
 
   """Updates the play position of a Play object"""
   updatePlayPosition(playId: Float!, position: Float!): Play!

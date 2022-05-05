@@ -14,16 +14,18 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async subscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
-        if (podcast) {
+        console.log(podcast)
+        if (podcast && !library.subscribedPodcasts.includes(podcast._id)) {
             library.subscribedPodcasts.push(podcast._id)
             await library.save()
         }
+        console.log(library)
         return getFullLibrary(library._id)
     }
 
     @Authorized()
     @Mutation((returns) => Library)
-    async unsubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
+    async unSubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcasts = await PodcastModel.findOne({ slug })
 
         const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts._id)
@@ -254,6 +256,21 @@ export async function getFullLibrary(_id: string): Promise<DocumentType<Library>
                             foreignField: '_id',
                             localField: 'podcasts',
                             as: 'podcasts',
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: 'authors',
+                                        localField: 'author',
+                                        foreignField: '_id',
+                                        as: 'author',
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        author: { $first: '$author' },
+                                    },
+                                },
+                            ],
                         },
                     },
                 ],
@@ -277,10 +294,33 @@ export async function getFullLibrary(_id: string): Promise<DocumentType<Library>
         },
         {
             $lookup: {
+                from: 'episodes',
+                foreignField: '_id',
+                localField: 'archivedEpisodes',
+                as: 'archivedEpisodes',
+            },
+        },
+        {
+            $lookup: {
                 from: 'podcasts',
                 foreignField: '_id',
                 localField: 'subscribedPodcasts',
                 as: 'subscribedPodcasts',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'authors',
+                            localField: 'author',
+                            foreignField: '_id',
+                            as: 'author',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            author: { $first: '$author' },
+                        },
+                    },
+                ],
             },
         },
     ])
