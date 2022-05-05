@@ -67,7 +67,7 @@ initializeSentry()
             // @ts-ignore
             var json = JSON.parse(body)
             done(null, json)
-        } catch (err) {
+        } catch (err: any) {
             err.statusCode = 400
             done(err, undefined)
         }
@@ -134,7 +134,7 @@ initializeSentry()
     app.register(server.createHandler())
 
     app.register(require('fastify-cors'), {
-        origin: (origin, cb) => {
+        origin: (origin: string, cb: (arg1: any, arg2?: any, ...args: any[]) => any) => {
             if (/localhost/.test(origin) || !origin) {
                 //  Request from localhost will pass
                 cb(null, true)

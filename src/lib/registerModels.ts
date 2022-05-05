@@ -89,7 +89,7 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
 
     /*** Register Podcast episode */
     let episodes = await Promise.all(
-        feedObject.entries.map(async (episodeItem) => {
+        feedObject.entries?.map(async (episodeItem: any) => {
             try {
                 let { episodeObject, entitiesInput, authorInput } = await parseEpisodeData(episodeItem, podcast)
                 let episode = await registerEpisode(episodeObject)
@@ -99,7 +99,7 @@ export async function parseFeedAndRegister(feedObject: { [index: string]: any })
                 if (author) episode.author = author
                 await episode.save()
                 return episode
-            } catch (error) {
+            } catch (error: any) {
                 console.log(`${chalk.red.bold('✗')} Error in registering episode: ${chalk.yellow(error.message)}`)
                 return
             }

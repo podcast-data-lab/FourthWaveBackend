@@ -26,7 +26,7 @@ export default class LibraryResolver {
     async unsubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcasts = await PodcastModel.findOne({ slug })
 
-        const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts[0]._id)
+        const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts._id)
         if (indx > -1) {
             library.subscribedPodcasts.splice(indx, 1)
             await library.save()

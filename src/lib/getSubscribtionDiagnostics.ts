@@ -18,13 +18,13 @@ export async function getSubscriptionStatus(rssFeed: string, hmac: string) {
         encodeURIComponent(rssFeed)
     }`
     console.log(`${chalk.hex('F18701')('Subscription status url: ')}: ${url}`)
-    return new Promise((resolve, reject) => {
+    return new Promise<SubscriptionStatus>((resolve, reject) => {
         request(
             {
                 url,
                 method: 'GET',
             },
-            (error, response, body) => {
+            (error: any, response: any, body: any) => {
                 if (error) {
                     console.log(`${chalk.hex('F18701')('Error: ')}: ${error}`)
                     captureException(error)
@@ -40,7 +40,7 @@ export async function getSubscriptionStatus(rssFeed: string, hmac: string) {
     })
 }
 
-function extractPodcastData(html, rssFeed): SubscriptionStatus {
+function extractPodcastData(html: string, rssFeed: string): SubscriptionStatus {
     try {
         let parsed = parse(html)
         let labels = parsed.querySelectorAll('dl')[0].querySelectorAll('dt')
@@ -50,7 +50,7 @@ function extractPodcastData(html, rssFeed): SubscriptionStatus {
         for (let i = 0; i < labels.length; i++) {
             let label = labels[i].innerHTML
             let value = values[i].innerHTML
-            data[toCamelCase(label.trim())] = value.trim()
+            data[toCamelCase(label.trim()) as keyof SubscriptionStatus] = value.trim()
         }
         return data
     } catch (e) {

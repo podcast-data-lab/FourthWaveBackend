@@ -11,18 +11,19 @@ mongoose.connect(MONGO_DB, {
     useUnifiedTopology: true,
 })
 
-export async function registerPodcast(podcastFeedData, totalNo, currentNo) {
-    return parseFeedAndRegister(podcastFeedData).catch((e) => {
-        console.log(`${chalk.red.bold('✗')} Error in registering podcast: ${(e.message)}`)
-        return e
-    }).then((podcast) => {
-        console.log(
-            `${chalk.yellow.bold(podcast.title)} registered ${chalk.green('✔')}\n${chalk.hex('#DCC9B6')(
-                ((currentNo / totalNo) * 100).toFixed(2) + `%`,
-            )}\n`,
-        )
-    })
-    
+export async function registerPodcast(podcastFeedData: { [index: string]: any }, totalNo: number, currentNo: number) {
+    return parseFeedAndRegister(podcastFeedData)
+        .catch((e) => {
+            console.log(`${chalk.red.bold('✗')} Error in registering podcast: ${e.message}`)
+            return e
+        })
+        .then((podcast) => {
+            console.log(
+                `${chalk.yellow.bold(podcast.title)} registered ${chalk.green('✔')}\n${chalk.hex('#DCC9B6')(
+                    ((currentNo / totalNo) * 100).toFixed(2) + `%`,
+                )}\n`,
+            )
+        })
 }
 
 ;(async () => {
@@ -38,7 +39,7 @@ export async function registerPodcast(podcastFeedData, totalNo, currentNo) {
             const data = JSON.parse(fs.readFileSync(podcastPath, 'utf8'))
             await registerPodcast(data, totalNo, currentNo)
         }
-    } catch (error) {
+    } catch (error: any) {
         console.log(`${chalk.red('An error occured')}: `, error.message)
     }
     mongoose.disconnect()

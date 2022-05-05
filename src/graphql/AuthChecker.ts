@@ -1,4 +1,4 @@
-import { AuthChecker } from 'type-graphql'
+import { AuthChecker, ResolverData } from 'type-graphql'
 import { UserContext } from '../models/Context'
 import { UserPermission } from '../models/enums/Permissions'
 /**
@@ -6,10 +6,7 @@ import { UserPermission } from '../models/enums/Permissions'
  * @param { root, arguments, context, info }
  * @param roles
  */
-export const AuthCheckerFn: AuthChecker = (
-    { root, args, context, info }: { root: any; args: any; context: UserContext; info: any },
-    roles: UserPermission[],
-) => {
+export const AuthCheckerFn: AuthChecker<UserContext> = ({ root, args, context, info }, roles: string[]) => {
     // If no roles are required
     if (!context.user) return false
     if (roles.length == 0) {

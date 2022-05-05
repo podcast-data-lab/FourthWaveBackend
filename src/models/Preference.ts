@@ -19,6 +19,10 @@ export class UserPreference {
     @Field()
     @prop({ default: 0.5 })
     volume: number
+
+    @Field()
+    @prop({ default: 1 })
+    speed: number
 }
 
 export const UserPreferenceModel = getModelForClass(UserPreference)

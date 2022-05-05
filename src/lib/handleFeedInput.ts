@@ -74,7 +74,7 @@ async function getUpdatedItems(rss_url: string, last_fetched: Date, podcast: Pod
         body: JSON.stringify({ last_fetched, rss_url }),
     })
         .then(checkStatus)
-        .then((body) => {
+        .then((body: { entries: any[] }) => {
             return body.entries.map((entry) => parseEpisodeData(entry, podcast))
         })
         .catch((error) => {
@@ -84,7 +84,7 @@ async function getUpdatedItems(rss_url: string, last_fetched: Date, podcast: Pod
         })
 }
 
-async function checkStatus(response) {
+async function checkStatus(response: any) {
     if (response.status >= 200 && response.status < 300) {
         return response.json()
     } else {

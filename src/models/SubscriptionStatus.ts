@@ -2,7 +2,7 @@ import { Field, ObjectType } from 'type-graphql'
 
 @ObjectType()
 export class SubscriptionStatus {
-    constructor(rssFeed) {
+    constructor(rssFeed: string) {
         this.rssFeed = rssFeed
     }
 
