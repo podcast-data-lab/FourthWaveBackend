@@ -77,3 +77,7 @@ The following are the search indexes used to search for content in the app.
     }
 }
 ```
+
+## Notes on MongoDB
+
+-   [MongoDB does not retain order when using `$lookup`](https://stackoverflow.com/questions/55033804/aggregate-lookup-does-not-return-elements-original-array-order)

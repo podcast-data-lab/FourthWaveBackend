@@ -59,14 +59,14 @@ export const verifyTokenAndGetUser = async (token: string): Promise<Omit<UserCon
             user.preferences = preferences._id
             await user.save()
         } else {
-            library = await LibraryModel.findById({ _id: new ObjectId(user.library as any) })
+            library = await LibraryModel.findById({ _id: user.library })
             if (!library) {
                 library = new LibraryModel()
                 user.library = library._id
                 await library.save()
                 await user.save()
             }
-            playingQueue = await PlayingQueueModel.findById({ _id: new ObjectId(user.playingQueue as any) })
+            playingQueue = await PlayingQueueModel.findById({ _id: user.playingQueue })
             if (!playingQueue) {
                 playingQueue = new PlayingQueueModel()
                 user.playingQueue = playingQueue._id

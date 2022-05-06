@@ -14,21 +14,18 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async subscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
-        console.log(podcast)
         if (podcast && !library.subscribedPodcasts.includes(podcast._id)) {
             library.subscribedPodcasts.push(podcast._id)
             await library.save()
         }
-        console.log(library)
         return getFullLibrary(library._id)
     }
 
     @Authorized()
     @Mutation((returns) => Library)
     async unSubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
-        const podcasts = await PodcastModel.findOne({ slug })
-
-        const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast_id == podcasts._id)
+        const podcast = await PodcastModel.findOne({ slug })
+        const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast._id.equals(podcast_id))
         if (indx > -1) {
             library.subscribedPodcasts.splice(indx, 1)
             await library.save()
@@ -52,7 +49,7 @@ export default class LibraryResolver {
     async deleteCollection(@Arg('collectionId') collectionId: string, @Ctx() { library }: UserContext): Promise<Library> {
         const collection = await CollectionModel.findOne({ _id: collectionId })
         if (collection) {
-            const indx = library.collections.findIndex((collection_id) => collection_id == collection._id)
+            const indx = library.collections.findIndex((collection_id) => collection._id.equals(collection_id))
             if (indx > -1) {
                 library.collections.splice(indx, 1)
                 await collection.remove()
@@ -88,7 +85,7 @@ export default class LibraryResolver {
         const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
         const collection = await CollectionModel.findOne({ _id: collectionId })
         if (podcast && collection) {
-            const indx = collection.podcasts.findIndex((podcast_id) => podcast_id == podcast._id)
+            const indx = collection.podcasts.findIndex((podcast_id) => podcast._id.equals(podcast_id))
             if (indx > -1) {
                 collection.podcasts.splice(indx, 1)
                 await collection.save()
@@ -112,7 +109,7 @@ export default class LibraryResolver {
     async deletePlaylist(@Arg('playlistId') playlistId: string, @Ctx() { library }: UserContext): Promise<Library> {
         const playlist = await PlaylistModel.findOne({ _id: playlistId })
         if (playlist) {
-            const indx = library.playlists.findIndex((playlist_id) => playlist_id == playlist._id)
+            const indx = library.playlists.findIndex((playlist_id) => playlist._id.equals(playlist_id))
             if (indx > -1) {
                 library.playlists.splice(indx, 1)
                 await playlist.remove()
@@ -150,7 +147,7 @@ export default class LibraryResolver {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug: episodeSlug })
         const playlist = await PlaylistModel.findOne({ _id: collectionId })
         if (episode && playlist) {
-            const indx = playlist.episodes.findIndex((episode_id) => episode_id == episode._id)
+            const indx = playlist.episodes.findIndex((episode_id) => episode._id(episode_id))
             if (indx > -1) {
                 playlist.episodes.splice(indx, 1)
                 await playlist.save()
@@ -176,7 +173,7 @@ export default class LibraryResolver {
     async unlikeEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
 
-        const indx = library.likedEpisodes.findIndex((episode_id) => episode_id == episode._id)
+        const indx = library.likedEpisodes.findIndex((episode_id) => episode._id(episode_id))
         if (indx > -1) {
             library.likedEpisodes.splice(indx, 1)
             await library.save()
@@ -199,7 +196,7 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async unArchiveEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
-        const indx = library.archivedEpisodes.findIndex((episode_id) => episode_id == episode._id)
+        const indx = library.archivedEpisodes.findIndex((episode_id) => episode._id.equals(episode_id))
         if (indx > -1) {
             library.archivedEpisodes.splice(indx, 1)
             await library.save()
@@ -223,7 +220,7 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async unbookmarkEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne({ slug })
-        const indx = library.bookmarkedEpisodes.findIndex((episode_id) => episode_id == episode._id)
+        const indx = library.bookmarkedEpisodes.findIndex((episode_id) => episode._id(episode_id))
         if (indx > -1) {
             library.bookmarkedEpisodes.splice(indx, 1)
             await library.save()

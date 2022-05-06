@@ -4,8 +4,8 @@ import { Episode } from './Episode'
 
 @ObjectType()
 export class Play {
-    @Field((type) => Episode, { description: 'The slug of the epiosde' })
-    @prop({ type: () => Episode })
+    @Field((type) => Episode)
+    @prop({ ref: 'Episode' })
     episode: Ref<Episode>
 
     @Field((type) => Number)

@@ -93,7 +93,7 @@ type Mutation {
   addToBeginningOfQueue(slug: String!): PlayingQueue!
 
   """Adds an episode to a player's queue"""
-  addToPlayerQueue(slug: String!): [PlayingQueue!]!
+  addToEndOfQueue(slug: String!): PlayingQueue!
   archiveEpisode(slug: String!): Library!
   bookmarkEpisode(slug: String!): Library!
 
@@ -101,10 +101,10 @@ type Mutation {
   changePlayingSpeed(speed: Float!): UserPreference!
 
   """Deletes/Clears a user's playing queue"""
-  clearQueue: [PlayingQueue!]!
+  clearQueue: PlayingQueue!
 
   """completes the currently playing item and loads the current queue"""
-  completeAndGoToNext(playId: String!): [PlayingQueue!]!
+  completeAndGoToNext(playId: String!): PlayingQueue!
   createCollection(collectionName: String!): Library!
   createPlaylist(playlistName: String!): Library!
   deleteCollection(collectionId: String!): Library!
@@ -112,7 +112,7 @@ type Mutation {
   likeEpisode(slug: String!): Library!
 
   """Rearrange items in the player's queue"""
-  rearrangeQueue(queue: QueueInput!): [PlayingQueue!]!
+  rearrangeQueue(queue: QueueInput!): PlayingQueue!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Library!
   removePodcastFromCollection(collectionId: String!, slug: String!): Library!
 
@@ -137,8 +137,6 @@ type Mutation {
 
 type Play {
   completed: Boolean
-
-  """The slug of the epiosde"""
   episode: Episode!
   position: Float!
   started: Boolean!
@@ -205,7 +203,7 @@ type Query {
   getTrending: [Podcast!]!
 
   """Returns a user's player queue"""
-  getUserQueue: [PlayingQueue!]!
+  getUserQueue: PlayingQueue!
   print: String!
 
   """
