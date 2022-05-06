@@ -6,6 +6,9 @@ import { User } from './User'
 
 @ObjectType()
 export class Comment {
+    @Field((type) => ID)
+    _id: string
+
     @Field()
     @prop({ type: String, required: true })
     content: string

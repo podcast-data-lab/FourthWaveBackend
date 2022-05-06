@@ -5,6 +5,7 @@ import { Play } from '../../models/Play'
 import { PlayingQueue, PlayingQueueModel } from '../../models/PlayingQueue'
 import { DocumentType, Ref } from '@typegoose/typegoose'
 import { insert, remove } from 'ramda'
+import { ObjectId } from 'mongodb'
 
 @InputType()
 class QueueInput {
@@ -239,7 +240,10 @@ export async function getCompleteQueue(_id: string): Promise<DocumentType<Playin
     return queues[0]
 }
 
-async function getPlayForEpisodeInPlayingQueue(playingQueueId: string, episodeId: string): Promise<DocumentType<Play>> {
+async function getPlayForEpisodeInPlayingQueue(
+    playingQueueId: string,
+    episodeId: string | ObjectId,
+): Promise<DocumentType<Play>> {
     const playingQueue = await PlayingQueueModel.aggregate([
         { $match: { _id: playingQueueId } },
         {

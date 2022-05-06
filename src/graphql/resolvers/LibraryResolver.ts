@@ -4,9 +4,10 @@ import { Arg, Authorized, Ctx, Mutation, Resolver } from 'type-graphql'
 import { Podcast, PodcastModel } from '../../models/Podcast'
 import { Library, LibraryModel } from '../../models/Library'
 import { UserContext } from '../../models/Context'
-import { DocumentType } from '@typegoose/typegoose'
+import { DocumentType, Ref } from '@typegoose/typegoose'
 import { CollectionModel } from '../../models/Collection'
 import { PlaylistModel } from '../../models/Playlist'
+import { ObjectId } from 'mongodb'
 
 @Resolver((of) => Library)
 export default class LibraryResolver {
@@ -25,7 +26,7 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async unSubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcast = await PodcastModel.findOne({ slug })
-        const indx = library.subscribedPodcasts.findIndex((podcast_id) => podcast._id.equals(podcast_id))
+        const indx = library.subscribedPodcasts.findIndex((podcast_id) => new ObjectId(podcast._id).equals(podcast_id.toString()))
         if (indx > -1) {
             library.subscribedPodcasts.splice(indx, 1)
             await library.save()
@@ -49,7 +50,9 @@ export default class LibraryResolver {
     async deleteCollection(@Arg('collectionId') collectionId: string, @Ctx() { library }: UserContext): Promise<Library> {
         const collection = await CollectionModel.findOne({ _id: collectionId })
         if (collection) {
-            const indx = library.collections.findIndex((collection_id) => collection._id.equals(collection_id))
+            const indx = library.collections.findIndex((collection_id) =>
+                new ObjectId(collection._id).equals(collection_id.toString()),
+            )
             if (indx > -1) {
                 library.collections.splice(indx, 1)
                 await collection.remove()
@@ -85,7 +88,7 @@ export default class LibraryResolver {
         const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
         const collection = await CollectionModel.findOne({ _id: collectionId })
         if (podcast && collection) {
-            const indx = collection.podcasts.findIndex((podcast_id) => podcast._id.equals(podcast_id))
+            const indx = collection.podcasts.findIndex((podcast_id) => new ObjectId(podcast._id).equals(podcast_id.toString()))
             if (indx > -1) {
                 collection.podcasts.splice(indx, 1)
                 await collection.save()
@@ -109,7 +112,7 @@ export default class LibraryResolver {
     async deletePlaylist(@Arg('playlistId') playlistId: string, @Ctx() { library }: UserContext): Promise<Library> {
         const playlist = await PlaylistModel.findOne({ _id: playlistId })
         if (playlist) {
-            const indx = library.playlists.findIndex((playlist_id) => playlist._id.equals(playlist_id))
+            const indx = library.playlists.findIndex((playlist_id) => new ObjectId(playlist._id).equals(playlist_id.toString()))
             if (indx > -1) {
                 library.playlists.splice(indx, 1)
                 await playlist.remove()
@@ -130,7 +133,7 @@ export default class LibraryResolver {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug: episodeSlug })
         const playlist = await PlaylistModel.findOne({ _id: playlistId })
         if (episode && playlist) {
-            playlist.episodes.push(episode._id)
+            playlist.episodes.push(episode)
             await playlist.save()
         }
 
@@ -147,7 +150,7 @@ export default class LibraryResolver {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug: episodeSlug })
         const playlist = await PlaylistModel.findOne({ _id: collectionId })
         if (episode && playlist) {
-            const indx = playlist.episodes.findIndex((episode_id) => episode._id(episode_id))
+            const indx = playlist.episodes.findIndex((episode_id) => episode._id.equals(episode_id.toString()))
             if (indx > -1) {
                 playlist.episodes.splice(indx, 1)
                 await playlist.save()
@@ -162,7 +165,7 @@ export default class LibraryResolver {
     async likeEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
         if (episode) {
-            library.likedEpisodes.push(episode._id)
+            library.likedEpisodes.push(episode)
             await library.save()
         }
         return getFullLibrary(library._id)
@@ -173,7 +176,7 @@ export default class LibraryResolver {
     async unlikeEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
 
-        const indx = library.likedEpisodes.findIndex((episode_id) => episode._id(episode_id))
+        const indx = library.likedEpisodes.findIndex((episode_id) => episode._id.equals(episode_id.toString()))
         if (indx > -1) {
             library.likedEpisodes.splice(indx, 1)
             await library.save()
@@ -186,7 +189,7 @@ export default class LibraryResolver {
     async archiveEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
         if (episode) {
-            library.archivedEpisodes.push(episode._id)
+            library.archivedEpisodes.push(episode)
             await library.save()
         }
         return getFullLibrary(library._id)
@@ -196,7 +199,7 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async unArchiveEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
-        const indx = library.archivedEpisodes.findIndex((episode_id) => episode._id.equals(episode_id))
+        const indx = library.archivedEpisodes.findIndex((episode_id) => episode._id.equals(episode_id.toString()))
         if (indx > -1) {
             library.archivedEpisodes.splice(indx, 1)
             await library.save()
@@ -210,7 +213,7 @@ export default class LibraryResolver {
     async bookmarkEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
         if (episode) {
-            library.bookmarkedEpisodes.push(episode._id)
+            library.bookmarkedEpisodes.push(episode)
             await library.save()
         }
         return getFullLibrary(library._id)
@@ -220,7 +223,7 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async unbookmarkEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne({ slug })
-        const indx = library.bookmarkedEpisodes.findIndex((episode_id) => episode._id(episode_id))
+        const indx = library.bookmarkedEpisodes.findIndex((episode_id) => episode._id.equals(episode_id.toString()))
         if (indx > -1) {
             library.bookmarkedEpisodes.splice(indx, 1)
             await library.save()
@@ -229,7 +232,7 @@ export default class LibraryResolver {
     }
 }
 
-export async function getFullLibrary(_id: string): Promise<DocumentType<Library>> {
+export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Library>> {
     let libs = await LibraryModel.aggregate<DocumentType<Library>>([
         { $match: { _id } },
         {

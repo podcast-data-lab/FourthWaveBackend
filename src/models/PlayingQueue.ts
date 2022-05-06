@@ -4,6 +4,9 @@ import { Play } from './Play'
 import { ObjectId } from 'mongoose'
 @ObjectType()
 export class PlayingQueue {
+    @Field((type) => ID)
+    _id: string
+
     @Field((type) => [Play])
     @prop({ ref: 'Play', default: [] })
     public plays: Ref<Play>[]

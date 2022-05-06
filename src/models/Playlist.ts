@@ -6,6 +6,9 @@ import { Episode } from './Episode'
     description: 'A playlist contains a list of episodes added by a user.',
 })
 export class Playlist {
+    @Field((type) => ID)
+    _id: string
+
     @Field()
     @prop({
         type: String,

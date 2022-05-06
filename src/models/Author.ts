@@ -1,8 +1,11 @@
 import { prop } from '@typegoose/typegoose'
-import { Field, ObjectType } from 'type-graphql'
+import { Field, ID, ObjectType } from 'type-graphql'
 
 @ObjectType()
 export class Author {
+    @Field((type) => ID)
+    _id: string
+
     @Field({ nullable: true })
     @prop()
     public name?: string
@@ -13,7 +16,7 @@ export class Author {
     })
     public email?: string
 
-    @Field({nullable: true})
+    @Field({ nullable: true })
     @prop({
         type: String,
     })

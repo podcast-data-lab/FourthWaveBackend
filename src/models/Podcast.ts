@@ -7,6 +7,9 @@ import { Author } from './Author'
 
 @ObjectType()
 export class Podcast {
+    @Field((type) => ID)
+    _id: string
+
     @Field()
     @prop()
     public title: string

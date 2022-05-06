@@ -4,6 +4,9 @@ import { UiMode } from './enums/UiMode'
 
 @ObjectType()
 export class UserPreference {
+    @Field((type) => ID)
+    _id: string
+
     @Field((type) => UiMode)
     @prop({ default: UiMode.Light })
     uiMode: UiMode

@@ -1,4 +1,6 @@
 import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
+import { ObjectID } from 'bson'
+import { ObjectId } from 'mongodb'
 import { Field, ID, ObjectType } from 'type-graphql'
 import { Category } from './Category'
 import { Collection } from './Collection'
@@ -8,6 +10,9 @@ import { Podcast } from './Podcast'
 
 @ObjectType()
 export class Library {
+    @Field((type) => ID)
+    _id: ObjectID
+
     @Field((type) => [Episode])
     @prop({ ref: 'Episode', default: [] })
     public bookmarkedEpisodes: Ref<Episode>[]

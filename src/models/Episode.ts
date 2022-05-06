@@ -8,9 +8,12 @@ import { Play } from './Play'
 import { Podcast } from './Podcast'
 import { ObjectId } from 'mongoose'
 import { Author } from './Author'
+import { ObjectID } from 'bson'
 
 @ObjectType()
 export class Episode {
+    @Field((type) => ID)
+    _id: ObjectID
 
     @Field({ nullable: true })
     @prop()
@@ -29,13 +32,12 @@ export class Episode {
     public mime?: string
 
     @Field((type) => Author, { nullable: true })
-    @prop({ ref: 'Author'})
+    @prop({ ref: 'Author' })
     author?: Ref<Author>
 
     @Field({ nullable: true })
     @prop()
     public description: string
-
 
     @Field({ nullable: true })
     @prop()

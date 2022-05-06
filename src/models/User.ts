@@ -8,6 +8,9 @@ import { UserPreference } from './Preference'
 
 @ObjectType()
 export class User {
+    @Field((type) => ID)
+    _id: string
+
     @Field({ nullable: true })
     @prop()
     public name: string

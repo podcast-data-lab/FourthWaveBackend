@@ -11,12 +11,14 @@ type AuthOutput {
 }
 
 type Author {
+  _id: ID!
   email: String
   name: String
   slug: String
 }
 
 type Category {
+  _id: ID!
   comments: [Comment!]!
   contributor: User!
   episodes: [Episode!]!
@@ -27,11 +29,13 @@ type Category {
 
 """A collection contains a list of podcasts grouped by a user"""
 type Collection {
+  _id: ID!
   name: String!
   podcasts: [Podcast!]!
 }
 
 type Comment {
+  _id: ID!
   categories: Category!
   content: String!
   likes: [User!]!
@@ -45,6 +49,7 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Entity {
+  _id: ID!
   episodes: [Episode!]!
   name: String!
   podcasts: [Podcast!]!
@@ -52,6 +57,7 @@ type Entity {
 }
 
 type Episode {
+  _id: ID!
   author: Author
   categories: [Category!]
   comments: [Comment!]
@@ -76,6 +82,7 @@ type Episode {
 }
 
 type Library {
+  _id: ID!
   archivedEpisodes: [Episode!]!
   bookmarkedEpisodes: [Episode!]!
   collections: [Collection!]!
@@ -136,6 +143,7 @@ type Mutation {
 }
 
 type Play {
+  _id: ID!
   completed: Boolean
   episode: Episode!
   position: Float!
@@ -143,16 +151,19 @@ type Play {
 }
 
 type PlayingQueue {
+  _id: ID!
   plays: [Play!]!
 }
 
 """A playlist contains a list of episodes added by a user."""
 type Playlist {
+  _id: ID!
   episodes: [Episode!]!
   name: String!
 }
 
 type Podcast {
+  _id: ID!
   author: Author
   base64image: String
   categories: [Category!]
@@ -246,6 +257,7 @@ input QueueInput {
 }
 
 type SubscriptionStatus {
+  _id: ID!
   aggregateStatistics: String!
   callbackUrl: String!
   expirationTime: String!
@@ -267,6 +279,7 @@ enum UiMode {
 }
 
 type User {
+  _id: ID!
   active: Boolean!
   admin: Boolean!
   contributions: [String!]!
@@ -288,6 +301,7 @@ enum UserPermission {
 }
 
 type UserPreference {
+  _id: ID!
   playbackSpeed: Float!
   skipAds: Boolean!
   speed: Float!

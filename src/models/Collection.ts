@@ -6,6 +6,9 @@ import { Podcast } from './Podcast'
     description: 'A collection contains a list of podcasts grouped by a user',
 })
 export class Collection {
+    @Field((type) => ID)
+    _id: string
+
     @Field()
     @prop({
         type: String,
