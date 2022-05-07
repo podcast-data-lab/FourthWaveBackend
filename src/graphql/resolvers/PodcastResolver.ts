@@ -117,7 +117,6 @@ export default class PodcastResolver {
                 },
             },
         ])
-
         return podcast[0]
     }
 

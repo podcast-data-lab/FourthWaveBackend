@@ -152,8 +152,9 @@ export class PlayingQueueResolver {
         @Ctx() { playingQueue }: UserContext,
     ): Promise<PlayingQueue> {
         let movedPlay = playingQueue.plays[from]
-        playingQueue.plays = remove(from, 1, playingQueue.plays)
-        playingQueue.plays = insert(to, movedPlay, playingQueue.plays)
+        let playAtTo = playingQueue.plays[to]
+        playingQueue.plays[from] = playAtTo
+        playingQueue.plays[to] = movedPlay
         await playingQueue.save()
         return getCompleteQueue(playingQueue._id)
     }
