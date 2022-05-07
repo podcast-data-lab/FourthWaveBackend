@@ -117,11 +117,11 @@ type Mutation {
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
   likeEpisode(slug: String!): Library!
-
-  """Rearrange items in the player's queue"""
-  rearrangeQueue(queue: QueueInput!): PlayingQueue!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Library!
   removePodcastFromCollection(collectionId: String!, slug: String!): Library!
+
+  """Rearrange items in the player's queue"""
+  reorderQueue(from: Float!, to: Float!): PlayingQueue!
 
   """Sets a user Volume"""
   setUserVolume(volume: Float!): UserPreference!
@@ -250,10 +250,6 @@ type Query {
 
   """Returns the Most Popular Podcast Episodes"""
   topEpisodes: [Episode!]!
-}
-
-input QueueInput {
-  plays: [String!]!
 }
 
 type SubscriptionStatus {

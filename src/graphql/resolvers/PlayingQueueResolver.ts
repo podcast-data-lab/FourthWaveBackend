@@ -22,6 +22,7 @@ export class PlayingQueueResolver {
     async startPlay(@Arg('slug') slug: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
         const episode = await EpisodeModel.findOne({ slug: slug })
         let play = await getPlayForEpisodeInPlayingQueue(playingQueue._id, episode._id)
+        console.log(play)
         if (!play) {
             play = new PlayModel({
                 episode: episode._id,
@@ -31,12 +32,10 @@ export class PlayingQueueResolver {
             })
 
             await play.save()
-            playingQueue.plays = insert(0, play._id, playingQueue.plays)
+            playingQueue.plays = insert(0, play, playingQueue.plays)
             await playingQueue.save()
         } else {
-            play.started = true
-            await play.save()
-
+            PlayModel.findOneAndUpdate({ _id: play._id }, { started: true })
             playingQueue.plays = insert(0, play, playingQueue.plays)
             await playingQueue.save()
         }
@@ -147,14 +146,15 @@ export class PlayingQueueResolver {
     @Mutation((returns) => PlayingQueue, {
         description: "Rearrange items in the player's queue",
     })
-    async rearrangeQueue(@Arg('queue') queue: QueueInput, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
-        let tempQueue = []
-        for (let playId of queue.plays) {
-            const play = await PlayModel.findById(playId)
-            tempQueue.push(play)
-        }
-        playingQueue.plays = tempQueue
-
+    async reorderQueue(
+        @Arg('from') from: number,
+        @Arg('to') to: number,
+        @Ctx() { playingQueue }: UserContext,
+    ): Promise<PlayingQueue> {
+        let movedPlay = playingQueue.plays[from]
+        playingQueue.plays = remove(from, 1, playingQueue.plays)
+        playingQueue.plays = insert(to, movedPlay, playingQueue.plays)
+        await playingQueue.save()
         return getCompleteQueue(playingQueue._id)
     }
 
