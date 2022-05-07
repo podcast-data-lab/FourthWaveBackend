@@ -37,7 +37,8 @@ export async function registerEpisode(episodeData: EpisodeObject) {
 export async function registerPodcastAuthor(author: PodcastAuthorInput) {
     if (!author) return null
     let podcastAuthor: DocumentType<Author>
-    let slug = (author?.name && slugify(author.name)) ?? (author?.email && slugify(author.email))
+    let slug =
+        (author?.name && slugify(author.name, { strict: true })) ?? (author?.email && slugify(author.email, { strict: true }))
 
     if (author?.name) podcastAuthor = await AuthorModel.findOne({ name: author?.name })
     if (!podcastAuthor && author?.email) podcastAuthor = await AuthorModel.findOne({ email: author?.email })
@@ -146,11 +147,11 @@ export async function registerEntities(
 async function registerCategories(categoryArray: string[], currentObject: Podcast | Episode) {
     let categories = []
     for (const title of categoryArray) {
-        let category = await CategoryModel.findOne({ slug: slugify(title) })
+        let category = await CategoryModel.findOne({ slug: slugify(title, { strict: true }) })
         if (!category) {
             category = new CategoryModel({
                 title,
-                slug: slugify(title),
+                slug: slugify(title, { strict: true }),
             })
         }
         if (currentObject instanceof Episode) {
@@ -167,13 +168,11 @@ async function registerCategories(categoryArray: string[], currentObject: Podcas
 function parsePodcastData(podcastData: { [index: string]: any }): PodcastModelInput {
     let podcastObject: PodcastObject = {
         title: podcastData?.feed.title,
-        slug: `${
-            slugify(podcastData?.feed?.title) + (podcastData?.feed?.author ? '-' : '') + slugify(podcastData?.feed?.author ?? '')
-        }`,
+        slug: `${slugify(podcastData?.feed?.title, { strict: true })}`,
         rssFeed: podcastData.feed_url,
         categories: [],
         episodes: [],
-        image: podcastData?.feed?.image?.url ?? '',
+        image: podcastData?.feed?.image?.href ?? '',
         lastUpdated: new Date(podcastData?.published ?? new Date()),
         link: podcastData?.feed?.link ?? '',
         publisher: podcastData?.feed?.author ?? '',
@@ -199,14 +198,14 @@ function getCategories(categories: Tag[]): string[] {
 export function parseEpisodeData(episodeData: { [index: string]: any }, podcast: Podcast): EpisodeModelInput {
     let episodeObject: EpisodeObject = {
         title: episodeData.title,
-        slug: `${podcast.slug}/${slugify(episodeData.title)}`,
+        slug: `${podcast.slug}?episode=${slugify(episodeData.title, { strict: true })}`,
         sourceUrl: episodeData?.enclosure?.url ?? '',
         link: getAudioLink(episodeData?.links).href,
         subtitle: episodeData?.subtitle,
         mime: getAudioLink(episodeData?.links).type,
         description: getContentType(episodeData?.summary?.trim(), 'text/plain') ?? episodeData?.subtitle.trim() ?? '',
         htmlDescription: getContentType(episodeData?.summary?.trim(), 'text/html'),
-        duration: parseTimeToMilliseconds(episodeData.itunes_duration),
+        duration: episodeData.itunes_duration ?? getAudioLink(episodeData?.links).length,
         published: episodeData.published,
         image: episodeData?.image?.href,
         podcast: podcast,
@@ -222,21 +221,16 @@ export function parseEpisodeData(episodeData: { [index: string]: any }, podcast:
     let authorInput = (episodeData?.authors && episodeData?.authors?.length && episodeData?.authors[0]) ?? null
     return { episodeObject, entitiesInput, authorInput }
 }
+
 let AUDIO_MIME_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/ogg', 'audio/wav', ' application/ogg']
-type Link = { href: string; rel: string; type: string }
+type Link = { href: string; rel: string; type: string; length?: string | number }
 function getAudioLink(links: Link[]): Link {
     // Return the link with the type audio/mp4, 'audio/mpeg', '	audio/x-wav', application/ogg, 	audio/x-wav, or audio/x-aiff
-    return links?.find((link) => AUDIO_MIME_TYPES.includes(link.type)) ?? { href: '', rel: '', type: '' }
+    return links?.find((link) => AUDIO_MIME_TYPES.includes(link.type)) ?? { href: '', rel: '', type: '', length: '' }
 }
+
 type Content = { base: string; language: string; type: string; value: string }
 function getContentType(contents: Content[], mime: 'text/html' | 'text/plain'): string {
     if (!Array.isArray(contents)) return ''
     return contents?.find((content) => content.type === mime)?.value ?? ''
-}
-function parseTimeToMilliseconds(time: string): string {
-    if (!time) return ''
-    if (!/^[0-9:]*$/gm.test(time)) return time
-    if (/^[0-9]+$/.test(time)) return parseInt(time).toString()
-    let [hours, minutes, seconds] = time.split(':')
-    return (parseInt(hours) * 60 * 60 * 1000 + parseInt(minutes) * 60 * 1000 + parseInt(seconds) * 1000).toString()
 }
