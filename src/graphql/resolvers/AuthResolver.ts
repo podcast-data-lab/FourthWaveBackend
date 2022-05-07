@@ -1,7 +1,8 @@
 import { GraphQLError } from 'graphql'
-import { Resolver, Mutation, Ctx, ObjectType, Field } from 'type-graphql'
+import { Resolver, Mutation, Ctx, ObjectType, Field, Authorized } from 'type-graphql'
 import { UserModel } from '../../models'
 import { UserContext } from '../../models/Context'
+import { UserPermission } from '../../models/enums/Permissions'
 import { Library } from '../../models/Library'
 import { PlayingQueue } from '../../models/PlayingQueue'
 import { UserPreference, UserPreferenceModel } from '../../models/Preference'
@@ -23,8 +24,10 @@ class AuthOutput {
 
 @Resolver((of) => User)
 export default class AuthResolver {
+    @Authorized([UserPermission.User])
     @Mutation((returns) => AuthOutput)
     async signUpOrIn(@Ctx() context: UserContext): Promise<AuthOutput | GraphQLError> {
+        console.log(context.user)
         return getUserData(context)
     }
 }

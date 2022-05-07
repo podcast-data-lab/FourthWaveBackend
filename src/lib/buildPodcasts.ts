@@ -30,7 +30,7 @@ export async function registerPodcast(podcastFeedData: { [index: string]: any },
     const podcastFolderPath = path.join(process.cwd(), `temp/lambdas-${process.argv[2]}/podcasts`)
     const podcasts: string[] = fs.readdirSync(podcastFolderPath)
 
-    const totalNo = podcasts.length
+    const totalNo = podcasts?.length
     let currentNo = 0
     try {
         for (const filename of podcasts) {
