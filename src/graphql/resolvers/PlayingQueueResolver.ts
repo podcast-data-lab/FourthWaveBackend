@@ -19,16 +19,16 @@ export class PlayingQueueResolver {
     @Mutation((returns) => PlayingQueue, {
         description: 'Starts the playing of a Play object',
     })
-    async startPlay(@Arg('slug') slug: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+    async startPlay(@Arg('slug') slug: string, @Ctx() { playingQueue, user }: UserContext): Promise<PlayingQueue> {
         const episode = await EpisodeModel.findOne({ slug: slug })
         let play = await getPlayForEpisodeInPlayingQueue(playingQueue._id, episode._id)
-        console.log(play)
         if (!play) {
             play = new PlayModel({
                 episode: episode._id,
                 position: 0,
                 started: true,
                 completed: false,
+                uid: user.id,
             })
 
             await play.save()
@@ -66,7 +66,7 @@ export class PlayingQueueResolver {
     @Mutation((returns) => PlayingQueue, {
         description: "Adds an episode to a player's queue",
     })
-    async addToBeginningOfQueue(@Arg('slug') slug: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+    async addToBeginningOfQueue(@Arg('slug') slug: string, @Ctx() { playingQueue, user }: UserContext): Promise<PlayingQueue> {
         const episode = await EpisodeModel.findOne({ slug: slug })
         let playInQueue = await getPlayForEpisodeInPlayingQueue(playingQueue._id, episode._id)
         if (!playInQueue) {
@@ -75,6 +75,7 @@ export class PlayingQueueResolver {
                 position: 0,
                 started: true,
                 completed: false,
+                uid: user.id,
             })
 
             await play.save()
@@ -96,7 +97,7 @@ export class PlayingQueueResolver {
     @Mutation((returns) => PlayingQueue, {
         description: "Adds an episode to a player's queue",
     })
-    async addToEndOfQueue(@Arg('slug') slug: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+    async addToEndOfQueue(@Arg('slug') slug: string, @Ctx() { playingQueue, user }: UserContext): Promise<PlayingQueue> {
         const episode = await EpisodeModel.findOne({ slug: slug })
         const completeQueue = await getCompleteQueue(playingQueue._id)
         //@ts-ignore
@@ -107,6 +108,7 @@ export class PlayingQueueResolver {
                 position: 0,
                 started: false,
                 completed: false,
+                uid: user.id,
             })
             playingQueue.plays.push(play._id)
         } else {

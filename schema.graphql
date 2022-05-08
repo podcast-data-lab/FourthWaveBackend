@@ -151,6 +151,7 @@ type Play {
   episode: Episode!
   position: Float!
   started: Boolean!
+  uid: User
 }
 
 type PlayingQueue {

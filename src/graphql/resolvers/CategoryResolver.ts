@@ -6,7 +6,6 @@ import { Category, CategoryModel } from '../../models/Category'
 export default class CategoryResolver {
     @Query()
     print(): String {
-        console.log('here')
         return 'Hello'
     }
 

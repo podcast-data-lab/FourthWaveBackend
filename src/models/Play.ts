@@ -3,11 +3,16 @@ import { ObjectID } from 'bson'
 import { ObjectId } from 'mongodb'
 import { ObjectType, Field, ID } from 'type-graphql'
 import { Episode } from './Episode'
+import { User } from './User'
 
 @ObjectType()
 export class Play {
     @Field((type) => ID)
     _id: string
+
+    @Field((type) => User, { nullable: true })
+    @prop({ ref: 'User' })
+    uid: Ref<User>
 
     @Field((type) => Episode)
     @prop({ ref: 'Episode' })

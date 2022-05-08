@@ -41,7 +41,6 @@ export default class PodcastResolver {
                 },
             },
         ])
-        console.log(podcasts[0])
         return podcasts
     }
 

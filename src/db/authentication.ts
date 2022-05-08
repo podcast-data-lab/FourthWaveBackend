@@ -89,7 +89,6 @@ export const verifyTokenAndGetUser = async (token: string): Promise<Omit<UserCon
 }
 
 export async function getOrCreateTemporaryUser(deviceId: string) {
-    console.log('getOrCreateTemporaryUser for device: ', deviceId)
     let user = await UserModel.findOne({ deviceId })
     let library
     let playingQueue
@@ -131,6 +130,5 @@ export async function getOrCreateTemporaryUser(deviceId: string) {
         }
     } catch (error) {}
 
-    console.log('user', user)
     return { user, library, playingQueue }
 }
