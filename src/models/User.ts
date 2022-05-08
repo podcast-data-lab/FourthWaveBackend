@@ -23,7 +23,6 @@ export class User {
     @prop({
         type: String,
         lowercase: true,
-        unique: true,
     })
     public email: string
 

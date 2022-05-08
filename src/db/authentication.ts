@@ -89,44 +89,48 @@ export const verifyTokenAndGetUser = async (token: string): Promise<Omit<UserCon
 }
 
 export async function getOrCreateTemporaryUser(deviceId: string) {
+    console.log('getOrCreateTemporaryUser for device: ', deviceId)
     let user = await UserModel.findOne({ deviceId })
     let library
     let playingQueue
-    if (!user) {
-        user = new UserModel({
-            deviceId,
-            active: false,
-            permissions: [UserPermission.User],
-        })
-        library = new LibraryModel()
-        await library.save()
-
-        playingQueue = new PlayingQueueModel()
-        await playingQueue.save()
-
-        let preferences = new UserPreferenceModel()
-        await preferences.save()
-
-        user.library = library
-        user.playingQueue = playingQueue._id
-        user.preferences = preferences._id
-        await user.save()
-    } else {
-        library = await LibraryModel.findById({ _id: user.library })
-        if (!library) {
+    try {
+        if (!user) {
+            user = new UserModel({
+                deviceId,
+                active: false,
+                permissions: [UserPermission.User],
+            })
             library = new LibraryModel()
-            user.library = library
             await library.save()
-            await user.save()
-        }
-        playingQueue = await PlayingQueueModel.findById({ _id: user.playingQueue })
-        if (!playingQueue) {
+
             playingQueue = new PlayingQueueModel()
-            user.playingQueue = playingQueue._id
             await playingQueue.save()
+
+            let preferences = new UserPreferenceModel()
+            await preferences.save()
+
+            user.library = library
+            user.playingQueue = playingQueue._id
+            user.preferences = preferences._id
             await user.save()
+        } else {
+            library = await LibraryModel.findById({ _id: user.library })
+            if (!library) {
+                library = new LibraryModel()
+                user.library = library
+                await library.save()
+                await user.save()
+            }
+            playingQueue = await PlayingQueueModel.findById({ _id: user.playingQueue })
+            if (!playingQueue) {
+                playingQueue = new PlayingQueueModel()
+                user.playingQueue = playingQueue._id
+                await playingQueue.save()
+                await user.save()
+            }
         }
-    }
+    } catch (error) {}
+
     console.log('user', user)
     return { user, library, playingQueue }
 }
