@@ -159,6 +159,7 @@ type Play {
 
 type PlayingQueue {
   _id: ID!
+  playHistory: [Play!]!
   plays: [Play!]!
 }
 

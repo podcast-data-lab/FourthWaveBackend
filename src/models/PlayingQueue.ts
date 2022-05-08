@@ -10,6 +10,10 @@ export class PlayingQueue {
     @Field((type) => [Play])
     @prop({ ref: 'Play', default: [] })
     public plays: Ref<Play>[]
+
+    @Field((type) => [Play])
+    @prop({ ref: 'Play', default: [] })
+    public playHistory: Ref<Play>[]
 }
 
 export const PlayingQueueModel = getModelForClass(PlayingQueue)

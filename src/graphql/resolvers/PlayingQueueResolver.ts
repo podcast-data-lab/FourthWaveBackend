@@ -39,7 +39,17 @@ export class PlayingQueueResolver {
             playingQueue.plays = insert(0, play, playingQueue.plays)
             await playingQueue.save()
         }
-        // else, place the play in the front of the queue
+        /* Update Play history */
+        let indexOfPlayInHistory = playingQueue.playHistory.findIndex((playId) =>
+            new ObjectId(play._id).equals(playId.toString()),
+        )
+        if (indexOfPlayInHistory < 0) {
+            playingQueue.playHistory.push(play._id)
+        } else {
+            playingQueue.playHistory.splice(indexOfPlayInHistory, 1)
+            playingQueue.playHistory.push(play._id)
+        }
+
         return getCompleteQueue(playingQueue._id)
     }
 
