@@ -280,20 +280,21 @@ type User {
   admin: Boolean!
   contributions: [String!]!
   deviceId: String
-  email: String!
+  email: String
   library: Library!
   name: String
   permissions: [UserPermission!]!
   playingQueue: PlayingQueue!
   plays: [Play!]!
   preferences: UserPreference!
-  uid: String!
+  uid: String
 }
 
 """User Permissions"""
 enum UserPermission {
   Admin
   Editor
+  Registered_User
   User
 }
 

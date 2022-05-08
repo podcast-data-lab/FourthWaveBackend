@@ -96,6 +96,7 @@ export async function getOrCreateTemporaryUser(deviceId: string) {
         user = new UserModel({
             deviceId,
             active: false,
+            permissions: [UserPermission.User],
         })
         library = new LibraryModel()
         await library.save()
@@ -126,5 +127,6 @@ export async function getOrCreateTemporaryUser(deviceId: string) {
             await user.save()
         }
     }
+    console.log('user', user)
     return { user, library, playingQueue }
 }

@@ -4,6 +4,7 @@ export enum UserPermission {
     Admin = 'ADMIN',
     Editor = 'EDITOR',
     User = 'USER',
+    Registered_User = 'REGISTERED_USER',
 }
 
 registerEnumType(UserPermission, {

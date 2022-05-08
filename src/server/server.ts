@@ -124,7 +124,7 @@ initializeSentry()
         context: async ({ request, reply }): Promise<UserContext> => {
             let token = request.headers.authorization
             let deviceId = request.headers['x-device-id'] as string
-
+            console.log('deviceId: ' + deviceId)
             if (!token && !deviceId) return null
             if (token) {
                 let userContext = await verifyTokenAndGetUser(token)

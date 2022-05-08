@@ -19,7 +19,7 @@ export class User {
     @prop()
     public deviceId: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop({
         type: String,
         lowercase: true,
@@ -27,7 +27,7 @@ export class User {
     })
     public email: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop({
         type: String,
         unique: true,
