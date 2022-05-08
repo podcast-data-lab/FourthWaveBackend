@@ -116,6 +116,9 @@ type Mutation {
   createPlaylist(playlistName: String!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
+
+  """Goes to the next play. Current play is placed at the end of the queue"""
+  goToNextPlay: PlayingQueue!
   likeEpisode(slug: String!): Library!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Library!
 

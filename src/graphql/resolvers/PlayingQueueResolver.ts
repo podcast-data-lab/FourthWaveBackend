@@ -163,6 +163,19 @@ export class PlayingQueueResolver {
 
     @Authorized()
     @Mutation((returns) => PlayingQueue, {
+        description: 'Goes to the next play. Current play is placed at the end of the queue',
+    })
+    async goToNextPlay(@Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+        // Place current play at the second position in queue
+        const currentPlay = playingQueue.plays[0]
+        playingQueue.plays.shift()
+        playingQueue.plays.push(currentPlay)
+        await playingQueue.save()
+        return getCompleteQueue(playingQueue._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => PlayingQueue, {
         description: "Deletes/Clears a user's playing queue",
     })
     async clearQueue(@Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
