@@ -118,6 +118,9 @@ type Mutation {
   deletePlaylist(playlistId: String!): Library!
   likeEpisode(slug: String!): Library!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Library!
+
+  """Removes a play at a particular position in the queue"""
+  removePlayAtIndex(index: Float!): PlayingQueue!
   removePodcastFromCollection(collectionId: String!, slug: String!): Library!
 
   """Rearrange items in the player's queue"""

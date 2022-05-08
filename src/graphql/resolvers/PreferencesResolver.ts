@@ -2,6 +2,7 @@ import { Arg, Ctx, Mutation, Resolver } from 'type-graphql'
 import { UserContext } from '../../models/Context'
 import { UserPreference, UserPreferenceModel } from '../../models/Preference'
 import { DocumentType } from '@typegoose/typegoose'
+
 @Resolver((of) => UserPreference)
 export class PreferencesResolver {
     @Mutation((returns) => UserPreference, { description: 'Sets a user Volume' })

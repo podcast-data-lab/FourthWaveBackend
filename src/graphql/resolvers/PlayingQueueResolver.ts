@@ -151,10 +151,10 @@ export class PlayingQueueResolver {
         @Arg('to') to: number,
         @Ctx() { playingQueue }: UserContext,
     ): Promise<PlayingQueue> {
-        let movedPlay = playingQueue.plays[from]
-        let playAtTo = playingQueue.plays[to]
-        playingQueue.plays[from] = playAtTo
-        playingQueue.plays[to] = movedPlay
+        const queue = playingQueue.plays
+        const item = queue.splice(from, 1)[0]
+        queue.splice(to, 0, item)
+
         await playingQueue.save()
         return getCompleteQueue(playingQueue._id)
     }
@@ -164,7 +164,17 @@ export class PlayingQueueResolver {
         description: "Deletes/Clears a user's playing queue",
     })
     async clearQueue(@Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
-        playingQueue.plays = []
+        playingQueue.plays = playingQueue.plays.splice(1, playingQueue.plays.length)
+        await playingQueue.save()
+        return playingQueue
+    }
+
+    @Authorized()
+    @Mutation((returns) => PlayingQueue, {
+        description: 'Removes a play at a particular position in the queue',
+    })
+    async removePlayAtIndex(@Arg('index') index: number, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+        playingQueue.plays.splice(index, 1)
         await playingQueue.save()
         return playingQueue
     }
