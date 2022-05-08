@@ -15,10 +15,13 @@ export class User {
     @prop()
     public name: string
 
+    @Field({ nullable: true })
+    @prop()
+    public deviceId: string
+
     @Field()
     @prop({
         type: String,
-        required: true,
         lowercase: true,
         unique: true,
     })
@@ -27,7 +30,6 @@ export class User {
     @Field()
     @prop({
         type: String,
-        required: true,
         unique: true,
         minlength: 8,
     })

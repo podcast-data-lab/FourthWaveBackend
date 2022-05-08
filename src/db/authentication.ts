@@ -87,3 +87,44 @@ export const verifyTokenAndGetUser = async (token: string): Promise<Omit<UserCon
         return null
     }
 }
+
+export async function getOrCreateTemporaryUser(deviceId: string) {
+    let user = await UserModel.findOne({ deviceId })
+    let library
+    let playingQueue
+    if (!user) {
+        user = new UserModel({
+            deviceId,
+            active: false,
+        })
+        library = new LibraryModel()
+        await library.save()
+
+        playingQueue = new PlayingQueueModel()
+        await playingQueue.save()
+
+        let preferences = new UserPreferenceModel()
+        await preferences.save()
+
+        user.library = library
+        user.playingQueue = playingQueue._id
+        user.preferences = preferences._id
+        await user.save()
+    } else {
+        library = await LibraryModel.findById({ _id: user.library })
+        if (!library) {
+            library = new LibraryModel()
+            user.library = library
+            await library.save()
+            await user.save()
+        }
+        playingQueue = await PlayingQueueModel.findById({ _id: user.playingQueue })
+        if (!playingQueue) {
+            playingQueue = new PlayingQueueModel()
+            user.playingQueue = playingQueue._id
+            await playingQueue.save()
+            await user.save()
+        }
+    }
+    return { user, library, playingQueue }
+}

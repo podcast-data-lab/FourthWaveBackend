@@ -30,7 +30,7 @@ import {
     AuthResolver,
 } from '../graphql/resolvers'
 import { AuthCheckerFn } from '../graphql/AuthChecker'
-import { verifyTokenAndGetUser } from '../db/authentication'
+import { getOrCreateTemporaryUser, verifyTokenAndGetUser } from '../db/authentication'
 import { handleFeedContentUpdate } from '../lib/handleFeedInput'
 import { UserContext } from '../models/Context'
 
@@ -123,10 +123,18 @@ initializeSentry()
         schema,
         context: async ({ request, reply }): Promise<UserContext> => {
             let token = request.headers.authorization
-            if (!token) return null
-            let userContext = await verifyTokenAndGetUser(token)
-            if (!userContext) return null
-            return { ...userContext, roles: [] }
+            let deviceId = request.headers['x-device-id'] as string
+
+            if (!token && !deviceId) return null
+            if (token) {
+                let userContext = await verifyTokenAndGetUser(token)
+                if (!userContext) return null
+                return { ...userContext, roles: [] }
+            } else {
+                let userContext = await getOrCreateTemporaryUser(deviceId)
+                if (!userContext) return null
+                return { ...userContext, roles: [] }
+            }
         },
     })
 
@@ -155,7 +163,7 @@ initializeSentry()
         endpointURL: '/graphql',
     })
 
-    const host = '0.0.0.0'
+    const host = '192.168.1.210'
     const PORT = process.env.PORT || 6500
 
     app.listen(PORT, host, () => {

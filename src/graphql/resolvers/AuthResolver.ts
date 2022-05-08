@@ -27,7 +27,6 @@ export default class AuthResolver {
     @Authorized([UserPermission.User])
     @Mutation((returns) => AuthOutput)
     async signUpOrIn(@Ctx() context: UserContext): Promise<AuthOutput | GraphQLError> {
-        console.log(context.user)
         return getUserData(context)
     }
 }

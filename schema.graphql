@@ -279,6 +279,7 @@ type User {
   active: Boolean!
   admin: Boolean!
   contributions: [String!]!
+  deviceId: String
   email: String!
   library: Library!
   name: String
