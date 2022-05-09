@@ -23,7 +23,7 @@ export class Episode {
     @prop()
     public subtitle?: string
 
-    @Field((type) => Date)
+    @Field((type) => Date, { nullable: true })
     @prop({ type: () => Date })
     public published: Date
 

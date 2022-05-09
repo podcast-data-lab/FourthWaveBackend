@@ -197,7 +197,7 @@ export default class PodcastResolver {
                     slug: 1,
                     categories: 1,
                     entities: 1,
-                    _id: 0,
+                    _id: 1,
                     score: { $meta: 'searchScore' },
                 },
             },

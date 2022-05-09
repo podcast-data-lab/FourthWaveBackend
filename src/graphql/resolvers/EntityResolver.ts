@@ -95,7 +95,7 @@ export class EntityResolver {
                     name: 1,
                     podcasts: 1,
                     episodes: 1,
-                    _id: 0,
+                    _id: 1,
                     score: { $meta: 'searchScore' },
                 },
             },

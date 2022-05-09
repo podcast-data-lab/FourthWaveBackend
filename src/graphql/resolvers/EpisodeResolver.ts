@@ -10,7 +10,7 @@ export default class EpisodeResolver {
         description: `Find episodes based on a search string. Searches can be restricted to title, description, or both.`,
     })
     async searchEpisodes(
-        @Arg('searchString') { inDescription, inTitle, searchString, categorySlugs }: SearchInput,
+        @Arg('searchInput') { inDescription, inTitle, searchString, categorySlugs }: SearchInput,
     ): Promise<Episode[]> {
         let searchStage: PipelineStage = {
             $search: {
@@ -48,7 +48,7 @@ export default class EpisodeResolver {
                     entities: 1,
                     epNo: 1,
                     snNo: 1,
-                    _id: 0,
+                    _id: 1,
                     score: { $meta: 'searchScore' },
                 },
             },

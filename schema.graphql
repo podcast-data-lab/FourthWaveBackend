@@ -73,7 +73,7 @@ type Episode {
   mime: String
   plays: Play
   podcast: Podcast
-  published: DateTime!
+  published: DateTime
   slug: String
   snNo: String
   sourceUrl: String
@@ -241,7 +241,7 @@ type Query {
   """
   Find episodes based on a search string. Searches can be restricted to title, description, or both.
   """
-  searchEpisodes(searchString: SearchInput!): [Episode!]!
+  searchEpisodes(searchInput: SearchInput!): [Episode!]!
 
   """
   Searches for podcasts based on a search string and entity. 
