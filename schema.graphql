@@ -92,6 +92,13 @@ type Library {
   subscribedPodcasts: [Podcast!]!
 }
 
+type Links {
+  download: String
+  download_location: String
+  html: String
+  self: String
+}
+
 type Mutation {
   addEpisodeToPlaylist(collectionId: String!, episodeSlug: String!): Library!
   addPodcastToCollection(collectionId: String!, slug: String!): Library!
@@ -243,6 +250,9 @@ type Query {
   """
   searchEpisodes(searchInput: SearchInput!): [Episode!]!
 
+  """Search a photo on unsplash"""
+  searchForCoverPhoto(searchTerm: String!): [UnsplashPhoto!]!
+
   """
   Searches for podcasts based on a search string and entity. 
               For instance, Searching for podcasts that mention "Obama" will return podcasts that mention that entityName
@@ -282,12 +292,49 @@ type SubscriptionStatus {
   state: String!
 }
 
+type URLS {
+  full: String
+  raq: String
+  regular: String
+  small: String
+  thumb: String
+}
+
 """
 UI Mode - Either '"Light" or "Dark"
 """
 enum UiMode {
   Dark
   Light
+}
+
+type UnsplashPhoto {
+  alt_description: String
+  blur_hash: String
+  categories: [String!]
+  color: String
+  description: String
+  height: Float
+  likes: Float
+  links: Links
+  promoted_at: String
+  urls: URLS
+  user: UnsplashUser
+  width: Float
+}
+
+type UnsplashUser {
+  bio: String
+  first_name: String
+  id: String
+  instagram_username: String
+  last_name: String
+  location: String
+  name: String
+  portfolio_url: String
+  twitter_username: String
+  updated_at: String
+  username: String
 }
 
 type User {

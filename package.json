@@ -37,7 +37,7 @@
         "mongodb": "^4.3.1",
         "mongoose": "^6.3.0",
         "mongoose-findorcreate": "^3.0.0",
-        "node-fetch": "2",
+        "node-fetch": "2.6.7",
         "node-html-parser": "^5.3.3",
         "ramda": "^0.28.0",
         "reflect-metadata": "^0.1.13",

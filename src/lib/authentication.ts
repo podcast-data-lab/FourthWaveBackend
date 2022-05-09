@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 import { ObjectId } from 'mongodb'
-import { firebaseAuth } from '../lib/firebase'
+import { firebaseAuth } from './firebase'
 import { UserModel } from '../models'
 import { LibraryModel } from '../models/Library'
 import { User } from '../models/User'

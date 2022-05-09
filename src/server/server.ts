@@ -30,9 +30,10 @@ import {
     AuthResolver,
 } from '../graphql/resolvers'
 import { AuthCheckerFn } from '../graphql/AuthChecker'
-import { getOrCreateTemporaryUser, verifyTokenAndGetUser } from '../db/authentication'
+import { getOrCreateTemporaryUser, verifyTokenAndGetUser } from '../lib/authentication'
 import { handleFeedContentUpdate } from '../lib/handleFeedInput'
 import { UserContext } from '../models/Context'
+import { PhotosResolver } from '../graphql/resolvers/UnsplashResolver'
 
 initializeSentry()
 ;(async () => {
@@ -48,6 +49,7 @@ initializeSentry()
             PreferencesResolver,
             CategoryResolver,
             EntityResolver,
+            PhotosResolver,
         ],
         emitSchemaFile: {
             path: './schema.graphql',
