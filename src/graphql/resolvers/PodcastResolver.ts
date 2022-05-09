@@ -17,6 +17,8 @@ export class SearchInput {
     inDescription: boolean
     @Field((type) => [String])
     categorySlugs: string[]
+    @Field()
+    page: number
 }
 @Resolver((of) => Podcast)
 export default class PodcastResolver {
@@ -134,7 +136,7 @@ export default class PodcastResolver {
         Searches can be specified to be in the title or description or both.`,
     })
     async searchPodcasts(
-        @Arg('searchInput') { searchString, inTitle, inDescription, categorySlugs }: SearchInput,
+        @Arg('searchInput') { searchString, inTitle, inDescription, categorySlugs, page }: SearchInput,
     ): Promise<Podcast[]> {
         let searchStage: PipelineStage = {
             $search: {
@@ -181,8 +183,35 @@ export default class PodcastResolver {
                 ...searchStage,
             },
             ...categoryStages,
+
             {
-                $limit: 10,
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'authors',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author',
+                },
+            },
+            {
+                $addFields: {
+                    author: { $first: '$author' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'entities',
+                    foreignField: '_id',
+                    localField: 'entities',
+                    as: 'entities',
+                },
             },
             {
                 $project: {
@@ -196,26 +225,18 @@ export default class PodcastResolver {
                     palette: 1,
                     slug: 1,
                     categories: 1,
+                    author: 1,
                     entities: 1,
                     _id: 1,
                     score: { $meta: 'searchScore' },
                 },
             },
             {
-                $lookup: {
-                    from: 'categories',
-                    foreignField: '_id',
-                    localField: 'categories',
-                    as: 'categories',
-                },
+                $skip: page * 15,
             },
+
             {
-                $lookup: {
-                    from: 'entities',
-                    foreignField: '_id',
-                    localField: 'entities',
-                    as: 'entities',
-                },
+                $limit: 15,
             },
         ])
         return podcasts

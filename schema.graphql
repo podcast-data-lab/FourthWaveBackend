@@ -264,6 +264,7 @@ input SearchInput {
   categorySlugs: [String!]!
   inDescription: Boolean!
   inTitle: Boolean!
+  page: Float!
   searchString: String!
 }
 
