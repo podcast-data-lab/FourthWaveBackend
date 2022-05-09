@@ -193,7 +193,7 @@ type Podcast {
 
 type Query {
   """Returns a list of all the genres"""
-  getCategories: [Category!]!
+  getCategories(page: Float!): [Category!]!
   getCategorySearchRecommendations: [Category!]!
   getComment: Comment
 

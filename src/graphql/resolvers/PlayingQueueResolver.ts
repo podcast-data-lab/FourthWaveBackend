@@ -272,6 +272,70 @@ export async function getCompleteQueue(_id: string): Promise<DocumentType<Playin
                 as: 'plays',
             },
         },
+        {
+            $lookup: {
+                from: 'plays',
+                let: { playHistoryIds: '$playHistory' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $in: ['$_id', '$$playHistoryIds'] },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'episodes',
+                            foreignField: '_id',
+                            localField: 'episode',
+                            as: 'episode',
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: 'podcasts',
+                                        foreignField: '_id',
+                                        localField: 'podcast',
+                                        as: 'podcast',
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        podcast: { $first: '$podcast' },
+                                    },
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'authors',
+                                        localField: 'author',
+                                        foreignField: '_id',
+                                        as: 'author',
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        author: { $first: '$author' },
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        $addFields: {
+                            episode: { $first: '$episode' },
+                        },
+                    },
+                    {
+                        $addFields: {
+                            sort: {
+                                $indexOfArray: ['$$playHistoryIds', '$_id'],
+                            },
+                        },
+                    },
+                    { $sort: { sort: 1 } },
+                    { $addFields: { sort: '$$REMOVE' } },
+                ],
+                as: 'playHistory',
+            },
+        },
     ])
     return queues[0]
 }
