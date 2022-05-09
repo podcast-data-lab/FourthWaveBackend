@@ -162,8 +162,8 @@ initializeSentry()
         endpointURL: '/graphql',
     })
 
-    const host = '0.0.0.0'
-    // const local = '192.168.1.210'
+    // const host = '0.0.0.0'
+    const host = '192.168.1.210'
     const PORT = process.env.PORT || 6500
 
     app.listen(PORT, host, () => {

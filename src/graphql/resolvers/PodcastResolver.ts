@@ -12,9 +12,9 @@ export class SearchInput {
     @Field()
     searchString: string
     @Field()
-    inTitle: string
+    inTitle: boolean
     @Field()
-    inDescription: string
+    inDescription: boolean
     @Field((type) => [String])
     categorySlugs: string[]
 }
@@ -153,10 +153,7 @@ export default class PodcastResolver {
             if (inTitle) searchStage.$search.text.path.push('title')
             if (inDescription) searchStage.$search.text.path.push('description')
         }
-        const podcasts: Podcast[] = await PodcastModel.aggregate([
-            {
-                ...searchStage,
-            },
+        let categoryStages: PipelineStage[] = [
             {
                 $lookup: {
                     from: 'categories',
@@ -165,8 +162,9 @@ export default class PodcastResolver {
                     as: 'categories',
                 },
             },
-            // Filter out podcasts that contain the category slugs
-            {
+        ]
+        if (categorySlugs.length > 0) {
+            categoryStages.push({
                 $match: {
                     categories: {
                         $elemMatch: {
@@ -176,7 +174,13 @@ export default class PodcastResolver {
                         },
                     },
                 },
+            })
+        }
+        const podcasts: Podcast[] = await PodcastModel.aggregate([
+            {
+                ...searchStage,
             },
+            ...categoryStages,
             {
                 $limit: 10,
             },

@@ -262,8 +262,8 @@ type Query {
 
 input SearchInput {
   categorySlugs: [String!]!
-  inDescription: String!
-  inTitle: String!
+  inDescription: Boolean!
+  inTitle: Boolean!
   searchString: String!
 }
 
