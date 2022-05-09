@@ -11,24 +11,6 @@ import { UserPermission } from '../models/enums/Permissions'
 import { UserPreferenceModel } from '../models/Preference'
 
 /**
- * A function to authenticate a user
- * @param uid
- * @returns {User} - if no user was initially found, creates a new user
- */
-
-export const signInOrCreateUser = async (uid: string, email: string): Promise<User | GraphQLError> => {
-    let user = await UserModel.findOne({ uid, email })
-    if (!user) {
-        user = new UserModel({
-            uid,
-            email,
-        })
-        await user.save()
-    }
-    return user
-}
-
-/**
  * Verifies if a token is valid, otherwise throws an error
  * @param token
  */
@@ -44,7 +26,7 @@ export const verifyTokenAndGetUser = async (token: string): Promise<Omit<UserCon
                     user = new UserModel({
                         uid: verifiedToken.uid,
                         email: verifiedToken.email,
-                        permissions: [UserPermission.User],
+                        permissions: [UserPermission.User, UserPermission.Registered_User],
                         name: verifiedToken.name,
                     })
                     library = new LibraryModel()
