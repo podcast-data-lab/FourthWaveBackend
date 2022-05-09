@@ -241,7 +241,7 @@ type Query {
   """
   Find episodes based on a search string. Searches can be restricted to title, description, or both.
   """
-  searchEpisodes(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Episode!]!
+  searchEpisodes(searchString: SearchInput!): [Episode!]!
 
   """
   Searches for podcasts based on a search string and entity. 
@@ -254,10 +254,17 @@ type Query {
   Searches for podcasts based on a search string. Returns 10 podcasts at a time.
           Searches can be specified to be in the title or description or both.
   """
-  searchPodcasts(inDescription: Boolean, inTitle: Boolean, searchString: String!): [Podcast!]!
+  searchPodcasts(searchInput: SearchInput!): [Podcast!]!
 
   """Returns the Most Popular Podcast Episodes"""
   topEpisodes: [Episode!]!
+}
+
+input SearchInput {
+  categorySlugs: [String!]!
+  inDescription: String!
+  inTitle: String!
+  searchString: String!
 }
 
 type SubscriptionStatus {

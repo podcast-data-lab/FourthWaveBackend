@@ -163,10 +163,10 @@ initializeSentry()
     })
 
     const host = '0.0.0.0'
-    const local = '192.168.1.210'
+    // const local = '192.168.1.210'
     const PORT = process.env.PORT || 6500
 
-    app.listen(PORT, local, () => {
+    app.listen(PORT, host, () => {
         const message = `api listening on port ${PORT}`
         console.log(message)
     })

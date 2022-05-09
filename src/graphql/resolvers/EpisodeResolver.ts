@@ -2,6 +2,7 @@ import { PipelineStage } from 'mongoose'
 import { Arg, Query, Resolver } from 'type-graphql'
 import { EpisodeModel } from '../../models'
 import { Episode } from '../../models/Episode'
+import { SearchInput } from './PodcastResolver'
 
 @Resolver((of) => Episode)
 export default class EpisodeResolver {
@@ -9,9 +10,7 @@ export default class EpisodeResolver {
         description: `Find episodes based on a search string. Searches can be restricted to title, description, or both.`,
     })
     async searchEpisodes(
-        @Arg('searchString') searchString: string,
-        @Arg('inTitle', { nullable: true }) inTitle: boolean = false,
-        @Arg('inDescription', { nullable: true }) inDescription: boolean = false,
+        @Arg('searchString') { inDescription, inTitle, searchString, categorySlugs }: SearchInput,
     ): Promise<Episode[]> {
         let searchStage: PipelineStage = {
             $search: {

@@ -2,7 +2,7 @@ import { Arg, Query, Resolver } from 'type-graphql'
 
 import { Category, CategoryModel } from '../../models/Category'
 
-const CATEGORY_LIMIT = 20
+const CATEGORY_LIMIT = 25
 @Resolver((of) => Category)
 export default class CategoryResolver {
     @Query()

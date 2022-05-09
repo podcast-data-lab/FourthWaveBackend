@@ -1,5 +1,5 @@
 import { PipelineStage } from 'mongoose'
-import { Arg, Query, Resolver } from 'type-graphql'
+import { Arg, Field, InputType, Query, Resolver } from 'type-graphql'
 import { getSubscriptionStatus } from '../../lib/getSubscribtionDiagnostics'
 import { Episode } from '../../models/Episode'
 
@@ -7,7 +7,17 @@ import { Podcast, PodcastModel } from '../../models/Podcast'
 import { SubscriptionStatus } from '../../models/SubscriptionStatus'
 
 const EPISODE_LIMIT = 15
-
+@InputType()
+export class SearchInput {
+    @Field()
+    searchString: string
+    @Field()
+    inTitle: string
+    @Field()
+    inDescription: string
+    @Field((type) => [String])
+    categorySlugs: string[]
+}
 @Resolver((of) => Podcast)
 export default class PodcastResolver {
     @Query((returns) => [Podcast], { description: 'Get podcasts ~ 50 podcasts at a time.' })
@@ -124,9 +134,7 @@ export default class PodcastResolver {
         Searches can be specified to be in the title or description or both.`,
     })
     async searchPodcasts(
-        @Arg('searchString') searchString: String,
-        @Arg('inTitle', { nullable: true }) inTitle: boolean,
-        @Arg('inDescription', { nullable: true }) inDescription: boolean,
+        @Arg('searchInput') { searchString, inTitle, inDescription, categorySlugs }: SearchInput,
     ): Promise<Podcast[]> {
         let searchStage: PipelineStage = {
             $search: {
@@ -148,6 +156,26 @@ export default class PodcastResolver {
         const podcasts: Podcast[] = await PodcastModel.aggregate([
             {
                 ...searchStage,
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    foreignField: '_id',
+                    localField: 'categories',
+                    as: 'categories',
+                },
+            },
+            // Filter out podcasts that contain the category slugs
+            {
+                $match: {
+                    categories: {
+                        $elemMatch: {
+                            slug: {
+                                $in: categorySlugs,
+                            },
+                        },
+                    },
+                },
             },
             {
                 $limit: 10,
