@@ -135,8 +135,8 @@ type Mutation {
   archiveEpisode(slug: String!): Library!
   bookmarkEpisode(slug: String!): Library!
 
-  """Changes a user's playing speed."""
-  changePlayingSpeed(speed: Float!): UserPreference!
+  """Changes a user's playing playbackSpeed."""
+  changePlayingSpeed(playbackSpeed: Float!): UserPreference!
 
   """Deletes/Clears a user's playing queue"""
   clearQueue: PlayingQueue!
@@ -407,7 +407,6 @@ type UserPreference {
   _id: ID!
   playbackSpeed: Float!
   skipAds: Boolean!
-  speed: Float!
   trimSilence: Boolean!
   uiMode: UiMode!
   volume: Float!

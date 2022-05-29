@@ -14,16 +14,16 @@ export class PreferencesResolver {
     @Mutation((returns) => UserPreference, { description: 'Sets a user Volume.' })
     async setUserVolume(@Arg('volume') volume: number, @Ctx() { user }: UserContext): Promise<UserPreference> {
         let preferences = await UserPreferenceModel.findById<DocumentType<UserPreference>>({ _id: user.preferences })
-        preferences.speed = volume
+        preferences.playbackSpeed = volume
         return preferences
     }
 
     @Mutation((returns) => UserPreference, {
-        description: "Changes a user's playing speed.",
+        description: "Changes a user's playing playbackSpeed.",
     })
-    async changePlayingSpeed(@Arg('speed') speed: number, @Ctx() { user }: UserContext): Promise<UserPreference> {
+    async changePlayingSpeed(@Arg('playbackSpeed') playbackSpeed: number, @Ctx() { user }: UserContext): Promise<UserPreference> {
         let preferences = await UserPreferenceModel.findById<DocumentType<UserPreference>>({ _id: user.preferences })
-        preferences.speed = speed
+        preferences.playbackSpeed = playbackSpeed
         return preferences
     }
 
