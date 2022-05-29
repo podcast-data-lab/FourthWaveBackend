@@ -165,6 +165,12 @@ type Mutation {
   """Rearrange items in the player's queue"""
   reorderQueue(from: Float!, to: Float!): PlayingQueue!
 
+  """Sets whether or not to skip ads in an episode."""
+  setSkipAds(skipAds: Boolean!): UserPreference!
+
+  """Sets whether or not to trim silence for an podcast episode"""
+  setTrimSilence(trimSilence: Boolean!): UserPreference!
+
   """Sets a user Volume."""
   setUserVolume(volume: Float!): UserPreference!
   signUpOrIn: AuthOutput!
@@ -261,8 +267,8 @@ type Query {
   """Returns the Trending Podcasts"""
   getTrending: [Podcast!]!
 
-  """Gets a user' preference."""
-  getUserPreferences(volume: Float!): UserPreference!
+  """Gets a user' preferences."""
+  getUserPreferences: UserPreference!
 
   """Returns a user's player queue"""
   getUserQueue: PlayingQueue!
@@ -402,6 +408,7 @@ type UserPreference {
   playbackSpeed: Float!
   skipAds: Boolean!
   speed: Float!
+  trimSilence: Boolean!
   uiMode: UiMode!
   volume: Float!
 }

@@ -20,6 +20,10 @@ export class UserPreference {
     skipAds?: boolean
 
     @Field()
+    @prop({ default: false })
+    trimSilence?: boolean
+
+    @Field()
     @prop({ default: 0.5 })
     volume: number
 
