@@ -30,8 +30,10 @@ type Category {
 """A collection contains a list of podcasts grouped by a user"""
 type Collection {
   _id: ID!
+  coverImageUrl: String!
   name: String!
   podcasts: [Podcast!]!
+  themeColor: String!
 }
 
 type Comment {
@@ -83,12 +85,33 @@ type Episode {
 
 type Library {
   _id: ID!
+
+  """
+  The Podcast Episodes that a user has archived - listened to or manually archived
+  """
   archivedEpisodes: [Episode!]!
+
+  """A user's bookmarked episodes"""
   bookmarkedEpisodes: [Episode!]!
+
+  """A user' collections"""
   collections: [Collection!]!
+
+  """The categories that a user is following."""
   followedCategories: [Category!]!
+
+  """The episodes that a user has liked"""
   likedEpisodes: [Episode!]!
+
+  """A user' playlists"""
   playlists: [Playlist!]!
+
+  """
+  User's podcasts "on Tap"
+  """
+  podsOnTap: [Podcast!]!
+
+  """The podcasts that the user has subscribed to."""
   subscribedPodcasts: [Podcast!]!
 }
 
@@ -108,6 +131,7 @@ type Mutation {
 
   """Adds an episode to a player's queue"""
   addToEndOfQueue(slug: String!): PlayingQueue!
+  addToOnTap(slug: String!): Library!
   archiveEpisode(slug: String!): Library!
   bookmarkEpisode(slug: String!): Library!
 
@@ -124,10 +148,15 @@ type Mutation {
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
 
+  """Retreives a user's library"""
+  getLibrary: Library!
+  getSubscribedPodcastEpisodeQueue: Library!
+
   """Goes to the next play. Current play is placed at the end of the queue"""
   goToNextPlay: PlayingQueue!
   likeEpisode(slug: String!): Library!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Library!
+  removeFromOnTap(slug: String!): Library!
 
   """Removes a play at a particular position in the queue"""
   removePlayAtIndex(index: Float!): PlayingQueue!
@@ -161,7 +190,7 @@ type Play {
   episode: Episode!
   position: Float!
   started: Boolean!
-  uid: User
+  user: User
 }
 
 type PlayingQueue {
@@ -173,8 +202,11 @@ type PlayingQueue {
 """A playlist contains a list of episodes added by a user."""
 type Playlist {
   _id: ID!
+  coverImageUrl: String!
+  description: String!
   episodes: [Episode!]!
   name: String!
+  themeColor: String!
 }
 
 type Podcast {
@@ -206,6 +238,7 @@ type Query {
 
   """Returns a list of recommended topics"""
   getEntitySearchRecommendations: [Entity!]!
+  getEpisodesForSubscribedPodcasts(lastDateFetched: DateTime!, page: Float!): Episode!
 
   """Returns the featured podcasts"""
   getFeatured: [Podcast!]!

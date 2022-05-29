@@ -16,6 +16,18 @@ export class Collection {
     })
     public name: string
 
+    @Field()
+    @prop({
+        type: String,
+    })
+    public coverImageUrl: string
+
+    @Field()
+    @prop({
+        type: String,
+    })
+    public themeColor: string
+
     @Field((type) => [Podcast])
     @prop({ ref: 'Podcast', default: [] })
     public podcasts: Ref<Podcast>[]

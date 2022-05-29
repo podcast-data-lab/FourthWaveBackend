@@ -1,6 +1,6 @@
 import { Episode } from '../../models/Episode'
 import { EpisodeModel } from '../../models'
-import { Arg, Authorized, Ctx, Mutation, Resolver } from 'type-graphql'
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { Podcast, PodcastModel } from '../../models/Podcast'
 import { Library, LibraryModel } from '../../models/Library'
 import { UserContext } from '../../models/Context'
@@ -8,9 +8,19 @@ import { DocumentType, Ref } from '@typegoose/typegoose'
 import { CollectionModel } from '../../models/Collection'
 import { PlaylistModel } from '../../models/Playlist'
 import { ObjectId } from 'mongodb'
+import { getEpisodesInPodcastList } from './PlaylistResolver'
+import { GraphQLError } from 'graphql'
 
 @Resolver((of) => Library)
 export default class LibraryResolver {
+    @Authorized()
+    @Mutation((returns) => Library, {
+        description: "Retreives a user's library",
+    })
+    async getLibrary(@Ctx() { library }: UserContext): Promise<Library> {
+        return getFullLibrary(library._id)
+    }
+
     @Authorized()
     @Mutation((returns) => Library)
     async subscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
@@ -23,8 +33,45 @@ export default class LibraryResolver {
     }
 
     @Authorized()
+    @Query((returns) => Episode)
+    async getEpisodesForSubscribedPodcasts(
+        @Arg('lastDateFetched') lastDateFetched: Date,
+        @Arg('page') page: number,
+        @Ctx() { library }: UserContext,
+    ): Promise<Episode[]> {
+        return getEpisodesInPodcastList(library.subscribedPodcasts, lastDateFetched, page)
+    }
+
+    @Authorized()
     @Mutation((returns) => Library)
     async unSubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
+        const podcast = await PodcastModel.findOne({ slug })
+        const indx = library.subscribedPodcasts.findIndex((podcast_id) => new ObjectId(podcast._id).equals(podcast_id.toString()))
+        if (indx > -1) {
+            library.subscribedPodcasts.splice(indx, 1)
+            await library.save()
+        }
+        return getFullLibrary(library._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => Library)
+    async addToOnTap(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library | GraphQLError> {
+        const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
+
+        if (library.podsOnTap.length >= 5) {
+            return new GraphQLError('You can only have 5 podcasts on tap')
+        }
+        if (podcast && !library.podsOnTap.includes(podcast._id)) {
+            library.subscribedPodcasts.push(podcast._id)
+            await library.save()
+        }
+        return getFullLibrary(library._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => Library)
+    async removeFromOnTap(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcast = await PodcastModel.findOne({ slug })
         const indx = library.subscribedPodcasts.findIndex((podcast_id) => new ObjectId(podcast._id).equals(podcast_id.toString()))
         if (indx > -1) {
@@ -207,7 +254,7 @@ export default class LibraryResolver {
         return getFullLibrary(library._id)
     }
 
-    /* Bookmark & unbookmark a Podcast */
+    /* Bookmark & unbookmark a Podcast Episode */
     @Authorized()
     @Mutation((returns) => Library)
     async bookmarkEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
@@ -229,6 +276,12 @@ export default class LibraryResolver {
             await library.save()
         }
         return getFullLibrary(library._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => Library)
+    async getSubscribedPodcastEpisodeQueue(@Ctx() { library }: UserContext): Promise<Episode[]> {
+        return []
     }
 }
 
@@ -306,6 +359,29 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
                 foreignField: '_id',
                 localField: 'subscribedPodcasts',
                 as: 'subscribedPodcasts',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'authors',
+                            localField: 'author',
+                            foreignField: '_id',
+                            as: 'author',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            author: { $first: '$author' },
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            $lookup: {
+                from: 'podcasts',
+                foreignField: '_id',
+                localField: 'podsOnTap',
+                as: 'podsOnTap',
                 pipeline: [
                     {
                         $lookup: {

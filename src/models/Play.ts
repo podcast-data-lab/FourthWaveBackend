@@ -12,7 +12,7 @@ export class Play {
 
     @Field((type) => User, { nullable: true })
     @prop({ ref: 'User' })
-    uid: Ref<User>
+    user: Ref<User>
 
     @Field((type) => Episode)
     @prop({ ref: 'Episode' })

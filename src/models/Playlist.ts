@@ -16,6 +16,24 @@ export class Playlist {
     })
     public name: string
 
+    @Field()
+    @prop({
+        type: String,
+    })
+    public description: string
+
+    @Field()
+    @prop({
+        type: String,
+    })
+    public coverImageUrl: string
+
+    @Field()
+    @prop({
+        type: String,
+    })
+    public themeColor: string
+
     @Field((type) => [Episode])
     @prop({ ref: 'Episode', default: [] })
     public episodes: Ref<Episode>[]
