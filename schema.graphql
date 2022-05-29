@@ -135,7 +135,7 @@ type Mutation {
   archiveEpisode(slug: String!): Library!
   bookmarkEpisode(slug: String!): Library!
 
-  """Changes a user's playing speed"""
+  """Changes a user's playing speed."""
   changePlayingSpeed(speed: Float!): UserPreference!
 
   """Deletes/Clears a user's playing queue"""
@@ -165,7 +165,7 @@ type Mutation {
   """Rearrange items in the player's queue"""
   reorderQueue(from: Float!, to: Float!): PlayingQueue!
 
-  """Sets a user Volume"""
+  """Sets a user Volume."""
   setUserVolume(volume: Float!): UserPreference!
   signUpOrIn: AuthOutput!
 
@@ -260,6 +260,9 @@ type Query {
 
   """Returns the Trending Podcasts"""
   getTrending: [Podcast!]!
+
+  """Gets a user' preference."""
+  getUserPreferences(volume: Float!): UserPreference!
 
   """Returns a user's player queue"""
   getUserQueue: PlayingQueue!
