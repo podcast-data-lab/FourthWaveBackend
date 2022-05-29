@@ -164,18 +164,14 @@ initializeSentry()
         endpointURL: '/graphql',
     })
 
-    const host = '0.0.0.0'
-    // const host = '192.168.1.210'
+    const HOST = '0.0.0.0'
     const PORT = process.env.PORT || 6500
 
-    app.listen(PORT, host, () => {
-        const message = `api listening on port ${PORT}`
-        console.log(message)
-    })
+    app.listen(PORT, process.env.HOST ?? HOST, () => console.log(`api listening on port ${PORT}`))
 })()
 
 function checkAllowedOrigins(origin: string): boolean {
-    const allowedOrigins = ['https://onthistopic.firebaseapp.com', 'https://onthistopic.web.app']
+    const allowedOrigins = ['https://fourth-wave.firebaseapp.com', 'https://fourth-wave.web.app/']
     // if (allowedOrigins.includes(origin)) return true
     // else return true
     return true
