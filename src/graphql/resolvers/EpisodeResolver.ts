@@ -97,7 +97,7 @@ export default class EpisodeResolver {
     })
     async topEpisodes(): Promise<Episode[]> {
         const eps = await EpisodeModel.aggregate([
-            { $sample: { size: 5 } },
+            { $sample: { size: 7 } },
             {
                 $lookup: {
                     from: 'entities',

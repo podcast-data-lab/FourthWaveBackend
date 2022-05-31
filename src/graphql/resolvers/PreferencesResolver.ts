@@ -8,13 +8,15 @@ export class PreferencesResolver {
     @Query((returns) => UserPreference, { description: "Gets a user' preferences." })
     async getUserPreferences(@Ctx() { user }: UserContext): Promise<UserPreference> {
         let preferences = await UserPreferenceModel.findById<DocumentType<UserPreference>>({ _id: user.preferences })
+        await preferences.save()
         return preferences
     }
 
     @Mutation((returns) => UserPreference, { description: 'Sets a user Volume.' })
     async setUserVolume(@Arg('volume') volume: number, @Ctx() { user }: UserContext): Promise<UserPreference> {
         let preferences = await UserPreferenceModel.findById<DocumentType<UserPreference>>({ _id: user.preferences })
-        preferences.playbackSpeed = volume
+        preferences.volume = volume
+        await preferences.save()
         return preferences
     }
 
@@ -24,6 +26,7 @@ export class PreferencesResolver {
     async changePlayingSpeed(@Arg('playbackSpeed') playbackSpeed: number, @Ctx() { user }: UserContext): Promise<UserPreference> {
         let preferences = await UserPreferenceModel.findById<DocumentType<UserPreference>>({ _id: user.preferences })
         preferences.playbackSpeed = playbackSpeed
+        await preferences.save()
         return preferences
     }
 
@@ -33,6 +36,7 @@ export class PreferencesResolver {
     async setTrimSilence(@Arg('trimSilence') trimSilence: boolean, @Ctx() { user }: UserContext): Promise<UserPreference> {
         let preferences = await UserPreferenceModel.findById<DocumentType<UserPreference>>({ _id: user.preferences })
         preferences.trimSilence = trimSilence
+        await preferences.save()
         return preferences
     }
 
@@ -42,6 +46,7 @@ export class PreferencesResolver {
     async setSkipAds(@Arg('skipAds') skipAds: boolean, @Ctx() { user }: UserContext): Promise<UserPreference> {
         let preferences = await UserPreferenceModel.findById<DocumentType<UserPreference>>({ _id: user.preferences })
         preferences.skipAds = skipAds
+        await preferences.save()
         return preferences
     }
 }
