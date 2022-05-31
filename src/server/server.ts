@@ -167,7 +167,7 @@ initializeSentry()
     const HOST = '0.0.0.0'
     const PORT = process.env.PORT || 6500
 
-    app.listen(PORT, process.env.HOST ?? HOST, () => console.log(`api listening on port ${PORT}`))
+    app.listen(PORT, process.env.HOST ?? HOST, () => console.log(`api listening on port ${PORT}.`))
 })()
 
 function checkAllowedOrigins(origin: string): boolean {
