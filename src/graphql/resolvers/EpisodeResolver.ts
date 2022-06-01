@@ -37,9 +37,12 @@ export default class EpisodeResolver {
                 $project: {
                     title: 1,
                     description: 1,
+                    htmlDescription: 1,
+                    explicit: 1,
+                    subtitle: 1,
+                    published: 1,
                     sourceUrl: 1,
                     image: 1,
-                    datePublished: 1,
                     duration: 1,
                     podcast: 1,
                     entities: 1,

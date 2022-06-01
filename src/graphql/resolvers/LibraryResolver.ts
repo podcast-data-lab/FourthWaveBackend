@@ -6,7 +6,7 @@ import { Library, LibraryModel } from '../../models/Library'
 import { UserContext } from '../../models/Context'
 import { DocumentType, Ref } from '@typegoose/typegoose'
 import { CollectionModel } from '../../models/Collection'
-import { PlaylistModel } from '../../models/Playlist'
+import { PlaylistInput, PlaylistModel } from '../../models/Playlist'
 import { ObjectId } from 'mongodb'
 import { getEpisodesInPodcastList } from './PlaylistResolver'
 import { GraphQLError } from 'graphql'
@@ -63,7 +63,7 @@ export default class LibraryResolver {
             return new GraphQLError('You can only have 5 podcasts on tap')
         }
         if (podcast && !library.podsOnTap.includes(podcast._id)) {
-            library.subscribedPodcasts.push(podcast._id)
+            library.podsOnTap.push(podcast._id)
             await library.save()
         }
         return getFullLibrary(library._id)
@@ -73,9 +73,9 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async removeFromOnTap(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcast = await PodcastModel.findOne({ slug })
-        const indx = library.subscribedPodcasts.findIndex((podcast_id) => new ObjectId(podcast._id).equals(podcast_id.toString()))
+        const indx = library.podsOnTap.findIndex((podcast_id) => new ObjectId(podcast._id).equals(podcast_id.toString()))
         if (indx > -1) {
-            library.subscribedPodcasts.splice(indx, 1)
+            library.podsOnTap.splice(indx, 1)
             await library.save()
         }
         return getFullLibrary(library._id)
@@ -146,8 +146,11 @@ export default class LibraryResolver {
 
     @Authorized()
     @Mutation((returns) => Library)
-    async createPlaylist(@Arg('playlistName') playlistName: string, @Ctx() { library }: UserContext): Promise<Library> {
-        const playlist = new PlaylistModel({ name: playlistName })
+    async createPlaylist(
+        @Arg('playlist') { name, coverImageUrl, description, themeColor }: PlaylistInput,
+        @Ctx() { library }: UserContext,
+    ): Promise<Library> {
+        const playlist = new PlaylistModel({ name, coverImageUrl, description, themeColor })
         await playlist.save()
         library.playlists.push(playlist._id)
 

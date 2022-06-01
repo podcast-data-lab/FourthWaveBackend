@@ -144,7 +144,7 @@ type Mutation {
   """completes the currently playing item and loads the current queue"""
   completeAndGoToNext(playId: String!): PlayingQueue!
   createCollection(collectionName: String!): Library!
-  createPlaylist(playlistName: String!): Library!
+  createPlaylist(playlist: PlaylistInput!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
 
@@ -211,6 +211,13 @@ type Playlist {
   coverImageUrl: String!
   description: String!
   episodes: [Episode!]!
+  name: String!
+  themeColor: String!
+}
+
+input PlaylistInput {
+  coverImageUrl: String!
+  description: String!
   name: String!
   themeColor: String!
 }

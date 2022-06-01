@@ -1,6 +1,4 @@
-import { Field, ObjectType } from 'type-graphql'
-import { ApiResponse } from 'unsplash-js/dist/helpers/response'
-import { Photos } from 'unsplash-js/dist/methods/search/types/response'
+import { Field, InputType, ObjectType } from 'type-graphql'
 
 @ObjectType()
 export class Links {

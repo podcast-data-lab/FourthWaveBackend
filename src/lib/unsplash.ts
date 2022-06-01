@@ -19,7 +19,7 @@ export function searchForPhoto(query: string): Promise<UnsplashPhoto[]> {
         .getPhotos({
             query,
             orientation: 'landscape',
-            perPage: 10,
+            perPage: 16,
         })
         .then((res) => {
             console.log(JSON.stringify(res.response.results[0]))
