@@ -1,5 +1,5 @@
 import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ID, InputType, ObjectType } from 'type-graphql'
 import { Podcast } from './Podcast'
 
 @ObjectType({
@@ -20,6 +20,12 @@ export class Collection {
     @prop({
         type: String,
     })
+    public description: string
+
+    @Field()
+    @prop({
+        type: String,
+    })
     public coverImageUrl: string
 
     @Field()
@@ -33,3 +39,18 @@ export class Collection {
     public podcasts: Ref<Podcast>[]
 }
 export const CollectionModel = getModelForClass(Collection)
+
+@InputType()
+export class CollectionInput {
+    @Field()
+    public name: string
+
+    @Field()
+    public description: string
+
+    @Field({ nullable: true })
+    public coverImageUrl: string
+
+    @Field({ nullable: true })
+    public themeColor: string
+}

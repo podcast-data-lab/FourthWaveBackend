@@ -31,9 +31,17 @@ type Category {
 type Collection {
   _id: ID!
   coverImageUrl: String!
+  description: String!
   name: String!
   podcasts: [Podcast!]!
   themeColor: String!
+}
+
+input CollectionInput {
+  coverImageUrl: String
+  description: String!
+  name: String!
+  themeColor: String
 }
 
 type Comment {
@@ -123,8 +131,8 @@ type Links {
 }
 
 type Mutation {
-  addEpisodeToPlaylist(collectionId: String!, episodeSlug: String!): Library!
-  addPodcastToCollection(collectionId: String!, slug: String!): Library!
+  addEpisodeToPlaylist(collectionId: String!, episodeSlug: String!): Playlist!
+  addPodcastToCollection(collectionId: String!, slug: String!): Collection!
 
   """Adds an episode to a player's queue"""
   addToBeginningOfQueue(slug: String!): PlayingQueue!
@@ -143,7 +151,7 @@ type Mutation {
 
   """completes the currently playing item and loads the current queue"""
   completeAndGoToNext(playId: String!): PlayingQueue!
-  createCollection(collectionName: String!): Library!
+  createCollection(collection: CollectionInput!): Library!
   createPlaylist(playlist: PlaylistInput!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
@@ -156,12 +164,12 @@ type Mutation {
   """Goes to the next play. Current play is placed at the end of the queue"""
   goToNextPlay: PlayingQueue!
   likeEpisode(slug: String!): Library!
-  removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Library!
+  removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Playlist!
   removeFromOnTap(slug: String!): Library!
 
   """Removes a play at a particular position in the queue"""
   removePlayAtIndex(index: Float!): PlayingQueue!
-  removePodcastFromCollection(collectionId: String!, slug: String!): Library!
+  removePodcastFromCollection(collectionId: String!, slug: String!): Collection!
 
   """Rearrange items in the player's queue"""
   reorderQueue(from: Float!, to: Float!): PlayingQueue!

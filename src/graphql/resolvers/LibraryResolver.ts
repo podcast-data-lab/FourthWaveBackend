@@ -4,8 +4,8 @@ import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { Podcast, PodcastModel } from '../../models/Podcast'
 import { Library, LibraryModel } from '../../models/Library'
 import { UserContext } from '../../models/Context'
-import { DocumentType, Ref } from '@typegoose/typegoose'
-import { Collection, CollectionModel } from '../../models/Collection'
+import { DocumentType } from '@typegoose/typegoose'
+import { Collection, CollectionInput, CollectionModel } from '../../models/Collection'
 import { Playlist, PlaylistInput, PlaylistModel } from '../../models/Playlist'
 import { ObjectId } from 'mongodb'
 import { getEpisodesInPodcastList } from './PlaylistResolver'
@@ -99,8 +99,11 @@ export default class LibraryResolver {
 
     @Authorized()
     @Mutation((returns) => Library)
-    async createCollection(@Arg('collectionName') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
-        const collection = new CollectionModel({ name: slug })
+    async createCollection(
+        @Arg('collection') collectionInput: CollectionInput,
+        @Ctx() { library }: UserContext,
+    ): Promise<Library> {
+        const collection = new CollectionModel({ ...collectionInput })
         await collection.save()
         library.collections.push(collection._id)
         await library.save()
@@ -126,28 +129,28 @@ export default class LibraryResolver {
     }
 
     @Authorized()
-    @Mutation((returns) => Library)
+    @Mutation((returns) => Collection)
     async addPodcastToCollection(
         @Arg('slug') slug: string,
         @Arg('collectionId') collectionId: string,
         @Ctx() { library }: UserContext,
-    ): Promise<Library> {
+    ): Promise<Collection> {
         const collection = await CollectionModel.findOne({ _id: collectionId })
         const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
         if (podcast && collection) {
             collection.podcasts.push(podcast._id)
             await library.save()
         }
-        return getFullLibrary(library._id)
+        return retreiveCollection(new ObjectId(collection._id))
     }
 
     @Authorized()
-    @Mutation((returns) => Library)
+    @Mutation((returns) => Collection)
     async removePodcastFromCollection(
         @Arg('slug') slug: string,
         @Arg('collectionId') collectionId: string,
         @Ctx() { library }: UserContext,
-    ): Promise<Library> {
+    ): Promise<Collection> {
         const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
         const collection = await CollectionModel.findOne({ _id: collectionId })
         if (podcast && collection) {
@@ -157,7 +160,7 @@ export default class LibraryResolver {
                 await collection.save()
             }
         }
-        return getFullLibrary(library._id)
+        return retreiveCollection(new ObjectId(collection._id))
     }
 
     @Authorized()
@@ -208,31 +211,30 @@ export default class LibraryResolver {
     }
 
     @Authorized()
-    @Mutation((returns) => Library)
+    @Mutation((returns) => Playlist)
     async addEpisodeToPlaylist(
         @Arg('episodeSlug') episodeSlug: string,
         @Arg('collectionId') playlistId: string,
         @Ctx() { library }: UserContext,
-    ): Promise<Library> {
+    ): Promise<Playlist> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug: episodeSlug })
         const playlist = await PlaylistModel.findOne({ _id: playlistId })
         if (episode && playlist) {
             playlist.episodes.push(episode)
             await playlist.save()
         }
-
-        return getFullLibrary(library._id)
+        return retreivePlaylist(new ObjectId(playlistId))
     }
 
     @Authorized()
-    @Mutation((returns) => Library)
+    @Mutation((returns) => Playlist)
     async removeEpisodeFromPlaylist(
         @Arg('episodeSlug') episodeSlug: string,
-        @Arg('playlistId') collectionId: string,
+        @Arg('playlistId') playlistId: string,
         @Ctx() { library }: UserContext,
-    ): Promise<Library> {
+    ): Promise<Playlist> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug: episodeSlug })
-        const playlist = await PlaylistModel.findOne({ _id: collectionId })
+        const playlist = await PlaylistModel.findOne({ _id: playlistId })
         if (episode && playlist) {
             const indx = playlist.episodes.findIndex((episode_id) => episode._id.equals(episode_id.toString()))
             if (indx > -1) {
@@ -240,7 +242,7 @@ export default class LibraryResolver {
                 await playlist.save()
             }
         }
-        return getFullLibrary(library._id)
+        return retreivePlaylist(new ObjectId(playlistId))
     }
 
     /* Like & Unlike Podcast */
