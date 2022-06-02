@@ -147,6 +147,7 @@ type Mutation {
   createPlaylist(playlist: PlaylistInput!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
+  editPlaylist(playlist: PlaylistInput!, playlistId: String!): Playlist!
 
   """Retreives a user's library"""
   getLibrary: Library!
@@ -216,10 +217,10 @@ type Playlist {
 }
 
 input PlaylistInput {
-  coverImageUrl: String!
+  coverImageUrl: String
   description: String!
   name: String!
-  themeColor: String!
+  themeColor: String
 }
 
 type Podcast {

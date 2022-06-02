@@ -166,19 +166,29 @@ export default class LibraryResolver {
         @Arg('playlist') { name, coverImageUrl, description, themeColor }: PlaylistInput,
         @Ctx() { library }: UserContext,
     ): Promise<Library> {
-        console.log(
-            JSON.stringify({
-                name,
-                coverImageUrl,
-                description,
-                themeColor,
-            }),
-        )
         const playlist = new PlaylistModel({ name, coverImageUrl, description, themeColor })
         await playlist.save()
         library.playlists.push(playlist._id)
         await library.save()
         return getFullLibrary(library._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => Playlist)
+    async editPlaylist(
+        @Arg('playlistId') playlistId: string,
+        @Arg('playlist') { name, coverImageUrl, description, themeColor }: PlaylistInput,
+        @Ctx() { library }: UserContext,
+    ): Promise<Playlist> {
+        const playlist = await PlaylistModel.findOne({ _id: playlistId })
+        if (playlist) {
+            playlist.name = name
+            playlist.coverImageUrl = coverImageUrl
+            playlist.description = description
+            playlist.themeColor = themeColor
+            await playlist.save()
+        }
+        return retreivePlaylist(playlist.id)
     }
 
     @Authorized()

@@ -49,9 +49,9 @@ export class PlaylistInput {
     @Field()
     public description: string
 
-    @Field()
+    @Field({ nullable: true })
     public coverImageUrl: string
 
-    @Field()
+    @Field({ nullable: true })
     public themeColor: string
 }
