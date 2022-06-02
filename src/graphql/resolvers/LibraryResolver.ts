@@ -188,7 +188,7 @@ export default class LibraryResolver {
             playlist.themeColor = themeColor
             await playlist.save()
         }
-        return retreivePlaylist(playlist.id)
+        return retreivePlaylist(new ObjectId(playlistId))
     }
 
     @Authorized()
@@ -323,14 +323,14 @@ export default class LibraryResolver {
 }
 
 export async function retreivePlaylist(_id: ObjectId) {
-    const playlist = await PlaylistModel.aggregate<DocumentType<Playlist>>([
+    const playlists = await PlaylistModel.aggregate<DocumentType<Playlist>>([
         { $match: { _id } },
         {
             $lookup: {
                 from: 'episodes',
                 foreignField: '_id',
-                localField: 'episode',
-                as: 'episode',
+                localField: 'episodes',
+                as: 'episodes',
                 pipeline: [
                     {
                         $lookup: {
@@ -362,8 +362,8 @@ export async function retreivePlaylist(_id: ObjectId) {
             },
         },
     ])
-    if (playlist.length > 0) {
-        return playlist[0]
+    if (playlists.length > 0) {
+        return playlists[0]
     }
     return null
 }
