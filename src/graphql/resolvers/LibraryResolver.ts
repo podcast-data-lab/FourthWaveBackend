@@ -22,7 +22,7 @@ export default class LibraryResolver {
     }
 
     @Authorized()
-    @Mutation((returns) => Playlist, {
+    @Query((returns) => Playlist, {
         description: 'Retreives a playlist by id',
     })
     async getPlaylist(@Arg('playlistId') playlistId: string): Promise<Playlist> {
@@ -30,7 +30,7 @@ export default class LibraryResolver {
     }
 
     @Authorized()
-    @Mutation((returns) => Collection, {
+    @Query((returns) => Collection, {
         description: 'Retreives a collection by id',
     })
     async getCollection(@Arg('collectionId') collectionId: string): Promise<Collection> {
