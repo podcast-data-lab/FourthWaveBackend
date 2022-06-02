@@ -5,8 +5,8 @@ import { Podcast, PodcastModel } from '../../models/Podcast'
 import { Library, LibraryModel } from '../../models/Library'
 import { UserContext } from '../../models/Context'
 import { DocumentType, Ref } from '@typegoose/typegoose'
-import { CollectionModel } from '../../models/Collection'
-import { PlaylistInput, PlaylistModel } from '../../models/Playlist'
+import { Collection, CollectionModel } from '../../models/Collection'
+import { Playlist, PlaylistInput, PlaylistModel } from '../../models/Playlist'
 import { ObjectId } from 'mongodb'
 import { getEpisodesInPodcastList } from './PlaylistResolver'
 import { GraphQLError } from 'graphql'
@@ -19,6 +19,22 @@ export default class LibraryResolver {
     })
     async getLibrary(@Ctx() { library }: UserContext): Promise<Library> {
         return getFullLibrary(library._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => Playlist, {
+        description: 'Retreives a playlist by id',
+    })
+    async getPlaylist(@Arg('playlistId') playlistId: string): Promise<Playlist> {
+        return retreivePlaylist(new ObjectId(playlistId))
+    }
+
+    @Authorized()
+    @Mutation((returns) => Collection, {
+        description: 'Retreives a collection by id',
+    })
+    async getCollection(@Arg('collectionId') collectionId: string): Promise<Collection> {
+        return retreiveCollection(new ObjectId(collectionId))
     }
 
     @Authorized()
@@ -150,10 +166,18 @@ export default class LibraryResolver {
         @Arg('playlist') { name, coverImageUrl, description, themeColor }: PlaylistInput,
         @Ctx() { library }: UserContext,
     ): Promise<Library> {
+        console.log(
+            JSON.stringify({
+                name,
+                coverImageUrl,
+                description,
+                themeColor,
+            }),
+        )
         const playlist = new PlaylistModel({ name, coverImageUrl, description, themeColor })
         await playlist.save()
         library.playlists.push(playlist._id)
-
+        await library.save()
         return getFullLibrary(library._id)
     }
 
@@ -288,6 +312,85 @@ export default class LibraryResolver {
     }
 }
 
+export async function retreivePlaylist(_id: ObjectId) {
+    const playlist = await PlaylistModel.aggregate<DocumentType<Playlist>>([
+        { $match: { _id } },
+        {
+            $lookup: {
+                from: 'episodes',
+                foreignField: '_id',
+                localField: 'episode',
+                as: 'episode',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'podcasts',
+                            foreignField: '_id',
+                            localField: 'podcast',
+                            as: 'podcast',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            podcast: { $first: '$podcast' },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'authors',
+                            localField: 'author',
+                            foreignField: '_id',
+                            as: 'author',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            author: { $first: '$author' },
+                        },
+                    },
+                ],
+            },
+        },
+    ])
+    if (playlist.length > 0) {
+        return playlist[0]
+    }
+    return null
+}
+
+export async function retreiveCollection(_id: ObjectId) {
+    const collection = await CollectionModel.aggregate<DocumentType<Collection>>([
+        { $match: { _id } },
+        {
+            $lookup: {
+                from: 'podcasts',
+                foreignField: '_id',
+                localField: 'podcasts',
+                as: 'podcasts',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'authors',
+                            localField: 'author',
+                            foreignField: '_id',
+                            as: 'author',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            author: { $first: '$author' },
+                        },
+                    },
+                ],
+            },
+        },
+    ])
+    if (collection.length > 0) {
+        return collection[0]
+    }
+    return null
+}
+
 export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Library>> {
     let libs = await LibraryModel.aggregate<DocumentType<Library>>([
         { $match: { _id } },
@@ -354,6 +457,24 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
                 foreignField: '_id',
                 localField: 'archivedEpisodes',
                 as: 'archivedEpisodes',
+            },
+        },
+        {
+            $lookup: {
+                from: 'playlists',
+                foreignField: '_id',
+                localField: 'playlists',
+                as: 'playlists',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'episodes',
+                            localField: 'episodes',
+                            foreignField: '_id',
+                            as: 'episodes',
+                        },
+                    },
+                ],
             },
         },
         {

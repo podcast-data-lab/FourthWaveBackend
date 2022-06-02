@@ -148,8 +148,14 @@ type Mutation {
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
 
+  """Retreives a collection by id"""
+  getCollection(collectionId: String!): Collection!
+
   """Retreives a user's library"""
   getLibrary: Library!
+
+  """Retreives a playlist by id"""
+  getPlaylist(playlistId: String!): Playlist!
   getSubscribedPodcastEpisodeQueue: Library!
 
   """Goes to the next play. Current play is placed at the end of the queue"""
