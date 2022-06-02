@@ -99,13 +99,10 @@ export default class LibraryResolver {
 
     @Authorized()
     @Mutation((returns) => Library)
-    async createCollection(
-        @Arg('collection') collectionInput: CollectionInput,
-        @Ctx() { library }: UserContext,
-    ): Promise<Library> {
-        const collection = new CollectionModel({ ...collectionInput })
-        await collection.save()
-        library.collections.push(collection._id)
+    async createCollection(@Arg('collection') collection: CollectionInput, @Ctx() { library }: UserContext): Promise<Library> {
+        const newCollection = new CollectionModel({ ...collection })
+        await newCollection.save()
+        library.collections.push(newCollection._id)
         await library.save()
 
         return getFullLibrary(library._id)
