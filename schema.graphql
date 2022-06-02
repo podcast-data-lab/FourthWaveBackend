@@ -132,7 +132,7 @@ type Links {
 
 type Mutation {
   addEpisodeToPlaylist(episodeSlug: String!, playlistId: String!): Playlist!
-  addPodcastToCollection(collectionId: String!, slug: String!): Collection!
+  addPodcastToCollection(collectionId: String!, podcastSlug: String!): Collection!
 
   """Adds an episode to a player's queue"""
   addToBeginningOfQueue(slug: String!): PlayingQueue!
@@ -169,7 +169,7 @@ type Mutation {
 
   """Removes a play at a particular position in the queue"""
   removePlayAtIndex(index: Float!): PlayingQueue!
-  removePodcastFromCollection(collectionId: String!, slug: String!): Collection!
+  removePodcastFromCollection(collectionId: String!, podcastSlug: String!): Collection!
 
   """Rearrange items in the player's queue"""
   reorderQueue(from: Float!, to: Float!): PlayingQueue!

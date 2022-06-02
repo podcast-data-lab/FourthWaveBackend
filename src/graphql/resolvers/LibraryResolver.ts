@@ -128,12 +128,12 @@ export default class LibraryResolver {
     @Authorized()
     @Mutation((returns) => Collection)
     async addPodcastToCollection(
-        @Arg('slug') slug: string,
+        @Arg('podcastSlug') podcastSlug: string,
         @Arg('collectionId') collectionId: string,
         @Ctx() { library }: UserContext,
     ): Promise<Collection> {
         const collection = await CollectionModel.findOne({ _id: collectionId })
-        const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
+        const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug: podcastSlug })
         if (podcast && collection) {
             collection.podcasts.push(podcast._id)
             await library.save()
@@ -144,11 +144,11 @@ export default class LibraryResolver {
     @Authorized()
     @Mutation((returns) => Collection)
     async removePodcastFromCollection(
-        @Arg('slug') slug: string,
+        @Arg('podcastSlug') podcastSlug: string,
         @Arg('collectionId') collectionId: string,
         @Ctx() { library }: UserContext,
     ): Promise<Collection> {
-        const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug })
+        const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug: podcastSlug })
         const collection = await CollectionModel.findOne({ _id: collectionId })
         if (podcast && collection) {
             const indx = collection.podcasts.findIndex((podcast_id) => new ObjectId(podcast._id).equals(podcast_id.toString()))
