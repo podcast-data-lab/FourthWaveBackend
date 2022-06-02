@@ -211,7 +211,7 @@ export default class LibraryResolver {
     @Mutation((returns) => Playlist)
     async addEpisodeToPlaylist(
         @Arg('episodeSlug') episodeSlug: string,
-        @Arg('collectionId') playlistId: string,
+        @Arg('playlistId') playlistId: string,
         @Ctx() { library }: UserContext,
     ): Promise<Playlist> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug: episodeSlug })

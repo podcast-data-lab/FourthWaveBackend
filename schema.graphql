@@ -131,7 +131,7 @@ type Links {
 }
 
 type Mutation {
-  addEpisodeToPlaylist(collectionId: String!, episodeSlug: String!): Playlist!
+  addEpisodeToPlaylist(episodeSlug: String!, playlistId: String!): Playlist!
   addPodcastToCollection(collectionId: String!, slug: String!): Collection!
 
   """Adds an episode to a player's queue"""
