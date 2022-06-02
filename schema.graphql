@@ -155,6 +155,7 @@ type Mutation {
   createPlaylist(playlist: PlaylistInput!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
+  editCollection(collection: CollectionInput!, collectionId: String!): Collection!
   editPlaylist(playlist: PlaylistInput!, playlistId: String!): Playlist!
 
   """Retreives a user's library"""

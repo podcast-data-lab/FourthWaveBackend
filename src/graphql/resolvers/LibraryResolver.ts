@@ -107,6 +107,23 @@ export default class LibraryResolver {
 
         return getFullLibrary(library._id)
     }
+    @Authorized()
+    @Mutation((returns) => Collection)
+    async editCollection(
+        @Arg('collectionId') collectionId: string,
+        @Arg('collection') { name, coverImageUrl, description, themeColor }: CollectionInput,
+        @Ctx() { library }: UserContext,
+    ): Promise<Collection> {
+        const collection = await PlaylistModel.findOne({ _id: collectionId })
+        if (collection) {
+            collection.name = name
+            collection.coverImageUrl = coverImageUrl
+            collection.description = description
+            collection.themeColor = themeColor
+            await collection.save()
+        }
+        return retreiveCollection(new ObjectId(collectionId))
+    }
 
     @Authorized()
     @Mutation((returns) => Library)
