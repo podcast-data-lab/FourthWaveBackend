@@ -173,7 +173,13 @@ type Mutation {
   """
   Play a playlist. Clear entire queue and add episodes in playlist onto queue
   """
-  playFromPlaylist(playlistId: String!): PlayingQueue!
+  playFromPlaylist(endOfQueue: Boolean!, playlistId: String!, upNext: Boolean!): PlayingQueue!
+
+  """Plays episodes from the user's liked episodes"""
+  playLikedEpisodes(endOfQueue: Boolean!, upNext: Boolean!): PlayingQueue!
+
+  """Plays episodes from the user's listen later list."""
+  playListenLater(endOfQueue: Boolean!, upNext: Boolean!): PlayingQueue!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Playlist!
   removeFromListenLater(slug: String!): Library!
   removeFromOnTap(slug: String!): Library!

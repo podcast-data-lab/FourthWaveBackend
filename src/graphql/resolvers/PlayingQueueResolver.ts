@@ -201,11 +201,13 @@ export class PlayingQueueResolver {
     })
     async playFromPlaylist(
         @Arg('playlistId') playlistId: string,
+        @Arg('upNext') upNext: boolean,
+        @Arg('endOfQueue') endOfQueue: boolean,
         @Ctx() { playingQueue, user: { uid } }: UserContext,
     ): Promise<PlayingQueue> {
         let playlist = await PlaylistModel.findById(playlistId)
         let episodes = await EpisodeModel.find({ _id: { $in: playlist.episodes } })
-        playingQueue.plays = []
+        let plays = []
         for (let episode of episodes) {
             const play = new PlayModel({
                 episode: episode._id,
@@ -215,7 +217,80 @@ export class PlayingQueueResolver {
                 uid,
             })
             await play.save()
-            playingQueue.plays.push(play._id)
+            plays.push(play._id)
+        }
+        if (upNext) {
+            playingQueue.plays.splice(1, 0, ...plays)
+        } else if (endOfQueue) {
+            playingQueue.plays.push(...plays)
+        } else if (!upNext && !endOfQueue) {
+            playingQueue.plays = plays
+        }
+        await playingQueue.save()
+        return getCompleteQueue(playingQueue._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => PlayingQueue, {
+        description: "Plays episodes from the user's listen later list.",
+    })
+    async playListenLater(
+        @Arg('upNext') upNext: boolean,
+        @Arg('endOfQueue') endOfQueue: boolean,
+        @Ctx() { playingQueue, library, user: { uid } }: UserContext,
+    ): Promise<PlayingQueue> {
+        let episodes = library.listenLater
+        let plays = []
+        for (let episode of episodes) {
+            const play = new PlayModel({
+                episode: episode._id,
+                position: 0,
+                started: false,
+                completed: false,
+                uid,
+            })
+            await play.save()
+            plays.push(play._id)
+        }
+        if (upNext) {
+            playingQueue.plays.splice(1, 0, ...plays)
+        } else if (endOfQueue) {
+            playingQueue.plays.push(...plays)
+        } else if (!upNext && !endOfQueue) {
+            playingQueue.plays = plays
+        }
+        await playingQueue.save()
+        return getCompleteQueue(playingQueue._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => PlayingQueue, {
+        description: "Plays episodes from the user's liked episodes",
+    })
+    async playLikedEpisodes(
+        @Arg('upNext') upNext: boolean,
+        @Arg('endOfQueue') endOfQueue: boolean,
+        @Ctx() { playingQueue, library, user: { uid } }: UserContext,
+    ): Promise<PlayingQueue> {
+        let episodes = library.likedEpisodes
+        let plays = []
+        for (let episode of episodes) {
+            const play = new PlayModel({
+                episode: episode._id,
+                position: 0,
+                started: false,
+                completed: false,
+                uid,
+            })
+            await play.save()
+            plays.push(play._id)
+        }
+        if (upNext) {
+            playingQueue.plays.splice(1, 0, ...plays)
+        } else if (endOfQueue) {
+            playingQueue.plays.push(...plays)
+        } else if (!upNext && !endOfQueue) {
+            playingQueue.plays = plays
         }
         await playingQueue.save()
         return getCompleteQueue(playingQueue._id)
