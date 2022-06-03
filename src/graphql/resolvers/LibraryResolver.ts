@@ -390,10 +390,13 @@ export async function retreiveCollection(_id: ObjectId) {
         {
             $lookup: {
                 from: 'podcasts',
-                foreignField: '_id',
-                localField: 'podcasts',
-                as: 'podcasts',
+                let: { podcastsIds: '$podcasts' },
                 pipeline: [
+                    {
+                        $match: {
+                            $expr: { $in: ['$_id', '$$podcastsIds'] },
+                        },
+                    },
                     {
                         $lookup: {
                             from: 'authors',
@@ -405,9 +408,15 @@ export async function retreiveCollection(_id: ObjectId) {
                     {
                         $addFields: {
                             author: { $first: '$author' },
+                            sort: {
+                                $indexOfArray: ['$$podcastsIds', '$_id'],
+                            },
                         },
                     },
+                    { $sort: { sort: 1 } },
+                    { $addFields: { sort: '$$REMOVE' } },
                 ],
+                as: 'podcasts',
             },
         },
     ])
@@ -438,10 +447,13 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
                     {
                         $lookup: {
                             from: 'podcasts',
-                            foreignField: '_id',
-                            localField: 'podcasts',
-                            as: 'podcasts',
+                            let: { podcastsIds: '$podcasts' },
                             pipeline: [
+                                {
+                                    $match: {
+                                        $expr: { $in: ['$_id', '$$podcastsIds'] },
+                                    },
+                                },
                                 {
                                     $lookup: {
                                         from: 'authors',
@@ -453,9 +465,15 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
                                 {
                                     $addFields: {
                                         author: { $first: '$author' },
+                                        sort: {
+                                            $indexOfArray: ['$$podcastsIds', '$_id'],
+                                        },
                                     },
                                 },
+                                { $sort: { sort: 1 } },
+                                { $addFields: { sort: '$$REMOVE' } },
                             ],
+                            as: 'podcasts',
                         },
                     },
                 ],
@@ -472,32 +490,19 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
         {
             $lookup: {
                 from: 'episodes',
-                foreignField: '_id',
-                localField: 'likedEpisodes',
-                as: 'likedEpisodes',
-            },
-        },
-        {
-            $lookup: {
-                from: 'episodes',
-                foreignField: '_id',
-                localField: 'archivedEpisodes',
-                as: 'archivedEpisodes',
-            },
-        },
-        {
-            $lookup: {
-                from: 'playlists',
-                foreignField: '_id',
-                localField: 'playlists',
-                as: 'playlists',
+                let: { likedEpisodesIds: '$likedEpisodes' },
                 pipeline: [
+                    {
+                        $match: {
+                            $expr: { $in: ['$_id', '$$likedEpisodesIds'] },
+                        },
+                    },
                     {
                         $lookup: {
                             from: 'episodes',
                             foreignField: '_id',
-                            localField: 'episodes',
-                            as: 'episodes',
+                            localField: 'episode',
+                            as: 'episode',
                             pipeline: [
                                 {
                                     $lookup: {
@@ -528,39 +533,138 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
                             ],
                         },
                     },
+                    {
+                        $addFields: {
+                            episode: { $first: '$episode' },
+                        },
+                    },
+                    {
+                        $addFields: {
+                            sort: {
+                                $indexOfArray: ['$$likedEpisodesIds', '$_id'],
+                            },
+                        },
+                    },
+                    { $sort: { sort: 1 } },
+                    { $addFields: { sort: '$$REMOVE' } },
+                ],
+                as: 'likedEpisodes',
+            },
+        },
+        {
+            $lookup: {
+                from: 'episodes',
+                foreignField: '_id',
+                localField: 'archivedEpisodes',
+                as: 'archivedEpisodes',
+            },
+        },
+        {
+            $lookup: {
+                from: 'playlists',
+                foreignField: '_id',
+                localField: 'playlists',
+                as: 'playlists',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'episodes',
+                            let: { episodesInPlaylistIds: '$episodes' },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: { $in: ['$_id', '$$episodesInPlaylistIds'] },
+                                    },
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'podcasts',
+                                        foreignField: '_id',
+                                        localField: 'podcast',
+                                        as: 'podcast',
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        podcast: { $first: '$podcast' },
+                                    },
+                                },
+                                {
+                                    $lookup: {
+                                        from: 'authors',
+                                        localField: 'author',
+                                        foreignField: '_id',
+                                        as: 'author',
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        author: { $first: '$author' },
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        episode: { $first: '$episode' },
+                                    },
+                                },
+                                {
+                                    $addFields: {
+                                        sort: {
+                                            $indexOfArray: ['$$episodesInPlaylistIds', '$_id'],
+                                        },
+                                    },
+                                },
+                                { $sort: { sort: 1 } },
+                                { $addFields: { sort: '$$REMOVE' } },
+                            ],
+                            as: 'episodes',
+                        },
+                    },
                 ],
             },
         },
         {
             $lookup: {
                 from: 'podcasts',
-                foreignField: '_id',
-                localField: 'subscribedPodcasts',
+                let: { subscribedPodcastsIds: '$subscribedPodcasts' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $in: ['$_id', '$$subscribedPodcastsIds'] },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'authors',
+                            localField: 'author',
+                            foreignField: '_id',
+                            as: 'author',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            author: { $first: '$author' },
+                            sort: {
+                                $indexOfArray: ['$$subscribedPodcastsIds', '$_id'],
+                            },
+                        },
+                    },
+                    { $sort: { sort: 1 } },
+                    { $addFields: { sort: '$$REMOVE' } },
+                ],
                 as: 'subscribedPodcasts',
-                pipeline: [
-                    {
-                        $lookup: {
-                            from: 'authors',
-                            localField: 'author',
-                            foreignField: '_id',
-                            as: 'author',
-                        },
-                    },
-                    {
-                        $addFields: {
-                            author: { $first: '$author' },
-                        },
-                    },
-                ],
             },
         },
         {
             $lookup: {
                 from: 'podcasts',
-                foreignField: '_id',
-                localField: 'podsOnTap',
-                as: 'podsOnTap',
+                let: { podsOnTapIds: '$podsOnTap' },
                 pipeline: [
+                    {
+                        $match: {
+                            $expr: { $in: ['$_id', '$$podsOnTapIds'] },
+                        },
+                    },
                     {
                         $lookup: {
                             from: 'authors',
@@ -572,9 +676,15 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
                     {
                         $addFields: {
                             author: { $first: '$author' },
+                            sort: {
+                                $indexOfArray: ['$$podsOnTapIds', '$_id'],
+                            },
                         },
                     },
+                    { $sort: { sort: 1 } },
+                    { $addFields: { sort: '$$REMOVE' } },
                 ],
+                as: 'podsOnTap',
             },
         },
     ])
