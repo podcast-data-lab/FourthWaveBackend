@@ -8,7 +8,7 @@ import { DocumentType } from '@typegoose/typegoose'
 import { Collection, CollectionInput, CollectionModel } from '../../models/Collection'
 import { Playlist, PlaylistInput, PlaylistModel } from '../../models/Playlist'
 import { ObjectId } from 'mongodb'
-import { getEpisodesInPodcastList } from './PlaylistResolver'
+import { getEpisodesInPodcastList } from './helpers'
 import { GraphQLError } from 'graphql'
 
 @Resolver((of) => Library)
