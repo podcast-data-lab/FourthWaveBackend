@@ -32,6 +32,10 @@ export class Library {
     @prop({ ref: 'Episode', default: [] })
     public likedEpisodes: Ref<Episode>[]
 
+    @Field((type) => [Episode], { description: 'The episodes that a user adds to listen later list' })
+    @prop({ ref: 'Episode', default: [] })
+    public listenLater: Ref<Episode>[]
+
     @Field((type) => [Episode], {
         description: 'The Podcast Episodes that a user has archived - listened to or manually archived',
     })

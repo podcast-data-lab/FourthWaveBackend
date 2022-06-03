@@ -111,6 +111,9 @@ type Library {
   """The episodes that a user has liked"""
   likedEpisodes: [Episode!]!
 
+  """The episodes that a user adds to listen later list"""
+  listenLater: [Episode!]!
+
   """A user' playlists"""
   playlists: [Playlist!]!
 
@@ -139,6 +142,7 @@ type Mutation {
 
   """Adds an episode to a player's queue"""
   addToEndOfQueue(slug: String!): PlayingQueue!
+  addToListenLater(slug: String!): Library!
   addToOnTap(slug: String!): Library!
   archiveEpisode(slug: String!): Library!
   bookmarkEpisode(slug: String!): Library!
@@ -166,6 +170,7 @@ type Mutation {
   goToNextPlay: PlayingQueue!
   likeEpisode(slug: String!): Library!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Playlist!
+  removeFromListenLater(slug: String!): Library!
   removeFromOnTap(slug: String!): Library!
 
   """Removes a play at a particular position in the queue"""

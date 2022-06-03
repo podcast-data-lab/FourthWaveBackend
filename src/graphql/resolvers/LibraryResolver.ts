@@ -284,6 +284,31 @@ export default class LibraryResolver {
         return getFullLibrary(library._id)
     }
 
+    /* Like & Unlike Podcast */
+    @Authorized()
+    @Mutation((returns) => Library)
+    async addToListenLater(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
+        const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
+        if (episode) {
+            library.listenLater.push(episode)
+            await library.save()
+        }
+        return getFullLibrary(library._id)
+    }
+
+    @Authorized()
+    @Mutation((returns) => Library)
+    async removeFromListenLater(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
+        const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
+
+        const indx = library.listenLater.findIndex((episode_id) => episode._id.equals(episode_id.toString()))
+        if (indx > -1) {
+            library.listenLater.splice(indx, 1)
+            await library.save()
+        }
+        return getFullLibrary(library._id)
+    }
+
     @Authorized()
     @Mutation((returns) => Library)
     async archiveEpisode(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
