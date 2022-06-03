@@ -6,6 +6,7 @@ import { PlayingQueue, PlayingQueueModel } from '../../models/PlayingQueue'
 import { DocumentType, Ref } from '@typegoose/typegoose'
 import { insert, remove } from 'ramda'
 import { ObjectId } from 'mongodb'
+import { PlaylistModel } from '../../models/Playlist'
 
 @InputType()
 class QueueInput {
@@ -192,6 +193,32 @@ export class PlayingQueueResolver {
         playingQueue.plays = playingQueue.plays.splice(1, playingQueue.plays.length)
         await playingQueue.save()
         return playingQueue
+    }
+
+    @Authorized()
+    @Mutation((returns) => PlayingQueue, {
+        description: 'Play a playlist. Clear entire queue and add episodes in playlist onto queue',
+    })
+    async playFromPlaylist(
+        @Arg('playlistId') playlistId: string,
+        @Ctx() { playingQueue, user: { uid } }: UserContext,
+    ): Promise<PlayingQueue> {
+        let playlist = await PlaylistModel.findById(playlistId)
+        let episodes = await EpisodeModel.find({ _id: { $in: playlist.episodes } })
+        playingQueue.plays = []
+        for (let episode of episodes) {
+            const play = new PlayModel({
+                episode: episode._id,
+                position: 0,
+                started: false,
+                completed: false,
+                uid,
+            })
+            await play.save()
+            playingQueue.plays.push(play._id)
+        }
+        await playingQueue.save()
+        return getCompleteQueue(playingQueue._id)
     }
 
     @Authorized()

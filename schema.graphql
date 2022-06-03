@@ -169,6 +169,11 @@ type Mutation {
   """Goes to the next play. Current play is placed at the end of the queue"""
   goToNextPlay: PlayingQueue!
   likeEpisode(slug: String!): Library!
+
+  """
+  Play a playlist. Clear entire queue and add episodes in playlist onto queue
+  """
+  playFromPlaylist(playlistId: String!): PlayingQueue!
   removeEpisodeFromPlaylist(episodeSlug: String!, playlistId: String!): Playlist!
   removeFromListenLater(slug: String!): Library!
   removeFromOnTap(slug: String!): Library!
