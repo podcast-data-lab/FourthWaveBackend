@@ -274,7 +274,7 @@ type Query {
 
   """Returns a list of recommended topics"""
   getEntitySearchRecommendations: [Entity!]!
-  getEpisodesForSubscribedPodcasts(lastDateFetched: DateTime!, page: Float!): Episode!
+  getEpisodesForSubscribedPodcasts(page: Float!): [Episode!]!
 
   """Returns the featured podcasts"""
   getFeatured: [Podcast!]!
