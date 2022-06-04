@@ -35,8 +35,17 @@ export async function getEpisodesInPodcastList(
             },
         },
         {
+            $lookup: {
+                from: 'entities',
+                foreignField: '_id',
+                localField: 'entities',
+                as: 'entities',
+            },
+        },
+        {
             $addFields: {
                 author: { $first: '$author' },
+                podcast: { $first: '$podcast' },
             },
         },
         {
