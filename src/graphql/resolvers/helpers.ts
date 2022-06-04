@@ -6,16 +6,16 @@ import { Podcast } from '../../models/Podcast'
 export async function getEpisodesInPodcastList(
     idList: string[] | Ref<Podcast, string>[],
     page: number,
-    lastUpdated: Date,
+    lastUpdated?: Date,
 ): Promise<Episode[]> {
     // lastupdated - (14 days * page)
-    let cutoff = new Date(lastUpdated.getTime() - 14 * 24 * 60 * 60 * 1000 * page)
+    // let cutoff = new Date(lastUpdated.getTime() - 14 * 24 * 60 * 60 * 1000 * page)
     let episodes = await EpisodeModel.aggregate<Episode>([
         {
             $match: {
                 podcast: { $in: idList },
                 // For Simplicity, just get the most recent 50 episodes
-                published: { $gte: cutoff },
+                // published: { $gte: cutoff },
             },
         },
         {
@@ -48,7 +48,7 @@ export async function getEpisodesInPodcastList(
         {
             $limit: 50,
         },
-    ])
+    ]).allowDiskUse(true)
     console.log(episodes)
     return episodes
 }

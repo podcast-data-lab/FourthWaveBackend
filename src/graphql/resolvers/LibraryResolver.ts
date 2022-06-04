@@ -50,12 +50,8 @@ export default class LibraryResolver {
 
     @Authorized()
     @Query((returns) => [Episode])
-    async getEpisodesForSubscribedPodcasts(
-        @Arg('page') page: number,
-        @Arg('lastFetched') lastFetched: Date,
-        @Ctx() { library }: UserContext,
-    ): Promise<Episode[]> {
-        return getEpisodesInPodcastList(library.subscribedPodcasts, page, lastFetched)
+    async getEpisodesForSubscribedPodcasts(@Arg('page') page: number, @Ctx() { library }: UserContext): Promise<Episode[]> {
+        return getEpisodesInPodcastList(library.subscribedPodcasts, page)
     }
 
     @Authorized()
