@@ -6,7 +6,7 @@ import { Podcast } from '../../models/Podcast'
 export async function getEpisodesInPodcastList(
     idList: string[] | Ref<Podcast, string>[],
     page: number,
-    lastUpdated?: Date,
+    lastUpdated: Date,
 ): Promise<Episode[]> {
     // lastupdated - (14 days * page)
     let cutoff = new Date(lastUpdated.getTime() - 14 * 24 * 60 * 60 * 1000 * page)
@@ -15,7 +15,7 @@ export async function getEpisodesInPodcastList(
             $match: {
                 podcast: { $in: idList },
                 // For Simplicity, just get the most recent 50 episodes
-                // published: { $gte: cutoff },
+                published: { $gte: cutoff },
             },
         },
         {
@@ -24,6 +24,19 @@ export async function getEpisodesInPodcastList(
                 foreignField: '_id',
                 localField: 'podcast',
                 as: 'podcast',
+            },
+        },
+        {
+            $lookup: {
+                from: 'authors',
+                localField: 'author',
+                foreignField: '_id',
+                as: 'author',
+            },
+        },
+        {
+            $addFields: {
+                author: { $first: '$author' },
             },
         },
         {
@@ -36,5 +49,6 @@ export async function getEpisodesInPodcastList(
             $limit: 50,
         },
     ])
+    console.log(episodes)
     return episodes
 }
