@@ -30,11 +30,11 @@ type Category {
 """A collection contains a list of podcasts grouped by a user"""
 type Collection {
   _id: ID!
-  coverImageUrl: String!
-  description: String!
+  coverImageUrl: String
+  description: String
   name: String!
   podcasts: [Podcast!]!
-  themeColor: String!
+  themeColor: String
 }
 
 input CollectionInput {
@@ -234,11 +234,11 @@ type PlayingQueue {
 """A playlist contains a list of episodes added by a user."""
 type Playlist {
   _id: ID!
-  coverImageUrl: String!
-  description: String!
+  coverImageUrl: String
+  description: String
   episodes: [Episode!]!
   name: String!
-  themeColor: String!
+  themeColor: String
 }
 
 input PlaylistInput {

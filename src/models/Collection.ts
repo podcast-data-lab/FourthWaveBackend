@@ -16,19 +16,19 @@ export class Collection {
     })
     public name: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop({
         type: String,
     })
     public description: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop({
         type: String,
     })
     public coverImageUrl: string
 
-    @Field()
+    @Field({ nullable: true })
     @prop({
         type: String,
     })
