@@ -55,6 +55,17 @@ export default class LibraryResolver {
     }
 
     @Authorized()
+    @Query((returns) => [Episode])
+    async getEpisodesForPodcastsInCollection(
+        @Arg('collectionId') collectionId: string,
+        @Arg('page') page: number,
+        @Ctx() { library }: UserContext,
+    ): Promise<Episode[]> {
+        let collection = await CollectionModel.findOne({ _id: collectionId })
+        return getEpisodesInPodcastList(collection.podcasts, page)
+    }
+
+    @Authorized()
     @Mutation((returns) => Library)
     async unSubscribeToPodcast(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const podcast = await PodcastModel.findOne({ slug })
