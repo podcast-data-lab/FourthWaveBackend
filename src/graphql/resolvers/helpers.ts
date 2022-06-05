@@ -58,6 +58,5 @@ export async function getEpisodesInPodcastList(
             $limit: 50,
         },
     ]).allowDiskUse(true)
-    console.log(episodes)
     return episodes
 }

@@ -110,7 +110,7 @@ export default class LibraryResolver {
         @Arg('collection') { name, coverImageUrl, description, themeColor }: CollectionInput,
         @Ctx() { library }: UserContext,
     ): Promise<Collection> {
-        const collection = await PlaylistModel.findOne({ _id: collectionId })
+        const collection = await CollectionModel.findOne({ _id: collectionId })
         if (collection) {
             collection.name = name
             collection.coverImageUrl = coverImageUrl

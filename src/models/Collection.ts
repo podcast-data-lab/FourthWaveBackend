@@ -45,12 +45,12 @@ export class CollectionInput {
     @Field()
     public name: string
 
-    @Field()
-    public description: string
+    @Field({ nullable: true })
+    public description?: string
 
     @Field({ nullable: true })
-    public coverImageUrl: string
+    public coverImageUrl?: string
 
     @Field({ nullable: true })
-    public themeColor: string
+    public themeColor?: string
 }
