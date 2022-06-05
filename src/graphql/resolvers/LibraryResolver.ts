@@ -149,7 +149,7 @@ export default class LibraryResolver {
         const podcast = await PodcastModel.findOne<DocumentType<Podcast>>({ slug: podcastSlug })
         if (podcast && collection) {
             collection.podcasts.push(podcast._id)
-            await library.save()
+            await collection.save()
         }
         return retreiveCollection(new ObjectId(collection._id))
     }
