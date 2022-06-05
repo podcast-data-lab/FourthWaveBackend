@@ -556,6 +556,51 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
         {
             $lookup: {
                 from: 'episodes',
+                let: { listenLaterIds: '$listenLater' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $in: ['$_id', '$$listenLaterIds'] },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'podcasts',
+                            foreignField: '_id',
+                            localField: 'podcast',
+                            as: 'podcast',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            podcast: { $first: '$podcast' },
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: 'authors',
+                            localField: 'author',
+                            foreignField: '_id',
+                            as: 'author',
+                        },
+                    },
+                    {
+                        $addFields: {
+                            author: { $first: '$author' },
+                            sort: {
+                                $indexOfArray: ['$$listenLaterIds', '$_id'],
+                            },
+                        },
+                    },
+                    { $sort: { sort: 1 } },
+                    { $addFields: { sort: '$$REMOVE' } },
+                ],
+                as: 'listenLater',
+            },
+        },
+        {
+            $lookup: {
+                from: 'episodes',
                 foreignField: '_id',
                 localField: 'archivedEpisodes',
                 as: 'archivedEpisodes',
