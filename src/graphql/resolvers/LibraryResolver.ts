@@ -107,15 +107,15 @@ export default class LibraryResolver {
     @Mutation((returns) => Collection)
     async editCollection(
         @Arg('collectionId') collectionId: string,
-        @Arg('collection') { name, coverImageUrl, description, themeColor }: CollectionInput,
+        @Arg('collection') collectionInput: CollectionInput,
         @Ctx() { library }: UserContext,
     ): Promise<Collection> {
         const collection = await CollectionModel.findOne({ _id: collectionId })
         if (collection) {
-            collection.name = name
-            collection.coverImageUrl = coverImageUrl
-            collection.description = description
-            collection.themeColor = themeColor
+            collection.name = collectionInput.name
+            collection.coverImageUrl = collectionInput.coverImageUrl
+            collection.description = collectionInput.description
+            collection.themeColor = collectionInput.themeColor
             await collection.save()
         }
         return retreiveCollection(new ObjectId(collectionId))
@@ -190,15 +190,15 @@ export default class LibraryResolver {
     @Mutation((returns) => Playlist)
     async editPlaylist(
         @Arg('playlistId') playlistId: string,
-        @Arg('playlist') { name, coverImageUrl, description, themeColor }: PlaylistInput,
+        @Arg('playlist') playlistInput: PlaylistInput,
         @Ctx() { library }: UserContext,
     ): Promise<Playlist> {
         const playlist = await PlaylistModel.findOne({ _id: playlistId })
         if (playlist) {
-            playlist.name = name
-            playlist.coverImageUrl = coverImageUrl
-            playlist.description = description
-            playlist.themeColor = themeColor
+            playlist.name = playlistInput.name
+            playlist.coverImageUrl = playlistInput.coverImageUrl
+            playlist.description = playlistInput.description
+            playlist.themeColor = playlistInput.themeColor
             await playlist.save()
         }
         return retreivePlaylist(new ObjectId(playlistId))
