@@ -163,6 +163,7 @@ type Mutation {
   createPlaylist(playlist: PlaylistInput!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
+  editCategoryFeatureness(categoryId: String!, featured: Boolean!): Category!
   editCollection(collection: CollectionInput!, collectionId: String!): Collection!
   editPlaylist(playlist: PlaylistInput!, playlistId: String!): Playlist!
 
@@ -291,7 +292,7 @@ type Query {
   """Returns the featured podcasts"""
   getFeatured: [Podcast!]!
   getFeaturedCategories: [Category!]!
-  getFullCategory: [Category!]!
+  getFullCategory(categoryId: String!): Category!
 
   """Gets the subscription status of podcasts. Returns 30 at a time."""
   getHubSubscriptionStatus(page: Float!): [SubscriptionStatus!]!
