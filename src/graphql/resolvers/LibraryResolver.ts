@@ -307,8 +307,10 @@ export default class LibraryResolver {
     @Mutation((returns) => Library)
     async removeFromListenLater(@Arg('slug') slug: string, @Ctx() { library }: UserContext): Promise<Library> {
         const episode = await EpisodeModel.findOne<DocumentType<Episode>>({ slug })
-
-        const indx = library.listenLater.findIndex((episode_id) => episode._id.equals(episode_id.toString()))
+        console.log(episode.id)
+        console.log(library.listenLater.map((e) => e.toString()))
+        const indx = library.listenLater.findIndex((epId) => episode._id.equals(epId.toString()))
+        console.log(indx)
         if (indx > -1) {
             library.listenLater.splice(indx, 1)
             await library.save()
@@ -651,7 +653,7 @@ export async function getFullLibrary(_id: ObjectId): Promise<DocumentType<Librar
                     { $sort: { sort: 1 } },
                     { $addFields: { sort: '$$REMOVE' } },
                 ],
-                as: 'listenLater',
+                as: 'archivedEpisodes',
             },
         },
         {
