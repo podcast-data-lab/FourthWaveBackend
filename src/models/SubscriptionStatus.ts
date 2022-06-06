@@ -1,12 +1,13 @@
 import { Field, ID, ObjectType } from 'type-graphql'
+import { Podcast } from './Podcast'
 
 @ObjectType()
 export class SubscriptionStatus {
     @Field((type) => ID)
     _id: string
 
-    constructor(rssFeed: string) {
-        this.rssFeed = rssFeed
+    constructor(podcast: Podcast) {
+        this.podcast = podcast
     }
 
     @Field()
@@ -37,5 +38,5 @@ export class SubscriptionStatus {
     aggregateStatistics: string = ''
 
     @Field()
-    rssFeed: string = ''
+    podcast: Podcast = new Podcast()
 }

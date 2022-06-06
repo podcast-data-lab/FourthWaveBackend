@@ -25,6 +25,10 @@ export class Entity {
     })
     name!: string
 
+    @Field((type) => Boolean, { nullable: true })
+    @prop({ default: false })
+    featured?: boolean
+
     @Field((type) => [Episode])
     @prop({ ref: 'Episode', default: [] })
     episodes: Ref<Episode>[]

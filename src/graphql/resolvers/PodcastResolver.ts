@@ -369,9 +369,9 @@ export default class PodcastResolver {
             },
         ])
         let subscriptions = []
-        for (let { hmac, rssFeed } of pods) {
-            if (!hmac) continue
-            let status = getSubscriptionStatus(rssFeed, hmac)
+        for (let podcast of pods) {
+            if (!podcast) continue
+            let status = getSubscriptionStatus(podcast)
             subscriptions.push(status)
         }
         return Promise.all(subscriptions)

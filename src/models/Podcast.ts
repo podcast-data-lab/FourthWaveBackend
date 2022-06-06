@@ -65,6 +65,10 @@ export class Podcast {
     @prop({ type: () => Date })
     lastUpdated?: Date
 
+    @Field((type) => Boolean, { nullable: true })
+    @prop({ default: false })
+    featured?: boolean
+
     @Field()
     @prop({
         type: String,

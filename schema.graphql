@@ -65,6 +65,7 @@ scalar DateTime
 type Entity {
   _id: ID!
   episodes: [Episode!]!
+  featured: Boolean
   name: String!
   podcasts: [Podcast!]!
   type: String!
@@ -262,6 +263,7 @@ type Podcast {
   description: String
   entities: [Entity!]
   episodes: [Episode!]
+  featured: Boolean
   frequency: Float
   image: String
   lastEpisodeDate: DateTime
@@ -378,7 +380,7 @@ type SubscriptionStatus {
   lastSuccessfulVerification: String!
   lastUnsubscribeRequest: String!
   lastVerificationError: String!
-  rssFeed: String!
+  podcast: Podcast!
   state: String!
 }
 
