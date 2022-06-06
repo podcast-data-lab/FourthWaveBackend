@@ -93,6 +93,7 @@ type Episode {
   snNo: String
   sourceUrl: String
   subtitle: String
+  summary: String
   title: String
 }
 

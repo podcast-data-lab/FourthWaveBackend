@@ -1,6 +1,7 @@
 import { PipelineStage } from 'mongoose'
-import { Arg, Field, InputType, Query, Resolver } from 'type-graphql'
+import { Arg, Authorized, Field, InputType, Query, Resolver } from 'type-graphql'
 import { getSubscriptionStatus } from '../../lib/getSubscribtionDiagnostics'
+import { UserPermission } from '../../models/enums/Permissions'
 import { Episode } from '../../models/Episode'
 
 import { Podcast, PodcastModel } from '../../models/Podcast'
@@ -355,6 +356,7 @@ export default class PodcastResolver {
         return pods
     }
 
+    @Authorized([UserPermission.Admin])
     @Query((returns) => [SubscriptionStatus], {
         description: 'Gets the subscription status of podcasts. Returns 30 at a time.',
     })

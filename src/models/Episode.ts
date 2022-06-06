@@ -41,6 +41,10 @@ export class Episode {
 
     @Field({ nullable: true })
     @prop()
+    public summary: string
+
+    @Field({ nullable: true })
+    @prop()
     public htmlDescription: string
 
     @Field({ nullable: true })
