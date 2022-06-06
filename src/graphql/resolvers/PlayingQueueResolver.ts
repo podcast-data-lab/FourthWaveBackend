@@ -145,12 +145,16 @@ export class PlayingQueueResolver {
     @Mutation((returns) => PlayingQueue, {
         description: 'completes the currently playing item and loads the current queue',
     })
-    async completeAndGoToNext(@Arg('playId') playId: string, @Ctx() { playingQueue }: UserContext): Promise<PlayingQueue> {
+    async completeAndGoToNext(
+        @Arg('playId') playId: string,
+        @Ctx() { playingQueue, library }: UserContext,
+    ): Promise<PlayingQueue> {
         const play = await PlayModel.findById(playId)
         play.completed = true
         await play.save()
-
+        library.archivedEpisodes.push(play.episode)
         playingQueue.plays.shift()
+        await library.save()
         await playingQueue.save()
         return getCompleteQueue(playingQueue._id)
     }
