@@ -34,4 +34,32 @@ export default class CategoryResolver {
         const categories = await CategoryModel.aggregate([{ $sample: { size: 10 } }])
         return categories
     }
+
+    @Query((returns) => [Category])
+    async getFeaturedCategories(): Promise<Category[]> {
+        const categories = await CategoryModel.aggregate([
+            {
+                $match: { featured: true },
+            },
+        ])
+        return categories
+    }
+
+    @Query((returns) => [Category])
+    async getFullCategory(): Promise<Category[]> {
+        const categories = await CategoryModel.aggregate([
+            {
+                $match: { featured: true },
+            },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'podcast',
+                    as: 'podcast',
+                },
+            },
+        ])
+        return categories
+    }
 }

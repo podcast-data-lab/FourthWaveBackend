@@ -290,6 +290,8 @@ type Query {
 
   """Returns the featured podcasts"""
   getFeatured: [Podcast!]!
+  getFeaturedCategories: [Category!]!
+  getFullCategory: [Category!]!
 
   """Gets the subscription status of podcasts. Returns 30 at a time."""
   getHubSubscriptionStatus(page: Float!): [SubscriptionStatus!]!
