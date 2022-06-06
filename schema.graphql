@@ -23,9 +23,11 @@ type Category {
   contributor: User!
   coverImageUrl: String
   episodes: [Episode!]!
+  featured: Boolean
   podcasts: [Podcast!]!
   slug: String!
   title: String!
+  visible: Boolean
 }
 
 """A collection contains a list of podcasts grouped by a user"""
@@ -35,6 +37,7 @@ type Collection {
   description: String
   name: String!
   podcasts: [Podcast!]!
+  public: Boolean
   themeColor: String
 }
 
@@ -239,6 +242,7 @@ type Playlist {
   description: String
   episodes: [Episode!]!
   name: String!
+  public: Boolean
   themeColor: String
 }
 

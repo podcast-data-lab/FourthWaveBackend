@@ -34,6 +34,13 @@ export class Collection {
     })
     public themeColor: string
 
+    @Field({ nullable: true })
+    @prop({
+        type: Boolean,
+        default: false,
+    })
+    public public: boolean
+
     @Field((type) => [Podcast])
     @prop({ ref: 'Podcast', default: [] })
     public podcasts: Ref<Podcast>[]

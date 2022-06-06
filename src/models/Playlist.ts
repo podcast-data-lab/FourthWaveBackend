@@ -35,6 +35,13 @@ export class Playlist {
     })
     public themeColor: string
 
+    @Field({ nullable: true })
+    @prop({
+        type: Boolean,
+        default: false,
+    })
+    public public: boolean
+
     @Field((type) => [Episode])
     @prop({ ref: 'Episode', default: [] })
     public episodes: Ref<Episode>[]

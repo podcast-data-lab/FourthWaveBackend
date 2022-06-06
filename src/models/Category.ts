@@ -20,6 +20,20 @@ export class Category {
 
     @Field({ nullable: true })
     @prop({
+        type: Boolean,
+        default: false,
+    })
+    featured: boolean
+
+    @Field({ nullable: true })
+    @prop({
+        type: Boolean,
+        default: false,
+    })
+    visible: boolean
+
+    @Field({ nullable: true })
+    @prop({
         type: String,
     })
     coverImageUrl: string
