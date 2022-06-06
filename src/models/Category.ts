@@ -18,6 +18,12 @@ export class Category {
     })
     title: string
 
+    @Field({ nullable: true })
+    @prop({
+        type: String,
+    })
+    coverImageUrl: string
+
     @Field((type) => User)
     @prop({ ref: () => User })
     contributor?: Ref<User>

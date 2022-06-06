@@ -21,6 +21,7 @@ type Category {
   _id: ID!
   comments: [Comment!]!
   contributor: User!
+  coverImageUrl: String
   episodes: [Episode!]!
   podcasts: [Podcast!]!
   slug: String!
