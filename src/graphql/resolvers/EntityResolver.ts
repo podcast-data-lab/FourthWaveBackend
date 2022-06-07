@@ -295,7 +295,7 @@ export class EntityResolver {
 
     @Authorized()
     @Query((returns) => Entity)
-    async getFullCategory(@Arg('entityId') entityId: string): Promise<Entity> {
+    async getFullEntity(@Arg('entityId') entityId: string): Promise<Entity> {
         return getFullEntity(entityId)
     }
 

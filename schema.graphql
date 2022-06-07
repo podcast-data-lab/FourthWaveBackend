@@ -306,7 +306,8 @@ type Query {
   getFeatured: [Podcast!]!
   getFeaturedCategories: [Category!]!
   getFeaturedEntities: [Entity!]!
-  getFullCategory(entityId: String!): Entity!
+  getFullCategory(categoryId: String!): Category!
+  getFullEntity(entityId: String!): Entity!
 
   """Gets the subscription status of podcasts. Returns 30 at a time."""
   getHubSubscriptionStatus(page: Float!): [SubscriptionStatus!]!
