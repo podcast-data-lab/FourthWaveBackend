@@ -40,7 +40,6 @@ export default class CategoryResolver {
                 },
             },
         ]).allowDiskUse(true)
-        console.log(categories)
         return categories
     }
 
@@ -91,8 +90,8 @@ async function getFullCategory(categoryId: string) {
             $lookup: {
                 from: 'podcasts',
                 foreignField: '_id',
-                localField: 'podcast',
-                as: 'podcast',
+                localField: 'podcasts',
+                as: 'podcasts',
             },
         },
     ])
