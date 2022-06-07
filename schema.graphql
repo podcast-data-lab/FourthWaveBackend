@@ -172,6 +172,9 @@ type Mutation {
   editEntityFeatureness(entityId: String!, featured: Boolean!): Entity!
   editPlaylist(playlist: PlaylistInput!, playlistId: String!): Playlist!
 
+  """Makes a podcast featured or not."""
+  editPodcastFeatureness(featured: Boolean!, slug: String!): Podcast!
+
   """Retreives a user's library"""
   getLibrary: Library!
   getSubscribedPodcastEpisodeQueue: Library!

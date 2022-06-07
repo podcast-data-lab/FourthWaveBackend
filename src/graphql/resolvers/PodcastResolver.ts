@@ -32,6 +32,7 @@ export class PodcastIdsInput {
 }
 @Resolver((of) => Podcast)
 export default class PodcastResolver {
+    @Authorized()
     @Query((returns) => [Podcast], { description: 'Get podcasts ~ 50 podcasts at a time.' })
     async getPodcasts(@Arg('page') page: number): Promise<Podcast[]> {
         const podcasts: Podcast[] = await PodcastModel.aggregate([
@@ -66,6 +67,7 @@ export default class PodcastResolver {
         return podcasts
     }
 
+    @Authorized()
     @Query((returs) => [Episode], { description: "Returns a podcasts'episodes. 20 podcast episodes at a time." })
     async getPodcastEpisodes(@Arg('slug') slug: string, @Arg('page') page: number): Promise<Episode[]> {
         const episodes: Episode[] = await PodcastModel.aggregate<Episode>([
@@ -108,6 +110,7 @@ export default class PodcastResolver {
         return episodes
     }
 
+    @Authorized()
     @Query((returns) => Podcast, {
         description: "Find a podcast based on it's slug",
     })
@@ -141,6 +144,7 @@ export default class PodcastResolver {
         return podcast[0]
     }
 
+    @Authorized()
     @Query((returns) => [Podcast], {
         description: `Searches for podcasts based on a search string. Returns 10 podcasts at a time.
         Searches can be specified to be in the title or description or both.`,
@@ -252,6 +256,7 @@ export default class PodcastResolver {
         return podcasts
     }
 
+    @Authorized()
     @Query((returns) => [Podcast], { description: 'Returns the featured podcasts' })
     async getFeatured(): Promise<Podcast[]> {
         const pods = await PodcastModel.aggregate([
@@ -289,6 +294,7 @@ export default class PodcastResolver {
         return pods
     }
 
+    @Authorized()
     @Query((returns) => [Podcast], { description: 'Returns the Trending Podcasts' })
     async getTrending(): Promise<Podcast[]> {
         const pods = await PodcastModel.aggregate([
@@ -326,6 +332,7 @@ export default class PodcastResolver {
         return pods
     }
 
+    @Authorized()
     @Query((returns) => [Podcast], {
         description: 'Returns the Most Played Podcasts',
     })
@@ -410,5 +417,18 @@ export default class PodcastResolver {
         )
         let subscriptions = await Promise.all(updatedPodcasts.filter((pod) => !!pod).map(getSubscriptionStatus))
         return subscriptions
+    }
+
+    @Authorized([UserPermission.Editor])
+    @Mutation((returns) => Podcast, { description: 'Makes a podcast featured or not.' })
+    async editPodcastFeatureness(@Arg('slug') entityId: string, @Arg('featured') featured: boolean): Promise<Podcast> {
+        const podcast = await PodcastModel.findById(entityId)
+        if (!podcast) {
+            throw new Error('Entity not found')
+        }
+        podcast.featured = featured
+        await podcast.save()
+
+        return podcast
     }
 }
