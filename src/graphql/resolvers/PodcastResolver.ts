@@ -376,18 +376,8 @@ export default class PodcastResolver {
     @Query((returns) => [SubscriptionStatus], {
         description: 'Gets the subscription status of podcasts. Returns 30 at a time.',
     })
-    async getHubSubscriptionStatus(
-        @Arg('page') page: number,
-        @Arg('resultsPerPage') resultsPerPage: number = 25,
-    ): Promise<SubscriptionStatus[]> {
-        const pods = await PodcastModel.aggregate<Podcast>([
-            {
-                $skip: resultsPerPage * page,
-            },
-            {
-                $limit: resultsPerPage,
-            },
-        ])
+    async getHubSubscriptionStatus(@Arg('page') page: number): Promise<SubscriptionStatus[]> {
+        let pods: Podcast[] = await PodcastModel.find()
         let subscriptions = await Promise.all(pods.map(getSubscriptionStatus))
         return subscriptions
     }

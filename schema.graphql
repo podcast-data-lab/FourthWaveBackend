@@ -316,7 +316,7 @@ type Query {
   getFullEntity(entityId: String!): Entity!
 
   """Gets the subscription status of podcasts. Returns 30 at a time."""
-  getHubSubscriptionStatus(page: Float!, resultsPerPage: Float!): [SubscriptionStatus!]!
+  getHubSubscriptionStatus(page: Float!): [SubscriptionStatus!]!
 
   """Retreives a playlist by id"""
   getPlaylist(playlistId: String!): Playlist!
