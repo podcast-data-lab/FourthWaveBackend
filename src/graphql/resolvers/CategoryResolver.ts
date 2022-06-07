@@ -1,15 +1,12 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql'
 
 import { Category, CategoryModel } from '../../models/Category'
+import { UserPermission } from '../../models/enums/Permissions'
 
-const CATEGORY_LIMIT = 25
+const CATEGORY_LIMIT = 35
 @Resolver((of) => Category)
 export default class CategoryResolver {
-    @Query()
-    print(): String {
-        return 'Hello'
-    }
-
+    @Authorized([UserPermission.Editor])
     @Query((returns) => [Category], {
         description: 'Returns a list of all the genres',
     })
@@ -22,19 +19,39 @@ export default class CategoryResolver {
                     _id: 1,
                     slug: 1,
                     title: 1,
+                    podcasts: 1,
+                    episodes: 1,
+                    featured: 1,
+                    visible: 1,
+                    coverImageUrl: 1,
+                    contributor: 1,
+                    comments: 1,
                 },
             },
             { $sort: { podCount: -1, epCount: -1 } },
-        ])
-        return categories.slice(page * CATEGORY_LIMIT, page * CATEGORY_LIMIT + CATEGORY_LIMIT)
+            { $skip: CATEGORY_LIMIT * page },
+            { $limit: CATEGORY_LIMIT },
+            {
+                $lookup: {
+                    from: 'podcasts',
+                    foreignField: '_id',
+                    localField: 'podcasts',
+                    as: 'podcasts',
+                },
+            },
+        ]).allowDiskUse(true)
+        console.log(categories)
+        return categories
     }
 
+    @Authorized()
     @Query((returns) => [Category])
     async getCategorySearchRecommendations(): Promise<Category[]> {
         const categories = await CategoryModel.aggregate([{ $sample: { size: 10 } }])
         return categories
     }
 
+    @Authorized()
     @Query((returns) => [Category])
     async getFeaturedCategories(): Promise<Category[]> {
         const categories = await CategoryModel.aggregate([
@@ -45,11 +62,13 @@ export default class CategoryResolver {
         return categories
     }
 
+    @Authorized()
     @Query((returns) => Category)
     async getFullCategory(@Arg('categoryId') categoryId: string): Promise<Category> {
         return getFullCategory(categoryId)
     }
 
+    @Authorized()
     @Mutation((returns) => Category)
     async editCategoryFeatureness(@Arg('categoryId') categoryId: string, @Arg('featured') featured: boolean): Promise<Category> {
         const category = await CategoryModel.findById(categoryId)

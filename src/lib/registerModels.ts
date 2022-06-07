@@ -155,9 +155,9 @@ async function registerCategories(categoryArray: string[], currentObject: Podcas
             })
         }
         if (currentObject instanceof Episode) {
-            category.episodes = [currentObject]
+            category.episodes.push(currentObject)
         } else {
-            category.podcasts = [currentObject]
+            category.podcasts.push(currentObject)
         }
         await category.save()
         categories.push(category)

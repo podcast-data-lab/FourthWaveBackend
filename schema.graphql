@@ -19,12 +19,12 @@ type Author {
 
 type Category {
   _id: ID!
-  comments: [Comment!]!
-  contributor: User!
+  comments: [Comment!]
+  contributor: User
   coverImageUrl: String
-  episodes: [Episode!]!
+  episodes: [Episode!]
   featured: Boolean
-  podcasts: [Podcast!]!
+  podcasts: [Podcast!]
   slug: String!
   title: String!
   visible: Boolean
@@ -330,7 +330,6 @@ type Query {
 
   """Returns a user's player queue"""
   getUserQueue: PlayingQueue!
-  print: String!
 
   """
   Searches for entities based on a search string. Returns 10 entities at a time

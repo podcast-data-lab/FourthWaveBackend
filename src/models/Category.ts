@@ -38,19 +38,19 @@ export class Category {
     })
     coverImageUrl: string
 
-    @Field((type) => User)
+    @Field((type) => User, { nullable: true })
     @prop({ ref: () => User })
     contributor?: Ref<User>
 
-    @Field((type) => [Episode])
+    @Field((type) => [Episode], { nullable: true })
     @prop({ ref: 'Episode' })
     episodes?: Ref<Episode>[]
 
-    @Field((type) => [Podcast])
+    @Field((type) => [Podcast], { nullable: true })
     @prop({ ref: 'Podcast' })
     podcasts?: Ref<Podcast>[]
 
-    @Field((type) => [Comment])
+    @Field((type) => [Comment], { nullable: true })
     @prop({ ref: 'Comment' })
     comments?: Ref<Comment>[]
 
