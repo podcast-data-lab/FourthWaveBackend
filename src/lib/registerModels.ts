@@ -132,9 +132,9 @@ export async function registerEntities(
                     name: entityName,
                 })
                 if (currentObject instanceof Episode) {
-                    entity.episodes = [currentObject]
+                    entity.episodes.push(currentObject)
                 } else {
-                    entity.podcasts = [currentObject]
+                    entity.podcasts.push(currentObject)
                 }
                 await entity.save()
             }
