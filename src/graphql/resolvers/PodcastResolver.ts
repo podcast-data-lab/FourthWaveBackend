@@ -24,6 +24,12 @@ export class SearchInput {
     @Field()
     page: number
 }
+
+@InputType()
+export class PodcastIdsInput {
+    @Field((type) => [String])
+    podcastIds: string[]
+}
 @Resolver((of) => Podcast)
 export default class PodcastResolver {
     @Query((returns) => [Podcast], { description: 'Get podcasts ~ 50 podcasts at a time.' })
@@ -378,7 +384,7 @@ export default class PodcastResolver {
     }
 
     @Mutation((returns) => Podcast, { description: 'Subscribes to a hub' })
-    async subscribePodcastsToHub(@Arg('podcastIds') podcastId: string[]): Promise<SubscriptionStatus[]> {
+    async subscribePodcastsToHub(@Arg('podcastIds') podcastId: PodcastIdsInput): Promise<SubscriptionStatus[]> {
         let podcasts = await PodcastModel.find({ _id: { $in: podcastId } })
         let podcastXMLUrls = podcasts.map((podcast) => podcast.rssFeed)
         const generateHub =

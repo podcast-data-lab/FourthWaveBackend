@@ -210,6 +210,9 @@ type Mutation {
 
   """Starts the playing of a Play object"""
   startPlay(slug: String!): PlayingQueue!
+
+  """Subscribes to a hub"""
+  subscribePodcastsToHub(podcastIds: PodcastIdsInput!): Podcast!
   subscribeToPodcast(slug: String!): Library!
   unArchiveEpisode(slug: String!): Library!
   unSubscribeToPodcast(slug: String!): Library!
@@ -276,6 +279,10 @@ type Podcast {
   rssFeed: String
   slug: String!
   title: String!
+}
+
+input PodcastIdsInput {
+  podcastIds: [String!]!
 }
 
 type Query {
