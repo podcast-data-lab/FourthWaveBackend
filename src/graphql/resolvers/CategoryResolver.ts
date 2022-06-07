@@ -67,7 +67,7 @@ export default class CategoryResolver {
         return getFullCategory(categoryId)
     }
 
-    @Authorized()
+    @Authorized([UserPermission.Editor])
     @Mutation((returns) => Category)
     async editCategoryFeatureness(@Arg('categoryId') categoryId: string, @Arg('featured') featured: boolean): Promise<Category> {
         const category = await CategoryModel.findById(categoryId)
@@ -75,6 +75,22 @@ export default class CategoryResolver {
             throw new Error('Category not found')
         }
         category.featured = featured
+        await category.save()
+
+        return getFullCategory(categoryId)
+    }
+
+    @Authorized([UserPermission.Editor])
+    @Mutation((returns) => Category)
+    async editCategoryCoverImage(
+        @Arg('coverImageUrl') coverImageUrl: string,
+        @Arg('categoryId') categoryId: string,
+    ): Promise<Category> {
+        const category = await CategoryModel.findById(categoryId)
+        if (!category) {
+            throw new Error('Category not found')
+        }
+        category.coverImageUrl = coverImageUrl
         await category.save()
 
         return getFullCategory(categoryId)

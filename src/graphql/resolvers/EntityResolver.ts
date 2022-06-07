@@ -299,7 +299,7 @@ export class EntityResolver {
         return getFullEntity(entityId)
     }
 
-    @Authorized()
+    @Authorized([UserPermission.Editor])
     @Mutation((returns) => Entity)
     async editEntityFeatureness(@Arg('entityId') entityId: string, @Arg('featured') featured: boolean): Promise<Entity> {
         const entity = await EntityModel.findById(entityId)

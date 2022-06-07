@@ -166,6 +166,7 @@ type Mutation {
   createPlaylist(playlist: PlaylistInput!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
+  editCategoryCoverImage(categoryId: String!, coverImageUrl: String!): Category!
   editCategoryFeatureness(categoryId: String!, featured: Boolean!): Category!
   editCollection(collection: CollectionInput!, collectionId: String!): Collection!
   editEntityFeatureness(entityId: String!, featured: Boolean!): Entity!
