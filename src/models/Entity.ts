@@ -36,5 +36,11 @@ export class Entity {
     @Field((type) => [Podcast])
     @prop({ ref: 'Podcast', default: [] })
     podcasts: Ref<Podcast>[]
+
+    @Field({ nullable: true })
+    @prop({
+        type: String,
+    })
+    coverImageUrl: string
 }
 export const EntityModel = getModelForClass(Entity)

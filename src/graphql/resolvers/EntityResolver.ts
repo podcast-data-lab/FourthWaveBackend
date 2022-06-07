@@ -301,10 +301,10 @@ export class EntityResolver {
 
     @Authorized()
     @Mutation((returns) => Entity)
-    async editCategoryFeatureness(@Arg('entityId') entityId: string, @Arg('featured') featured: boolean): Promise<Entity> {
+    async editEntityFeatureness(@Arg('entityId') entityId: string, @Arg('featured') featured: boolean): Promise<Entity> {
         const entity = await EntityModel.findById(entityId)
         if (!entity) {
-            throw new Error('Category not found')
+            throw new Error('Entity not found')
         }
         entity.featured = featured
         await entity.save()

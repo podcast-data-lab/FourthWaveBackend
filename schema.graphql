@@ -64,6 +64,7 @@ scalar DateTime
 
 type Entity {
   _id: ID!
+  coverImageUrl: String
   episodes: [Episode!]!
   featured: Boolean
   name: String!
@@ -165,8 +166,9 @@ type Mutation {
   createPlaylist(playlist: PlaylistInput!): Library!
   deleteCollection(collectionId: String!): Library!
   deletePlaylist(playlistId: String!): Library!
-  editCategoryFeatureness(entityId: String!, featured: Boolean!): Entity!
+  editCategoryFeatureness(categoryId: String!, featured: Boolean!): Category!
   editCollection(collection: CollectionInput!, collectionId: String!): Collection!
+  editEntityFeatureness(entityId: String!, featured: Boolean!): Entity!
   editPlaylist(playlist: PlaylistInput!, playlistId: String!): Playlist!
 
   """Retreives a user's library"""
