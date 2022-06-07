@@ -213,8 +213,8 @@ type Mutation {
   """Starts the playing of a Play object"""
   startPlay(slug: String!): PlayingQueue!
 
-  """Subscribes to a hub"""
-  subscribePodcastsToHub(podcastIds: PodcastIdsInput!): Podcast!
+  """Subscribe a podcast to a hub"""
+  subscribePodcastsToHub(podcastIds: PodcastIdsInput!): [SubscriptionStatus!]!
   subscribeToPodcast(slug: String!): Library!
   unArchiveEpisode(slug: String!): Library!
   unSubscribeToPodcast(slug: String!): Library!

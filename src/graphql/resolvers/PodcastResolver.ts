@@ -383,7 +383,8 @@ export default class PodcastResolver {
         return subscriptions
     }
 
-    @Mutation((returns) => Podcast, { description: 'Subscribes to a hub' })
+    @Authorized([UserPermission.Admin])
+    @Mutation((returns) => [SubscriptionStatus], { description: 'Subscribe a podcast to a hub' })
     async subscribePodcastsToHub(@Arg('podcastIds') podcastId: PodcastIdsInput): Promise<SubscriptionStatus[]> {
         let podcasts = await PodcastModel.find({ _id: { $in: podcastId } })
         let podcastXMLUrls = podcasts.map((podcast) => podcast.rssFeed)
