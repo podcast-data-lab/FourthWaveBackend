@@ -376,7 +376,7 @@ export default class PodcastResolver {
     @Query((returns) => [SubscriptionStatus], {
         description: 'Gets the subscription status of podcasts. Returns 30 at a time.',
     })
-    async getHubSubscriptionStatus(@Arg('page') page: number): Promise<SubscriptionStatus[]> {
+    async getHubSubscriptionStatus(): Promise<SubscriptionStatus[]> {
         let pods: Podcast[] = await PodcastModel.find()
         let subscriptions = await Promise.all(pods.map(getSubscriptionStatus))
         return subscriptions
