@@ -372,17 +372,16 @@ input SearchInput {
 }
 
 type SubscriptionStatus {
-  _id: ID!
-  aggregateStatistics: String!
-  callbackUrl: String!
-  expirationTime: String!
-  lastDeliveryError: String!
-  lastSubscribeRequest: String!
-  lastSuccessfulVerification: String!
-  lastUnsubscribeRequest: String!
-  lastVerificationError: String!
+  aggregateStatistics: String
+  callbackUrl: String
+  expirationTime: String
+  lastDeliveryError: String
+  lastSubscribeRequest: String
+  lastSuccessfulVerification: String
+  lastUnsubscribeRequest: String
+  lastVerificationError: String
   podcast: Podcast!
-  state: String!
+  state: String
 }
 
 type URLS {

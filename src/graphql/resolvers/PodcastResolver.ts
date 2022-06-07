@@ -1,8 +1,11 @@
 import { PipelineStage } from 'mongoose'
-import { Arg, Authorized, Field, InputType, Query, Resolver } from 'type-graphql'
+import { map } from 'ramda'
+import { Arg, Authorized, Field, InputType, Mutation, Query, Resolver } from 'type-graphql'
 import { getSubscriptionStatus } from '../../lib/getSubscribtionDiagnostics'
+import { subscribeToHub } from '../../lib/subscribeToHub'
 import { UserPermission } from '../../models/enums/Permissions'
 import { Episode } from '../../models/Episode'
+import { IOptions } from '../../models/I-Options'
 
 import { Podcast, PodcastModel } from '../../models/Podcast'
 import { SubscriptionStatus } from '../../models/SubscriptionStatus'
@@ -370,12 +373,35 @@ export default class PodcastResolver {
                 $limit: PODCAST_LIMIT,
             },
         ])
-        let subscriptions = []
-        for (let podcast of pods) {
-            if (!podcast) continue
-            let status = getSubscriptionStatus(podcast)
-            subscriptions.push(status)
-        }
-        return Promise.all(subscriptions)
+        let subscriptions = await Promise.all(pods.map(getSubscriptionStatus))
+        return subscriptions
+    }
+
+    @Mutation((returns) => Podcast, { description: 'Subscribes to a hub' })
+    async subscribePodcastsToHub(@Arg('podcastIds') podcastId: string[]): Promise<SubscriptionStatus[]> {
+        let podcasts = await PodcastModel.find({ _id: { $in: podcastId } })
+        let podcastXMLUrls = podcasts.map((podcast) => podcast.rssFeed)
+        const generateHub =
+            (hubUrl: string) =>
+            (xmlurl: string): IOptions => ({
+                secret: process.env.HMAC_SECRET,
+                leaseSeconds: 60 * 60 * 24 * 7,
+                mode: 'subscribe',
+                topic: xmlurl,
+                hub: hubUrl,
+                callbackUrl: process.env.CALL_BACK_URL,
+            })
+        const updatedPodcasts = await Promise.all(
+            map(generateHub(process.env.HUB_URL), podcastXMLUrls).map((hubRequest, i) => {
+                return new Promise<Podcast>((resolve, reject) => {
+                    setTimeout(async () => {
+                        const result = await subscribeToHub(hubRequest)
+                        resolve(result)
+                    }, i * 1000)
+                })
+            }),
+        )
+        let subscriptions = await Promise.all(updatedPodcasts.filter((pod) => !!pod).map(getSubscriptionStatus))
+        return subscriptions
     }
 }

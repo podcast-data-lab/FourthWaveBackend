@@ -3,38 +3,35 @@ import { Podcast } from './Podcast'
 
 @ObjectType()
 export class SubscriptionStatus {
-    @Field((type) => ID)
-    _id: string
-
     constructor(podcast: Podcast) {
         this.podcast = podcast
     }
 
-    @Field()
+    @Field({ nullable: true })
     callbackUrl: string = ''
 
-    @Field()
+    @Field({ nullable: true })
     state: string = ''
 
-    @Field()
+    @Field({ nullable: true })
     lastSuccessfulVerification: string = ''
 
-    @Field()
+    @Field({ nullable: true })
     expirationTime: string = ''
 
-    @Field()
+    @Field({ nullable: true })
     lastSubscribeRequest: string = ''
 
-    @Field()
+    @Field({ nullable: true })
     lastUnsubscribeRequest: string
 
-    @Field()
+    @Field({ nullable: true })
     lastVerificationError: string = ''
 
-    @Field()
+    @Field({ nullable: true })
     lastDeliveryError: string = ''
 
-    @Field()
+    @Field({ nullable: true })
     aggregateStatistics: string = ''
 
     @Field()
