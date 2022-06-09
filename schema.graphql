@@ -225,6 +225,9 @@ type Mutation {
   unbookmarkEpisode(slug: String!): Library!
   unlikeEpisode(slug: String!): Library!
 
+  """Updates a podcastRssFeed"""
+  updateAPodcasts(rssFeed: RssFeeds!): [SubscriptionStatus!]!
+
   """Updates the play position of a Play object"""
   updatePlayPosition(playId: Float!, position: Float!): Play!
 
@@ -378,6 +381,10 @@ type Query {
 
   """Returns the Most Popular Podcast Episodes"""
   topEpisodes: [Episode!]!
+}
+
+input RssFeeds {
+  rssFeeds: [String!]!
 }
 
 input SearchInput {

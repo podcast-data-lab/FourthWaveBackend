@@ -2,6 +2,7 @@ import { PipelineStage } from 'mongoose'
 import { map } from 'ramda'
 import { Arg, Authorized, Field, InputType, Mutation, Query, Resolver } from 'type-graphql'
 import { getSubscriptionStatus } from '../../lib/getSubscribtionDiagnostics'
+import { handleFeedContentUpdate } from '../../lib/handleFeedInput'
 import { subscribeToHub } from '../../lib/subscribeToHub'
 import { UserPermission } from '../../models/enums/Permissions'
 import { Episode } from '../../models/Episode'
@@ -30,6 +31,13 @@ export class PodcastIdsInput {
     @Field((type) => [String])
     podcastIds: string[]
 }
+
+@InputType()
+export class RssFeeds {
+    @Field((type) => [String])
+    rssFeeds: string[]
+}
+
 @Resolver((of) => Podcast)
 export default class PodcastResolver {
     @Authorized()
@@ -422,5 +430,13 @@ export default class PodcastResolver {
         await podcast.save()
 
         return podcast
+    }
+
+    @Authorized([UserPermission.Editor])
+    @Mutation((returns) => [SubscriptionStatus], { description: 'Updates a podcastRssFeed' })
+    async updateAPodcasts(@Arg('rssFeed') { rssFeeds }: RssFeeds): Promise<SubscriptionStatus[]> {
+        return Promise.all(rssFeeds.map((feedUrl) => handleFeedContentUpdate(feedUrl))).then(() =>
+            this.getHubSubscriptionStatus(),
+        )
     }
 }
