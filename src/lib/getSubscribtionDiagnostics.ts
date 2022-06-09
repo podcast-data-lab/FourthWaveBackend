@@ -46,7 +46,6 @@ function extractPodcastData(html: string, podcast: Podcast): SubscriptionStatus 
             let label = labels[i].innerHTML
             let value = values[i].innerHTML
             data[toCamelCase(label.trim()) as keyof Omit<SubscriptionStatus, 'podcast'>] = value.trim()
-            console.log(data[toCamelCase(label.trim()) as keyof Omit<SubscriptionStatus, 'podcast'>])
         }
         return data
     } catch (e) {

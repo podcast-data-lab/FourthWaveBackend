@@ -434,8 +434,8 @@ export default class PodcastResolver {
 
     @Authorized([UserPermission.Editor])
     @Mutation((returns) => [SubscriptionStatus], { description: 'Updates a podcastRssFeed' })
-    async updateAPodcasts(@Arg('rssFeed') { rssFeeds }: RssFeeds): Promise<SubscriptionStatus[]> {
-        return Promise.all(rssFeeds.map((feedUrl) => handleFeedContentUpdate(feedUrl))).then(() =>
+    async updateAPodcasts(@Arg('rssFeeds') { rssFeeds }: RssFeeds): Promise<SubscriptionStatus[]> {
+        return Promise.all(rssFeeds.map(async (feedUrl) => await handleFeedContentUpdate(feedUrl))).then(() =>
             this.getHubSubscriptionStatus(),
         )
     }

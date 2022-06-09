@@ -10,6 +10,7 @@ import {
 import { captureException } from '@sentry/node'
 import chalk from 'chalk'
 import fetch, { Headers } from 'node-fetch'
+import { Episode } from '../models/Episode'
 
 export async function handleFeedContentUpdate(rssFeed: string) {
     if (!rssFeed) return Promise.resolve()
@@ -19,7 +20,7 @@ export async function handleFeedContentUpdate(rssFeed: string) {
     let last_fetched = podcast.lastUpdated
     let updatedItems = await getUpdatedItems(rssFeed, last_fetched, podcast)
     return Promise.all(
-        updatedItems.map(async ({ entitiesInput, episodeObject, authorInput }) => {
+        updatedItems.map<Promise<Episode>>(async ({ entitiesInput, episodeObject, authorInput }) => {
             let episode = await registerEpisode(episodeObject)
             let entities = await registerEntities(entitiesInput, episode)
             let author = await registerPodcastAuthor(authorInput)
@@ -36,7 +37,7 @@ export async function handleFeedContentUpdate(rssFeed: string) {
         }),
     ).catch((error) => {
         captureException(error)
-        return Promise.resolve()
+        return Promise.resolve([])
     })
 }
 

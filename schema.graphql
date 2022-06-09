@@ -226,7 +226,7 @@ type Mutation {
   unlikeEpisode(slug: String!): Library!
 
   """Updates a podcastRssFeed"""
-  updateAPodcasts(rssFeed: RssFeeds!): [SubscriptionStatus!]!
+  updateAPodcasts(rssFeeds: RssFeeds!): [SubscriptionStatus!]!
 
   """Updates the play position of a Play object"""
   updatePlayPosition(playId: Float!, position: Float!): Play!
