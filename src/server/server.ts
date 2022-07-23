@@ -167,12 +167,11 @@ initializeSentry()
     const HOST = '0.0.0.0'
     const PORT = process.env.PORT || 6500
 
-    app.listen(PORT, process.env.HOST ?? HOST, () => console.log(`api listening on port ${PORT}.`))
+    app.listen(PORT, HOST, () => console.log(`api listening on port ${PORT}.`))
 })()
 
 function checkAllowedOrigins(origin: string): boolean {
     const allowedOrigins = ['https://fourth-wave.firebaseapp.com', 'https://fourth-wave.web.app/']
-    // if (allowedOrigins.includes(origin)) return true
-    // else return true
-    return true
+    if (allowedOrigins.includes(origin)) return true
+    else return false
 }

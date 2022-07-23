@@ -45,10 +45,10 @@ export default class PodcastResolver {
     async getPodcasts(@Arg('page') page: number): Promise<Podcast[]> {
         const podcasts: Podcast[] = await PodcastModel.aggregate([
             {
-                $skip: 30 * page,
+                $skip: 50 * page,
             },
             {
-                $limit: 30,
+                $limit: 50,
             },
             {
                 $lookup: {
