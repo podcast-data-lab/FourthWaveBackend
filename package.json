@@ -35,7 +35,7 @@
         "firebase-admin": "^10.0.2",
         "graphql": "^15.3.0",
         "mongodb": "^4.3.1",
-        "mongoose": "^6.3.0",
+        "mongoose": "^6.4.6",
         "mongoose-findorcreate": "^3.0.0",
         "node-fetch": "2.6.7",
         "node-html-parser": "^5.3.3",
